@@ -1,0 +1,32 @@
+# База данных SQLite
+storage/database.sqlite
+storage/*.sqlite
+storage/*.db
+
+# Загруженные файлы
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Временные файлы
+*.log
+*.tmp
+*.cache
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE файлы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# PHP
+vendor/
+composer.lock
+
+# Конфигурация (если нужно скрыть)
+# app/config.php
