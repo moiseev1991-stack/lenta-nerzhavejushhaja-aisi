@@ -18,6 +18,9 @@ if (!function_exists('db')) {
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             
+            // Настройки кодировки для SQLite
+            $pdo->exec('PRAGMA encoding = "UTF-8"');
+            
             // Включаем foreign keys
             $pdo->exec('PRAGMA foreign_keys = ON');
         }

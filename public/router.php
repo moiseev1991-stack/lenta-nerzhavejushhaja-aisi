@@ -1,5 +1,9 @@
 <?php
 
+// Устанавливаем кодировку UTF-8
+mb_internal_encoding('UTF-8');
+mb_http_output('UTF-8');
+
 // Router для встроенного PHP сервера
 // Отдает статику как есть, остальное прокидывает в index.php
 

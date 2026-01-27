@@ -36,8 +36,8 @@ try {
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 $requestPath = parse_url($requestUri, PHP_URL_PATH);
 
-// Убираем начальный слэш
-$requestPath = ltrim($requestPath, '/');
+// Убираем начальный и конечный слэш
+$requestPath = trim($requestPath, '/');
 
 // Роутинг
 if ($requestPath === '' || $requestPath === '/') {
@@ -105,6 +105,70 @@ if (strpos($requestPath, 'admin/') === 0) {
     exit;
 }
 
+// Технические SEO файлы
+if ($requestPath === 'robots.txt') {
+    header('Content-Type: text/plain; charset=utf-8');
+    require __DIR__ . '/../app/views/robots.txt.php';
+    exit;
+}
+
+if ($requestPath === 'sitemap.xml') {
+    header('Content-Type: application/xml; charset=utf-8');
+    require __DIR__ . '/../app/views/sitemap.xml.php';
+    exit;
+}
+
+// Раздел "Аналоги"
+if (strpos($requestPath, 'analogi/') === 0) {
+    $analogsData = require __DIR__ . '/../app/data/analogs.php';
+    $analogSlug = substr($requestPath, 8); // убираем 'analogi/'
+    $analogSlug = rtrim($analogSlug, '/');
+    
+    // Страницы аналогов по slug
+    $foundPage = null;
+    foreach ($analogsData['pages'] as $key => $page) {
+        if ($page['slug'] === 'analogi/' . $analogSlug || $page['slug'] === $requestPath) {
+            $foundPage = $page;
+            break;
+        }
+    }
+    
+    if ($foundPage) {
+        $pageTitle = $foundPage['title'];
+        $pageDescription = $foundPage['description'];
+        $pageH1 = $foundPage['h1'];
+        $pageIntro = $foundPage['intro'] ?? '';
+        $pageBullets = $foundPage['bullets'] ?? [];
+        $isAnalogPage = true;
+        require __DIR__ . '/../app/views/layout.php';
+        exit;
+    }
+    
+    // 404 если не найдено
+    require __DIR__ . '/../app/views/404.php';
+    exit;
+}
+
+// Сервисные страницы (проверяем до категорий и товаров)
+$servicePagesData = require __DIR__ . '/../app/data/pages.php';
+
+// Убираем слэш в конце для проверки
+$servicePageKey = rtrim($requestPath, '/');
+
+// Список известных сервисных страниц
+$knownServicePages = ['contacts', 'delivery', 'payment', 'about', 'price', 'privacy-policy'];
+
+if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$servicePageKey])) {
+    $pageData = $servicePagesData[$servicePageKey];
+    $pageTitle = $pageData['title'];
+    $pageDescription = $pageData['description'];
+    $pageH1 = $pageData['h1'];
+    $pageContent = $pageData['content'] ?? '';
+    $isServicePage = true;
+    require __DIR__ . '/../app/views/layout.php';
+    exit;
+}
+
 // Товар: /product/{slug}/
 if (preg_match('#^product/([^/]+)/?$#', $requestPath, $matches)) {
     $slug = $matches[1];
@@ -132,8 +196,9 @@ if (preg_match('#^product/([^/]+)/?$#', $requestPath, $matches)) {
 }
 
 // Категория: /{category_slug}/
-if (preg_match('#^([^/]+)/?$#', $requestPath, $matches)) {
-    $slug = $matches[1];
+// Проверяем только если путь не пустой и не содержит слэшей внутри
+if ($requestPath && strpos($requestPath, '/') === false) {
+    $slug = $requestPath;
     
     // Проверяем что это категория (начинается с aisi-)
     if (strpos($slug, 'aisi-') !== 0) {
