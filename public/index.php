@@ -39,6 +39,17 @@ $requestPath = parse_url($requestUri, PHP_URL_PATH);
 // Убираем начальный и конечный слэш
 $requestPath = trim($requestPath, '/');
 
+// Логотип из папки img/ в корне проекта (не из public/img/)
+if ($requestPath === 'img/logo_aisi_lenta_full.png') {
+    $logoFile = __DIR__ . '/../img/logo_aisi_lenta_full.png';
+    if (file_exists($logoFile) && is_file($logoFile)) {
+        header('Content-Type: image/png');
+        header('Cache-Control: public, max-age=86400');
+        readfile($logoFile);
+        exit;
+    }
+}
+
 // Роутинг
 if ($requestPath === '' || $requestPath === '/') {
     // Главная страница

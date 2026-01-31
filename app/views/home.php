@@ -8,8 +8,8 @@
         <div class="container">
             <div class="hero__inner hero__inner--centered">
                 <div class="hero__logo">
-                    <h1 class="hero__title"><?= e($config['site_name']) ?></h1>
-                    <p class="hero__subtitle">Нержавеющая лента AISI — широкий ассортимент</p>
+                    <h1 class="hero__title">Лента нержавеющая AISI</h1>
+                    <p class="hero__subtitle">Подберём марку, толщину и поверхность — быстро и точно под вашу задачу.</p>
                 </div>
             </div>
         </div>
@@ -57,6 +57,7 @@
                                 if ($product['thickness']) $meta[] = $product['thickness'] . ' мм';
                                 if ($product['condition'] === 'soft') $meta[] = 'Мягкая';
                                 if ($product['condition'] === 'hard') $meta[] = 'Нагартованная';
+                                if ($product['condition'] === 'semi_hard') $meta[] = 'Полугартованная';
                                 if ($product['surface']) $meta[] = $product['surface'];
                                 ?>
                                 <?= e(implode(' • ', $meta)) ?>

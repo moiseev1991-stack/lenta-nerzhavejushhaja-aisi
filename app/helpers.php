@@ -88,3 +88,18 @@ if (!function_exists('format_price')) {
         return number_format($price, 2, '.', ' ') . ' ₽/кг';
     }
 }
+
+/**
+ * Определяет серию AISI по slug категории (aisi-304 -> 300, aisi-904l -> 900L).
+ */
+if (!function_exists('aisi_series_from_slug')) {
+    function aisi_series_from_slug($slug) {
+        if (preg_match('/^aisi-(\d+)/i', $slug, $m)) {
+            $num = (int) $m[1];
+            if ($num >= 900) return '900L';
+            $first = (int) substr((string) $num, 0, 1);
+            return (string) ($first * 100);
+        }
+        return 'other';
+    }
+}

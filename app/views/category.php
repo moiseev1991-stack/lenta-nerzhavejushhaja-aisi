@@ -127,7 +127,8 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                                 <?php 
                                 $conditions = [
                                     'soft' => 'Мягкая',
-                                    'hard' => 'Нагартованная'
+                                    'hard' => 'Нагартованная',
+                                    'semi_hard' => 'Полугартованная'
                                 ];
                                 foreach ($conditions as $val => $label): 
                                     $checked = in_array($val, $filters['condition']);
@@ -178,7 +179,8 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                                 <?php 
                                 $surfaces = [
                                     'BA' => 'BA',
-                                    '2B' => '2B'
+                                    '2B' => '2B',
+                                    '4N' => '4N'
                                 ];
                                 foreach ($surfaces as $val => $label): 
                                     $checked = in_array($val, $filters['surface']);
@@ -238,6 +240,7 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                                             if ($product['thickness']) $meta[] = $product['thickness'] . ' мм';
                                             if ($product['condition'] === 'soft') $meta[] = 'Мягкая';
                                             if ($product['condition'] === 'hard') $meta[] = 'Нагартованная';
+                                            if ($product['condition'] === 'semi_hard') $meta[] = 'Полугартованная';
                                             if ($product['surface']) $meta[] = $product['surface'];
                                             ?>
                                             <?= e(implode(' • ', $meta)) ?>

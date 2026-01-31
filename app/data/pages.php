@@ -15,15 +15,12 @@ return [
                 
                 <div style="margin: 2rem 0;">
                     <h3>Телефоны</h3>
-                    <p><strong>Отдел продаж:</strong> <a href="tel:+74951234567">+7 (495) 123-45-67</a></p>
-                    <p><strong>Менеджер:</strong> <a href="tel:+74951234568">+7 (495) 123-45-68</a></p>
-                    <p><strong>Факс:</strong> +7 (495) 123-45-69</p>
+                    <p><strong>Телефон:</strong> <a href="tel:+74951060741">+7 (495) 106-07-41</a></p>
                 </div>
                 
                 <div style="margin: 2rem 0;">
                     <h3>Email</h3>
-                    <p><strong>Общие вопросы:</strong> <a href="mailto:info@example.com">info@example.com</a></p>
-                    <p><strong>Отдел продаж:</strong> <a href="mailto:sales@example.com">sales@example.com</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></p>
                 </div>
                 
                 <div style="margin: 2rem 0;">
@@ -239,6 +236,10 @@ return [
                 
                 <h3>Наши клиенты</h3>
                 <p>Мы работаем с предприятиями различных масштабов: от небольших мастерских до крупных промышленных компаний. Наши клиенты ценят нас за надежность, качество и оперативность.</p>
+                
+                <h3>Контакты</h3>
+                <p><strong>Телефон:</strong> <a href="tel:+74951060741">+7 (495) 106-07-41</a></p>
+                <p><strong>Email:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></p>
             </div>
         ',
     ],

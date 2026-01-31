@@ -261,6 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="">—</option>
                                 <option value="soft" <?= ($product && $product['condition'] === 'soft') ? 'selected' : '' ?>>Мягкая</option>
                                 <option value="hard" <?= ($product && $product['condition'] === 'hard') ? 'selected' : '' ?>>Нагартованная</option>
+                                <option value="semi_hard" <?= ($product && $product['condition'] === 'semi_hard') ? 'selected' : '' ?>>Полугартованная</option>
                             </select>
                         </div>
 
@@ -278,6 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="">—</option>
                                 <option value="BA" <?= ($product && $product['surface'] === 'BA') ? 'selected' : '' ?>>BA</option>
                                 <option value="2B" <?= ($product && $product['surface'] === '2B') ? 'selected' : '' ?>>2B</option>
+                                <option value="4N" <?= ($product && $product['surface'] === '4N') ? 'selected' : '' ?>>4N</option>
                             </select>
                         </div>
 
