@@ -89,6 +89,35 @@ if (!function_exists('format_price')) {
     }
 }
 
+/** Файл настроек сайта (ключ-значение) */
+if (!defined('SITE_SETTINGS_FILE')) {
+    define('SITE_SETTINGS_FILE', __DIR__ . '/../storage/site_settings.json');
+}
+
+if (!function_exists('get_site_setting')) {
+    function get_site_setting($key) {
+        $path = SITE_SETTINGS_FILE;
+        if (!file_exists($path)) {
+            return null;
+        }
+        $data = @json_decode(file_get_contents($path), true);
+        return isset($data[$key]) ? $data[$key] : null;
+    }
+}
+
+if (!function_exists('set_site_setting')) {
+    function set_site_setting($key, $value) {
+        $path = SITE_SETTINGS_FILE;
+        $dir = dirname($path);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+        $data = file_exists($path) ? (array) @json_decode(file_get_contents($path), true) : [];
+        $data[$key] = $value;
+        return file_put_contents($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)) !== false;
+    }
+}
+
 /**
  * Определяет серию AISI по slug категории (aisi-304 -> 300, aisi-904l -> 900L).
  */

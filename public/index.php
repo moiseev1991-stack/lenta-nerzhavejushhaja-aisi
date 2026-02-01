@@ -70,6 +70,8 @@ if ($requestPath === '' || $requestPath === '/') {
     ');
     $featuredProducts = $stmt->fetchAll();
     
+    $homeTextHtml = get_site_setting('home_text_html') ?? '';
+    
     require __DIR__ . '/../app/views/layout.php';
     exit;
 }
@@ -108,6 +110,11 @@ if (strpos($requestPath, 'admin/') === 0) {
     
     if ($adminPath === 'category_edit') {
         require __DIR__ . '/../app/admin/category_edit.php';
+        exit;
+    }
+    
+    if ($adminPath === 'home_text') {
+        require __DIR__ . '/../app/admin/home_text.php';
         exit;
     }
     

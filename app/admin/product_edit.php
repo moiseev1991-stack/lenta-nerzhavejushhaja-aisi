@@ -173,9 +173,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="admin-header__inner">
                     <h1>Админка</h1>
                     <nav class="admin-nav">
-                        <a href="/admin/products">Товары</a>
-                        <a href="/admin/categories">Категории</a>
-                        <a href="/admin/logout">Выход</a>
+                        <a href="<?= base_url('admin/products') ?>">Товары</a>
+                        <a href="<?= base_url('admin/categories') ?>">Категории</a>
+                        <a href="<?= base_url('admin/home_text') ?>">Текст на главной</a>
+                        <a href="<?= base_url('admin/logout') ?>">Выход</a>
                     </nav>
                 </div>
             </div>

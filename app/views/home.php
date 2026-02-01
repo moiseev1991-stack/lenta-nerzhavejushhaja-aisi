@@ -30,6 +30,16 @@
         </div>
     </section>
 
+    <?php if (!empty($homeTextHtml)): ?>
+    <section class="home-text">
+        <div class="container">
+            <div class="home-text__content">
+                <?= $homeTextHtml ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- Популярные товары -->
     <section class="products-section">
         <div class="container">

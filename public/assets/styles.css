@@ -1559,12 +1559,12 @@ details[open] .filter-group__title::before {
 
 .hero--home {
     position: relative;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-    background-image: url('/img/fon3.jpg');
+    background-color: var(--bg-primary);
+    background-image: url('/assets/img/fon.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
     padding: var(--spacing-2xl) 0;
     text-align: center;
     border-bottom: 1px solid var(--border-color);
@@ -1670,6 +1670,43 @@ details[open] .filter-group__title::before {
     font-size: var(--font-size-base);
     color: var(--text-muted);
     line-height: 1.6;
+}
+
+.home-text {
+    padding: var(--spacing-2xl) 0;
+}
+
+.home-text__content {
+    width: 100%;
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.home-text__content h2,
+.home-text__content h3,
+.home-text__content h4 {
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+}
+
+.home-text__content h2 { font-size: var(--font-size-h2); }
+.home-text__content h3 { font-size: var(--font-size-h3); }
+
+.home-text__content p {
+    margin-bottom: var(--spacing-md);
+}
+
+.home-text__content ul,
+.home-text__content ol {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-lg);
+}
+
+.home-text__content a {
+    color: var(--accent);
+    text-decoration: underline;
 }
 
 .categories-section,
