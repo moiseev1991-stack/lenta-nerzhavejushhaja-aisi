@@ -48,6 +48,10 @@ if (!function_exists('base_url')) {
 
 if (!function_exists('slugify')) {
     function slugify($text) {
+        if ($text === null || $text === '') {
+            return '';
+        }
+        $text = (string) $text;
         $text = mb_strtolower($text, 'UTF-8');
         
         // Транслитерация кириллицы
@@ -69,6 +73,46 @@ if (!function_exists('slugify')) {
         $text = trim($text, '-');
         
         return $text;
+    }
+}
+
+/** Нормализация slug (как slugify, ограничение длины 200) */
+if (!function_exists('normalize_slug')) {
+    function normalize_slug($text) {
+        $slug = slugify($text);
+        return $slug === '' ? '' : mb_substr($slug, 0, 200);
+    }
+}
+
+/**
+ * Возвращает уникальный slug: если занят — добавляет суффикс -2, -3, …
+ * $pdo — PDO, $table — 'products' или 'categories', $excludeId — id текущей записи (0 при создании).
+ */
+if (!function_exists('ensure_unique_slug')) {
+    function ensure_unique_slug(PDO $pdo, $slug, $table, $excludeId = 0) {
+        $slug = trim((string) $slug);
+        if ($slug === '') {
+            return '';
+        }
+        $slug = normalize_slug($slug) ?: $slug;
+        $slug = mb_substr($slug, 0, 200);
+        $idCol = 'id';
+        $slugCol = 'slug';
+        
+        $base = $slug;
+        $n = 1;
+        while (true) {
+            $stmt = $pdo->prepare("SELECT 1 FROM {$table} WHERE {$slugCol} = ? AND {$idCol} != ?");
+            $stmt->execute([$slug, (int) $excludeId]);
+            if (!$stmt->fetch()) {
+                return $slug;
+            }
+            $n++;
+            $slug = $base . '-' . $n;
+            if (mb_strlen($slug) > 200) {
+                $slug = mb_substr($base, 0, 200 - 1 - strlen((string)$n)) . '-' . $n;
+            }
+        }
     }
 }
 

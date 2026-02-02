@@ -18,13 +18,16 @@ $conditionLabels = [
         </nav>
 
         <div class="product__inner">
-            <!-- Изображение -->
-            <div class="product__image">
-                <?php if ($product['image']): ?>
-                    <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>">
-                <?php else: ?>
-                    <div class="product__placeholder">Нет фото</div>
-                <?php endif; ?>
+            <!-- Левая колонка: фото + преимущества -->
+            <div class="product__left">
+                <div class="product__image">
+                    <?php if ($product['image']): ?>
+                        <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>">
+                    <?php else: ?>
+                        <div class="product__placeholder">Нет фото</div>
+                    <?php endif; ?>
+                </div>
+                <?php $benefitsVariant = 'product'; include __DIR__ . '/partials/benefits.php'; ?>
             </div>
 
             <!-- Информация -->

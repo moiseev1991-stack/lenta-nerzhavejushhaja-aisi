@@ -13,8 +13,10 @@ $jsonLd = [];
 
 if ($isHome) {
     $config = require __DIR__ . '/../config.php';
-    $pageTitle = $config['site_name'];
-    $pageDescription = 'Каталог нержавеющих лент AISI. Широкий ассортимент марок стали.';
+    $defaultHomeTitle = 'Лента нержавеющая AISI — каталог нержавеющей ленты по маркам';
+    $defaultHomeDescription = 'Каталог нержавеющей ленты AISI 200/300/400/900L. Подбор по толщине, ширине, состоянию и поверхности. Отмотка от 50 кг, резка от 2,5 мм.';
+    $pageTitle = isset($homeTitle) && (string)$homeTitle !== '' ? $homeTitle : $defaultHomeTitle;
+    $pageDescription = isset($homeDescription) && (string)$homeDescription !== '' ? $homeDescription : $defaultHomeDescription;
 }
 
 if ($isProduct) {
@@ -126,7 +128,7 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle ?: $config['site_name']) ?></title>
-    <?php if ($pageDescription): ?>
+    <?php if ($pageDescription ?? ''): ?>
     <meta name="description" content="<?= e($pageDescription) ?>">
     <?php endif; ?>
     <link rel="stylesheet" href="<?= base_url('assets/styles.css') ?>">
@@ -138,57 +140,49 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
 </head>
 <body>
     <header class="top">
-        <div class="container">
+        <div class="container container--header">
             <div class="header__inner">
-                <?php
-                $logoPath = __DIR__ . '/../../img/logo_aisi_lenta_full.png';
-                $hasLogo = file_exists($logoPath);
-                ?>
-                <a href="<?= base_url() ?>" class="logo">
+                <a href="<?= base_url() ?>" class="logo header__logo">
+                    <?php
+                    $logoPath = __DIR__ . '/../../img/logo_aisi_lenta_full.png';
+                    $hasLogo = file_exists($logoPath);
+                    ?>
                     <?php if ($hasLogo): ?>
                         <img src="<?= base_url('img/logo_aisi_lenta_full.png') ?>" alt="<?= e($config['site_name']) ?>" class="logo__img">
                     <?php else: ?>
                         <span class="logo__text"><?= e($config['site_name']) ?></span>
                     <?php endif; ?>
                 </a>
+                <nav class="header__nav" id="headerNav" role="navigation">
+                    <div class="header__nav-menu">
+                        <a href="<?= base_url() ?>" class="header__nav-text">Марки AISI</a>
+                        <?php foreach ($aisiTabs as $tabKey): ?>
+                            <?php $block = $aisiMenuSeries[$tabKey]; ?>
+                            <div class="nav-dropdown nav-dropdown--series" data-series="<?= e($tabKey) ?>">
+                                <button type="button" class="nav-dropdown__trigger <?= ($currentSeries === $tabKey) ? 'nav-dropdown__trigger--active' : '' ?>" aria-expanded="false" aria-haspopup="true" aria-controls="aisiPanel-<?= e($tabKey) ?>">
+                                    <?= e($tabKey) ?> <span class="nav-dropdown__chevron" aria-hidden="true">▾</span>
+                                </button>
+                                <div class="nav-dropdown__panel" id="aisiPanel-<?= e($tabKey) ?>" role="menu" aria-label="Марки серии <?= e($tabKey) ?>">
+                                    <ul class="nav-dropdown__links">
+                                        <?php foreach ($block['items'] as $item): ?>
+                                            <li>
+                                                <a href="<?= base_url($item['slug'] . '/') ?>" role="menuitem" class="nav-dropdown__link <?= ($currentCategorySlug === $item['slug']) ? 'nav-dropdown__link--active' : '' ?>"><?= e($item['name']) ?></a>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="header__nav-contacts">
+                        <a href="tel:+74951060741" class="header__contact header__contact--phone">+7 (495) 106-07-41</a>
+                        <a href="mailto:ev18011@yandex.ru" class="header__contact header__contact--email">ev18011@yandex.ru</a>
+                        <a href="<?= base_url('admin/login') ?>" class="admin-link">Админ</a>
+                    </div>
+                </nav>
                 <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="headerNav">
                     <span></span><span></span><span></span>
                 </button>
-                <nav class="header__nav" id="headerNav" role="navigation">
-                    <span class="header__nav-text">Марки AISI</span>
-                    <?php foreach ($aisiTabs as $tabKey): ?>
-                        <?php $block = $aisiMenuSeries[$tabKey]; ?>
-                        <?php if ($tabKey === '200'): ?>
-                            <?php $first = $block['items'][0] ?? null; if ($first): ?>
-                                <a href="<?= base_url($first['slug'] . '/') ?>" class="header__nav-link <?= ($currentCategorySlug === $first['slug']) ? 'header__nav-link--active' : '' ?>">201</a>
-                            <?php endif; ?>
-                        <?php elseif ($tabKey === '900L'): ?>
-                            <?php $first = $block['items'][0] ?? null; if ($first): ?>
-                                <a href="<?= base_url($first['slug'] . '/') ?>" class="header__nav-link <?= ($currentCategorySlug === $first['slug']) ? 'header__nav-link--active' : '' ?>">904L</a>
-                            <?php endif; ?>
-                        <?php else: ?>
-                        <div class="nav-dropdown nav-dropdown--series" data-series="<?= e($tabKey) ?>">
-                            <button type="button" class="nav-dropdown__trigger <?= ($currentSeries === $tabKey) ? 'nav-dropdown__trigger--active' : '' ?>" aria-expanded="false" aria-haspopup="true" aria-controls="aisiPanel-<?= e($tabKey) ?>">
-                                <?= e($tabKey) ?> <span class="nav-dropdown__chevron" aria-hidden="true">▾</span>
-                            </button>
-                            <div class="nav-dropdown__panel" id="aisiPanel-<?= e($tabKey) ?>" role="menu" aria-label="Марки серии <?= e($tabKey) ?>">
-                                <ul class="nav-dropdown__links">
-                                    <?php foreach ($block['items'] as $item): ?>
-                                        <li>
-                                            <a href="<?= base_url($item['slug'] . '/') ?>" role="menuitem" class="<?= ($currentCategorySlug === $item['slug']) ? 'nav-dropdown__link--active' : '' ?>"><?= e($item['name']) ?></a>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                    <a href="<?= base_url('admin/login') ?>" class="admin-link">Админ</a>
-                </nav>
-                <div class="header__contacts">
-                    <a href="tel:+74951060741">+7 (495) 106-07-41</a>
-                    <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a>
-                </div>
             </div>
         </div>
         <div class="header__nav-overlay" id="navOverlay" aria-hidden="true"></div>

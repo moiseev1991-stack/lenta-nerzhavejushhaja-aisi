@@ -71,6 +71,9 @@ if ($requestPath === '' || $requestPath === '/') {
     $featuredProducts = $stmt->fetchAll();
     
     $homeTextHtml = get_site_setting('home_text_html') ?? '';
+    $homeTitle = get_site_setting('home_title') ?? '';
+    $homeH1 = get_site_setting('home_h1') ?? '';
+    $homeDescription = get_site_setting('home_description') ?? '';
     
     require __DIR__ . '/../app/views/layout.php';
     exit;

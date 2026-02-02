@@ -9,6 +9,7 @@ $pdo = db();
 $categoryId = $_GET['id'] ?? null;
 $category = null;
 $errors = [];
+$fieldErrors = [];
 $success = '';
 
 // Загрузка категории
@@ -32,19 +33,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Валидация
-    $slug = trim($_POST['slug'] ?? '');
     $name = trim($_POST['name'] ?? '');
+    $slugInput = trim($_POST['slug'] ?? '');
     
-    if (!$slug) $errors[] = 'Slug обязателен';
-    if (!$name) $errors[] = 'Название обязательно';
+    if ($name === '') {
+        $fieldErrors['name'] = 'Название обязательно';
+        $errors[] = $fieldErrors['name'];
+    }
     
-    if ($slug) {
-        // Проверка уникальности slug
-        $stmt = $pdo->prepare('SELECT id FROM categories WHERE slug = ? AND id != ?');
-        $stmt->execute([$slug, $categoryId ?: 0]);
-        if ($stmt->fetch()) {
-            $errors[] = 'Slug уже используется';
+    if ($slugInput === '' && $name !== '') {
+        $slug = ensure_unique_slug($pdo, slugify($name), 'categories', $categoryId ?: 0);
+    } elseif ($slugInput !== '') {
+        $slug = normalize_slug($slugInput);
+        if ($slug === '') {
+            $fieldErrors['slug'] = 'Введите корректный slug или оставьте пустым для автогенерации из названия';
+            $errors[] = $fieldErrors['slug'];
+            $slug = '';
+        } else {
+            $slug = ensure_unique_slug($pdo, $slug, 'categories', $categoryId ?: 0);
         }
+    } else {
+        $slug = '';
+    }
+    if ($slug === '' && empty($fieldErrors['name'])) {
+        $fieldErrors['slug'] = 'Slug обязателен. Оставьте поле пустым — он будет сгенерирован из названия.';
+        $errors[] = $fieldErrors['slug'];
     }
     
     if (empty($errors)) {
@@ -78,18 +91,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $params = array_values($data);
         }
         
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-        
-        if (!$categoryId) {
-            $categoryId = $pdo->lastInsertId();
+        try {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            if (!$categoryId) {
+                $categoryId = (int) $pdo->lastInsertId();
+            }
+            $success = 'Категория сохранена';
+            $stmt = $pdo->prepare('SELECT * FROM categories WHERE id = ?');
+            $stmt->execute([$categoryId]);
+            $category = $stmt->fetch();
+        } catch (PDOException $e) {
+            if ((int) $e->getCode() === 23000 || strpos($e->getMessage(), 'UNIQUE') !== false) {
+                $fieldErrors['slug'] = 'Slug уже занят. Измените или оставьте пустым для автогенерации.';
+                $errors[] = $fieldErrors['slug'];
+            } else {
+                $errors[] = 'Ошибка сохранения: ' . e($e->getMessage());
+            }
         }
-        
-        $success = 'Категория сохранена';
-        // Перезагружаем категорию
-        $stmt = $pdo->prepare('SELECT * FROM categories WHERE id = ?');
-        $stmt->execute([$categoryId]);
-        $category = $stmt->fetch();
     }
 }
 ?>
@@ -140,14 +159,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <form method="POST" class="admin-form">
-                        <div class="form-group">
-                            <label>Slug *</label>
-                            <input type="text" name="slug" value="<?= e($category['slug'] ?? '') ?>" required>
+                        <div class="form-group <?= !empty($fieldErrors['name']) ? 'form-group--error' : '' ?>">
+                            <label>Название *</label>
+                            <input type="text" name="name" value="<?= e($category['name'] ?? $_POST['name'] ?? '') ?>" required>
+                            <?php if (!empty($fieldErrors['name'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['name']) ?></span>
+                            <?php endif; ?>
                         </div>
 
-                        <div class="form-group">
-                            <label>Название *</label>
-                            <input type="text" name="name" value="<?= e($category['name'] ?? '') ?>" required>
+                        <div class="form-group <?= !empty($fieldErrors['slug']) ? 'form-group--error' : '' ?>">
+                            <label>Slug</label>
+                            <input type="text" name="slug" value="<?= e($category['slug'] ?? $_POST['slug'] ?? '') ?>" placeholder="Оставьте пустым для автогенерации">
+                            <small>Автогенерируется из названия, если пусто. Уникален среди категорий.</small>
+                            <?php if (!empty($fieldErrors['slug'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['slug']) ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">

@@ -11,7 +11,13 @@ $config = require __DIR__ . '/../config.php';
 $productId = $_GET['id'] ?? null;
 $product = null;
 $errors = [];
+$fieldErrors = [];
 $success = '';
+
+$ALLOWED_CONDITION = ['', 'soft', 'hard', 'semi_hard'];
+$ALLOWED_SURFACE = ['', 'BA', '2B', '4N'];
+$THICKNESS_MAX = 10;
+$WIDTH_MAX = 2000;
 
 // Загрузка товара
 if ($productId) {
@@ -38,24 +44,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Валидация
-    $categoryId = $_POST['category_id'] ?? '';
+    $categoryId = trim($_POST['category_id'] ?? '');
     $name = trim($_POST['name'] ?? '');
-    $slug = trim($_POST['slug'] ?? '');
+    $slugInput = trim($_POST['slug'] ?? '');
     
-    if (!$categoryId) $errors[] = 'Выберите категорию';
-    if (!$name) $errors[] = 'Название обязательно';
-    
-    if (!$slug && $name) {
-        $slug = slugify($name);
+    if (!$categoryId) {
+        $fieldErrors['category_id'] = 'Выберите категорию';
+        $errors[] = 'Выберите категорию';
+    }
+    if ($name === '') {
+        $fieldErrors['name'] = 'Название обязательно';
+        $errors[] = 'Название обязательно';
     }
     
-    if ($slug) {
-        // Проверка уникальности slug
-        $stmt = $pdo->prepare('SELECT id FROM products WHERE slug = ? AND id != ?');
-        $stmt->execute([$slug, $productId ?: 0]);
-        if ($stmt->fetch()) {
-            $errors[] = 'Slug уже используется';
+    if ($name !== '' && $slugInput === '') {
+        $slug = ensure_unique_slug($pdo, slugify($name), 'products', $productId ?: 0);
+    } elseif ($slugInput !== '') {
+        $slug = normalize_slug($slugInput);
+        if ($slug === '') {
+            $fieldErrors['slug'] = 'Введите корректный slug или оставьте пустым для автогенерации';
+            $errors[] = $fieldErrors['slug'];
+            $slug = '';
+        } else {
+            $slug = ensure_unique_slug($pdo, $slug, 'products', $productId ?: 0);
         }
+    } else {
+        $slug = '';
+    }
+    if ($slug === '' && empty($fieldErrors['name'])) {
+        $fieldErrors['slug'] = 'Slug обязателен. Оставьте поле пустым — он будет сгенерирован из названия.';
+        $errors[] = $fieldErrors['slug'];
+    }
+    
+    $thicknessRaw = $_POST['thickness'] ?? '';
+    $thickness = $thicknessRaw !== '' ? (float) str_replace(',', '.', $thicknessRaw) : null;
+    if ($thickness !== null && ($thickness <= 0 || $thickness > 10)) {
+        $fieldErrors['thickness'] = $thickness <= 0 ? 'Толщина должна быть больше 0' : 'Толщина не более 10 мм';
+        $errors[] = $fieldErrors['thickness'];
+    }
+    $widthRaw = $_POST['width'] ?? '';
+    $width = $widthRaw !== '' ? (float) str_replace(',', '.', $widthRaw) : null;
+    if ($width !== null && $width < 0) {
+        $fieldErrors['width'] = 'Ширина не может быть отрицательной';
+        $errors[] = $fieldErrors['width'];
+    }
+    $priceRaw = $_POST['price_per_kg'] ?? '';
+    $price_per_kg_val = $priceRaw !== '' ? (float) str_replace(',', '.', $priceRaw) : 0;
+    if ($price_per_kg_val < 0) {
+        $fieldErrors['price_per_kg'] = 'Цена не может быть отрицательной';
+        $errors[] = $fieldErrors['price_per_kg'];
+    }
+    $condition = $_POST['condition'] ?? '';
+    if (!in_array($condition, $ALLOWED_CONDITION, true)) {
+        $fieldErrors['condition'] = 'Недопустимое значение состояния';
+        $errors[] = $fieldErrors['condition'];
+    }
+    $surface = $_POST['surface'] ?? '';
+    if (!in_array($surface, $ALLOWED_SURFACE, true)) {
+        $fieldErrors['surface'] = 'Недопустимое значение поверхности';
+        $errors[] = $fieldErrors['surface'];
     }
     
     if (empty($errors)) {
@@ -66,12 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'h1' => trim($_POST['h1'] ?? ''),
             'title' => trim($_POST['title'] ?? ''),
             'description' => trim($_POST['description'] ?? ''),
-            'thickness' => $_POST['thickness'] ? (float)$_POST['thickness'] : null,
-            'width' => $_POST['width'] ? (float)$_POST['width'] : null,
-            'condition' => $_POST['condition'] ?? null,
-            'spring' => isset($_POST['spring']) ? (int)$_POST['spring'] : 0,
-            'surface' => $_POST['surface'] ?? null,
-            'price_per_kg' => (float)($_POST['price_per_kg'] ?? 0),
+            'thickness' => $thickness,
+            'width' => $width !== null && $width >= 0 ? $width : null,
+            'condition' => in_array($condition, $ALLOWED_CONDITION, true) ? ($condition ?: null) : null,
+            'spring' => isset($_POST['spring']) ? 1 : 0,
+            'surface' => in_array($surface, $ALLOWED_SURFACE, true) ? ($surface ?: null) : null,
+            'price_per_kg' => $price_per_kg_val,
             'in_stock' => isset($_POST['in_stock']) ? 1 : 0,
             'lead_time' => trim($_POST['lead_time'] ?? ''),
         ];
@@ -82,7 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Проверка размера
             if ($file['size'] > $config['upload_max_size']) {
-                $errors[] = 'Файл слишком большой (макс. 5MB)';
+                $fieldErrors['image'] = 'Файл слишком большой (макс. 5MB)';
+                $errors[] = $fieldErrors['image'];
             } else {
                 // Проверка типа
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -93,7 +141,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 if (!in_array($mimeType, $config['upload_allowed_types']) || 
                     !in_array($ext, $config['upload_allowed_extensions'])) {
-                    $errors[] = 'Недопустимый тип файла';
+                    $fieldErrors['image'] = 'Недопустимый тип файла (JPG, PNG, WebP)';
+                    $errors[] = $fieldErrors['image'];
                 } else {
                     // Создаем директорию если нет
                     if (!is_dir($config['upload_dir'])) {
@@ -108,30 +157,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (move_uploaded_file($file['tmp_name'], $filepath)) {
                         $data['image'] = '/uploads/' . $filename;
                     } else {
-                        $errors[] = 'Ошибка загрузки файла';
+                        $fieldErrors['image'] = 'Ошибка загрузки файла';
+                        $errors[] = $fieldErrors['image'];
                     }
                 }
             }
-        } elseif ($product && $product['image']) {
-            // Сохраняем старое изображение
+        } elseif ($product && !empty($product['image'])) {
             $data['image'] = $product['image'];
+        } else {
+            $data['image'] = null;
         }
         
         if (empty($errors)) {
             if ($productId) {
-                // Обновление
                 $data['updated_at'] = nowIso();
                 $sql = 'UPDATE products SET 
                         category_id = ?, slug = ?, name = ?, h1 = ?, title = ?, description = ?,
                         thickness = ?, width = ?, condition = ?, spring = ?, surface = ?,
                         price_per_kg = ?, in_stock = ?, lead_time = ?, image = ?, updated_at = ?
                         WHERE id = ?';
-                $params = array_merge(
-                    array_values($data),
-                    [$productId]
-                );
+                $params = [
+                    $data['category_id'], $data['slug'], $data['name'], $data['h1'], $data['title'], $data['description'],
+                    $data['thickness'], $data['width'], $data['condition'], $data['spring'], $data['surface'],
+                    $data['price_per_kg'], $data['in_stock'], $data['lead_time'], $data['image'], $data['updated_at'],
+                    $productId
+                ];
             } else {
-                // Создание
                 $data['created_at'] = nowIso();
                 $data['updated_at'] = nowIso();
                 $sql = 'INSERT INTO products 
@@ -139,21 +190,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                          thickness, width, condition, spring, surface,
                          price_per_kg, in_stock, lead_time, image, created_at, updated_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                $params = array_values($data);
+                $params = [
+                    $data['category_id'], $data['slug'], $data['name'], $data['h1'], $data['title'], $data['description'],
+                    $data['thickness'], $data['width'], $data['condition'], $data['spring'], $data['surface'],
+                    $data['price_per_kg'], $data['in_stock'], $data['lead_time'], $data['image'], $data['created_at'], $data['updated_at']
+                ];
             }
-            
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            
-            if (!$productId) {
-                $productId = $pdo->lastInsertId();
+            try {
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
+                if (!$productId) {
+                    $productId = (int) $pdo->lastInsertId();
+                }
+                $success = 'Товар сохранён';
+                $stmt = $pdo->prepare('SELECT * FROM products WHERE id = ?');
+                $stmt->execute([$productId]);
+                $product = $stmt->fetch();
+            } catch (PDOException $e) {
+                if ((int) $e->getCode() === 23000 || strpos($e->getMessage(), 'UNIQUE') !== false) {
+                    $fieldErrors['slug'] = 'Slug уже занят. Измените или оставьте пустым для автогенерации.';
+                    $errors[] = $fieldErrors['slug'];
+                } else {
+                    $errors[] = 'Ошибка сохранения: ' . e($e->getMessage());
+                }
             }
-            
-            $success = 'Товар сохранен';
-            // Перезагружаем товар
-            $stmt = $pdo->prepare('SELECT * FROM products WHERE id = ?');
-            $stmt->execute([$productId]);
-            $product = $stmt->fetch();
         }
     }
 }
@@ -205,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <form method="POST" enctype="multipart/form-data" class="admin-form">
-                        <div class="form-group">
+                        <div class="form-group <?= !empty($fieldErrors['category_id']) ? 'form-group--error' : '' ?>">
                             <label>Категория *</label>
                             <select name="category_id" required>
                                 <option value="">Выберите категорию</option>
@@ -216,17 +276,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <?php if (!empty($fieldErrors['category_id'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['category_id']) ?></span>
+                            <?php endif; ?>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group <?= !empty($fieldErrors['name']) ? 'form-group--error' : '' ?>">
                             <label>Название *</label>
-                            <input type="text" name="name" value="<?= e($product['name'] ?? '') ?>" required>
+                            <input type="text" name="name" value="<?= e($product['name'] ?? $_POST['name'] ?? '') ?>" required>
+                            <?php if (!empty($fieldErrors['name'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['name']) ?></span>
+                            <?php endif; ?>
                         </div>
 
-                        <div class="form-group">
-                            <label>Slug *</label>
-                            <input type="text" name="slug" value="<?= e($product['slug'] ?? '') ?>" required>
-                            <small>Автогенерируется из названия, если пусто</small>
+                        <div class="form-group <?= !empty($fieldErrors['slug']) ? 'form-group--error' : '' ?>">
+                            <label>Slug</label>
+                            <input type="text" name="slug" value="<?= e($product['slug'] ?? $_POST['slug'] ?? '') ?>" placeholder="Оставьте пустым для автогенерации">
+                            <small>Автогенерируется из названия, если пусто. Уникален среди товаров.</small>
+                            <?php if (!empty($fieldErrors['slug'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['slug']) ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">
@@ -245,18 +314,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group">
+                            <div class="form-group <?= !empty($fieldErrors['thickness']) ? 'form-group--error' : '' ?>">
                                 <label>Толщина (мм)</label>
-                                <input type="number" name="thickness" step="0.01" value="<?= e($product['thickness'] ?? '') ?>">
+                                <input type="number" name="thickness" step="0.01" min="0" max="10" value="<?= e($product['thickness'] ?? $_POST['thickness'] ?? '') ?>">
+                                <?php if (!empty($fieldErrors['thickness'])): ?>
+                                    <span class="form-error"><?= e($fieldErrors['thickness']) ?></span>
+                                <?php endif; ?>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group <?= !empty($fieldErrors['width']) ? 'form-group--error' : '' ?>">
                                 <label>Ширина (мм)</label>
-                                <input type="number" name="width" step="0.01" value="<?= e($product['width'] ?? '') ?>">
+                                <input type="number" name="width" step="0.01" min="0" value="<?= e($product['width'] ?? $_POST['width'] ?? '') ?>">
+                                <?php if (!empty($fieldErrors['width'])): ?>
+                                    <span class="form-error"><?= e($fieldErrors['width']) ?></span>
+                                <?php endif; ?>
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group <?= !empty($fieldErrors['condition']) ? 'form-group--error' : '' ?>">
                             <label>Состояние</label>
                             <select name="condition">
                                 <option value="">—</option>
@@ -264,6 +339,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="hard" <?= ($product && $product['condition'] === 'hard') ? 'selected' : '' ?>>Нагартованная</option>
                                 <option value="semi_hard" <?= ($product && $product['condition'] === 'semi_hard') ? 'selected' : '' ?>>Полугартованная</option>
                             </select>
+                            <?php if (!empty($fieldErrors['condition'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['condition']) ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">
@@ -274,7 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </label>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group <?= !empty($fieldErrors['surface']) ? 'form-group--error' : '' ?>">
                             <label>Поверхность</label>
                             <select name="surface">
                                 <option value="">—</option>
@@ -282,12 +360,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="2B" <?= ($product && $product['surface'] === '2B') ? 'selected' : '' ?>>2B</option>
                                 <option value="4N" <?= ($product && $product['surface'] === '4N') ? 'selected' : '' ?>>4N</option>
                             </select>
+                            <?php if (!empty($fieldErrors['surface'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['surface']) ?></span>
+                            <?php endif; ?>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group <?= !empty($fieldErrors['price_per_kg']) ? 'form-group--error' : '' ?>">
                             <label>Цена за кг (₽) *</label>
-                            <input type="number" name="price_per_kg" step="0.01" 
-                                   value="<?= e($product['price_per_kg'] ?? '') ?>" required>
+                            <input type="number" name="price_per_kg" step="0.01" min="0" 
+                                   value="<?= e($product['price_per_kg'] ?? $_POST['price_per_kg'] ?? '') ?>" required>
+                            <?php if (!empty($fieldErrors['price_per_kg'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['price_per_kg']) ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">
@@ -314,6 +398,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?php endif; ?>
                             <input type="file" name="image" accept="image/jpeg,image/png,image/webp">
                             <small>JPG, PNG, WebP, макс. 5MB</small>
+                            <?php if (!empty($fieldErrors['image'])): ?>
+                                <span class="form-error"><?= e($fieldErrors['image']) ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-actions">

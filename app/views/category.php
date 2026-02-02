@@ -21,71 +21,27 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                     <div class="category-hero__chips">
                         <span class="chips-label">Подкатегории:</span>
                         <div class="chips" id="chipsContainer">
-                            <?php 
-                            $chipsCount = 0;
-                            $maxVisibleChips = 10;
-                            foreach ($allCategories as $cat): 
-                                $chipsCount++;
-                                $isHidden = $chipsCount > $maxVisibleChips;
-                            ?>
+                            <?php foreach ($allCategories as $cat): ?>
                                 <a href="<?= base_url($cat['slug'] . '/') ?>" 
-                                   class="chip <?= $cat['slug'] === $category['slug'] ? 'chip--active' : '' ?> <?= $isHidden ? 'chip--hidden' : '' ?>"
-                                   data-chip-index="<?= $chipsCount ?>">
+                                   class="chip <?= $cat['slug'] === $category['slug'] ? 'chip--active' : '' ?>">
                                     <?= e($cat['name']) ?>
                                 </a>
                             <?php endforeach; ?>
                         </div>
-                        <?php if (count($allCategories) > $maxVisibleChips): ?>
-                        <button type="button" class="chips-toggle" id="chipsToggle">
-                            <span class="chips-toggle__show">Показать все марки</span>
-                            <span class="chips-toggle__hide" style="display: none;">Скрыть</span>
-                        </button>
-                        <?php endif; ?>
                     </div>
                 </div>
                 
                 <aside class="category-hero__right">
-                    <div class="hero-card">
+                    <div class="hero-card hero-card--compact">
                         <?php if ($minPrice): ?>
-                        <div class="badge badge--green">от <?= format_price($minPrice) ?></div>
+                        <div class="hero-card__price">от <?= format_price($minPrice) ?></div>
                         <?php endif; ?>
-                        <h3>Изготовим ленту по вашим размерам:</h3>
-                        <ul class="hero-card__list">
-                            <li>Точность ±0.01 мм</li>
-                            <li>Минимальная ширина от 5 мм</li>
-                        </ul>
-                        <a href="#request" class="btn btn--primary">Оставить заявку</a>
-                        
-                        <div class="hero-card__benefits" id="benefitsContainer">
-                            <button type="button" class="benefits-toggle" id="benefitsToggle">
-                                <span class="benefits-toggle__show">Показать преимущества</span>
-                                <span class="benefits-toggle__hide" style="display: none;">Скрыть преимущества</span>
-                            </button>
-                            <div class="benefits-content" id="benefitsContent" style="display: none;">
-                                <div class="benefit">
-                                    <svg class="benefit__icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                                        <path d="M10 2L3 7v11h4v-6h6v6h4V7l-7-5z"/>
-                                    </svg>
-                                    <span>Собственное производство</span>
-                                </div>
-                                <div class="benefit">
-                                    <svg class="benefit__icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                                        <path d="M10 10a3 3 0 100-6 3 3 0 000 6zM10 12c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                    </svg>
-                                    <span>Склад в центре Санкт-Петербурга</span>
-                                </div>
-                                <div class="benefit">
-                                    <svg class="benefit__icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                                        <circle cx="10" cy="10" r="8"/>
-                                        <path d="M10 6v4l3 2"/>
-                                    </svg>
-                                    <span>Быстрая отгрузка</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="<?= base_url($category['slug'] . '/') ?>#request" class="btn btn--primary hero-card__cta">Оставить заявку</a>
+                        <p class="hero-card__subtitle">Ответим за 15 минут, подберём марку и размеры</p>
                     </div>
                 </aside>
             </div>
+            <?php $benefitsVariant = 'category'; include __DIR__ . '/partials/benefits.php'; ?>
         </div>
     </section>
 
@@ -285,65 +241,4 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
     });
 })();
 
-// Управление чипсами (показать/скрыть все марки)
-(function() {
-    const toggle = document.getElementById('chipsToggle');
-    const chips = document.querySelectorAll('.chip--hidden');
-    
-    if (!toggle || chips.length === 0) return;
-    
-    toggle.addEventListener('click', function() {
-        const isHidden = chips[0].style.display === 'none' || chips[0].style.display === '';
-        
-        chips.forEach(function(chip) {
-            chip.style.display = isHidden ? 'inline-block' : 'none';
-        });
-        
-        const showText = toggle.querySelector('.chips-toggle__show');
-        const hideText = toggle.querySelector('.chips-toggle__hide');
-        
-        if (isHidden) {
-            showText.style.display = 'none';
-            hideText.style.display = 'inline';
-        } else {
-            showText.style.display = 'inline';
-            hideText.style.display = 'none';
-        }
-    });
-    
-    // Изначально скрываем
-    chips.forEach(function(chip) {
-        chip.style.display = 'none';
-    });
-})();
-
-// Управление преимуществами в CTA блоке
-(function() {
-    const toggle = document.getElementById('benefitsToggle');
-    const content = document.getElementById('benefitsContent');
-    
-    if (!toggle || !content) return;
-    
-    // На десктопе при высоте экрана < 900px сворачиваем по умолчанию
-    if (window.innerHeight < 900 && window.innerWidth >= 980) {
-        content.style.display = 'none';
-    }
-    
-    toggle.addEventListener('click', function() {
-        const isHidden = content.style.display === 'none';
-        
-        content.style.display = isHidden ? 'block' : 'none';
-        
-        const showText = toggle.querySelector('.benefits-toggle__show');
-        const hideText = toggle.querySelector('.benefits-toggle__hide');
-        
-        if (isHidden) {
-            showText.style.display = 'none';
-            hideText.style.display = 'inline';
-        } else {
-            showText.style.display = 'inline';
-            hideText.style.display = 'none';
-        }
-    });
-})();
 </script>
