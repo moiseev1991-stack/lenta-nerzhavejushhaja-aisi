@@ -129,7 +129,10 @@ if (!function_exists('require_admin')) {
 
 if (!function_exists('format_price')) {
     function format_price($price) {
-        return number_format($price, 2, '.', ' ') . ' ₽/кг';
+        if ($price === null || $price === '' || !is_numeric($price) || (float) $price <= 0) {
+            return 'Цена по запросу';
+        }
+        return number_format((float) $price, 2, '.', ' ') . ' ₽/кг';
     }
 }
 

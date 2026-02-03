@@ -24,33 +24,33 @@
                     <div class="usp__icon" aria-hidden="true">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                     </div>
-                    <h3 class="usp__h">Отматываем от 50 кг</h3>
+                    <h3 class="usp__h" title="Отматываем от 1 метра">Отматываем от 1 метра</h3>
                     <p class="usp__p">Подберём партию под задачу — без переплаты за лишний объём.</p>
                 </div>
                 <div class="usp__card">
                     <div class="usp__icon" aria-hidden="true">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.42 9.42L2 12l3.42 2.58"/><path d="M18.58 9.42L22 12l-3.42 2.58"/><path d="M2 12h20"/><path d="M8 6l4-4 4 4"/><path d="M16 18l-4 4-4-4"/></svg>
                     </div>
-                    <h3 class="usp__h">Прецизионная резка</h3>
+                    <h3 class="usp__h" title="Прецизионная резка">Прецизионная резка</h3>
                     <p class="usp__p">Чистая кромка и повторяемость размеров по всей партии.</p>
                 </div>
                 <div class="usp__card">
                     <div class="usp__icon" aria-hidden="true">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8v14M4 8h16M4 8l4-4M4 8l4 4M20 8l-4-4M20 8l-4 4"/></svg>
                     </div>
-                    <h3 class="usp__h">Ширина резки от 2,5 мм</h3>
+                    <h3 class="usp__h" title="Ширина резки от 2,5 мм">Ширина резки от 2,5 мм</h3>
                     <p class="usp__p">Узкая резка под производственные и штамповочные задачи.</p>
                 </div>
                 <div class="usp__card">
                     <div class="usp__icon" aria-hidden="true">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
                     </div>
-                    <h3 class="usp__h">Толщины от 0,05 до 4 мм</h3>
+                    <h3 class="usp__h" title="Толщины от 0,05 до 4 мм">Толщины от 0,05 до 4 мм</h3>
                     <p class="usp__p">От тонких лент до более толстых — под разные применения.</p>
                 </div>
             </div>
             <div class="usp__cta">
-                <a href="<?= base_url() ?>#request" class="usp__cta-btn">Подобрать ленту под задачу</a>
+                <button type="button" class="usp__cta-btn js-open-request-modal">Подобрать ленту под задачу</button>
                 <p class="usp__cta-subtitle">
                     <span class="usp__cta-subtitle-icon" aria-hidden="true">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -66,8 +66,12 @@
         <div class="container">
             <h2 class="section-title">Категории</h2>
             <div class="categories-grid">
-                <?php foreach ($allCategories as $cat): ?>
+                <?php foreach ($allCategories as $cat):
+                    $seriesBadge = aisi_series_from_slug($cat['slug']);
+                    $showBadge = ($seriesBadge !== 'other');
+                ?>
                     <a href="<?= base_url($cat['slug'] . '/') ?>" class="category-card">
+                        <?php if ($showBadge): ?><span class="series-badge"><?= e($seriesBadge) ?></span><?php endif; ?>
                         <div class="category-card__name"><?= e($cat['name']) ?></div>
                         <div class="category-card__link">Смотреть товары →</div>
                     </a>
@@ -128,13 +132,6 @@
                     </a>
                 <?php endforeach; ?>
             </div>
-        </div>
-    </section>
-
-    <!-- Якорь для кнопок «Оставить заявку» / «Под заказ» (сюда можно встроить форму или виджет amoCRM) -->
-    <section id="request" class="request-section" aria-label="Заявка">
-        <div class="container">
-            <div id="request-inner"></div>
         </div>
     </section>
 </div>

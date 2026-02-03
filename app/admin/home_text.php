@@ -95,7 +95,7 @@ $homeDescription = get_site_setting('home_description') ?? '';
                             </div>
                             <div class="form-group">
                                 <label for="home_description">Meta description</label>
-                                <textarea name="home_description" id="home_description" rows="4" class="form-control" maxlength="1000" placeholder="Подберём нержавеющую ленту по марке AISI, толщине, ширине и поверхности. Отмотка от 50 кг. Резка от 2,5 мм."><?= e($homeDescription) ?></textarea>
+                                <textarea name="home_description" id="home_description" rows="4" class="form-control" maxlength="1000" placeholder="Подберём нержавеющую ленту по марке AISI, толщине, ширине и поверхности. Отмотка от 1 метра. Резка от 2,5 мм."><?= e($homeDescription) ?></textarea>
                                 <span class="form-hint">Рекомендуем 120–160 символов. Сейчас: <span id="home_description_count"><?= mb_strlen($homeDescription) ?></span></span>
                             </div>
                         </fieldset>

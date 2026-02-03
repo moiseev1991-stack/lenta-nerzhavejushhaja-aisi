@@ -34,7 +34,7 @@ $blockClass = 'usp-block usp-block--' . $benefitsVariant;
                     <span class="usp-block__icon" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $svgPath ?></svg>
                     </span>
-                    <span class="usp-block__text"><?= e($item['title']) ?></span>
+                    <span class="usp-block__text" title="<?= e($item['title']) ?>"><?= e($item['title']) ?></span>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -49,7 +49,7 @@ $blockClass = 'usp-block usp-block--' . $benefitsVariant;
                     <span class="usp-block__icon" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $svgPath ?></svg>
                     </span>
-                    <span class="usp-block__text"><?= e($item['title']) ?></span>
+                    <span class="usp-block__text" title="<?= e($item['title']) ?>"><?= e($item['title']) ?></span>
                 </li>
             <?php endforeach; ?>
         </ul>

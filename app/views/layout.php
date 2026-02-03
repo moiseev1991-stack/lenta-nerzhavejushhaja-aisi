@@ -14,7 +14,7 @@ $jsonLd = [];
 if ($isHome) {
     $config = require __DIR__ . '/../config.php';
     $defaultHomeTitle = 'Лента нержавеющая AISI — каталог нержавеющей ленты по маркам';
-    $defaultHomeDescription = 'Каталог нержавеющей ленты AISI 200/300/400/900L. Подбор по толщине, ширине, состоянию и поверхности. Отмотка от 50 кг, резка от 2,5 мм.';
+    $defaultHomeDescription = 'Каталог нержавеющей ленты AISI 200/300/400/900L. Подбор по толщине, ширине, состоянию и поверхности. Отмотка от 1 метра, резка от 2,5 мм.';
     $pageTitle = isset($homeTitle) && (string)$homeTitle !== '' ? $homeTitle : $defaultHomeTitle;
     $pageDescription = isset($homeDescription) && (string)$homeDescription !== '' ? $homeDescription : $defaultHomeDescription;
 }
@@ -180,6 +180,7 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                         <a href="<?= base_url('admin/login') ?>" class="admin-link">Админ</a>
                     </div>
                 </nav>
+                <a href="tel:+74951060741" class="header__phone-link" aria-label="Позвонить">+7 (495) 106-07-41</a>
                 <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="headerNav">
                     <span></span><span></span><span></span>
                 </button>
@@ -200,7 +201,54 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
         <?php elseif ($isServicePage): ?>
             <?php require __DIR__ . '/page.php'; ?>
         <?php endif; ?>
+
+        <!-- Якорь #request (форма в модале) -->
+        <section id="request" class="request-section request-section--anchor" aria-label="Заявка" aria-hidden="true"></section>
     </main>
+
+    <!-- Модальное окно заявки (amoCRM) -->
+    <?php $amocrm = $config['amocrm'] ?? []; $amoFormId = $amocrm['form_id'] ?? '1663854'; ?>
+    <script>window.AMOCRM_EMBED_CONFIG = <?= json_encode($amocrm) ?>;</script>
+    <div class="request-modal-overlay" id="requestModalOverlay" aria-hidden="true" role="presentation"></div>
+    <div class="request-modal" id="requestModal" role="dialog" aria-modal="true" aria-labelledby="requestModalTitle" aria-hidden="true">
+        <div class="request-modal__box">
+            <div class="request-modal__header">
+                <h2 class="request-modal__title" id="requestModalTitle" tabindex="-1">Оставить заявку</h2>
+                <button type="button" class="request-modal__close" id="requestModalClose" aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="request-modal__body">
+                <div id="request-inner" class="request-modal__form-wrap">
+                    <div class="request-modal__loader" id="requestModalLoader" aria-hidden="false">
+                        <div class="request-modal__loader-placeholder"></div>
+                        <p class="request-modal__loader-text">Загружаем форму…</p>
+                    </div>
+                    <div class="request-modal__error request-modal__error--hidden" id="requestModalError" aria-hidden="true">
+                        <h3 class="request-modal__error-title">Не удалось загрузить форму</h3>
+                        <p class="request-modal__error-text">Попробуйте ещё раз или свяжитесь с нами по телефону.</p>
+                        <div class="request-modal__error-actions">
+                            <button type="button" class="request-modal__error-btn request-modal__error-btn--primary" id="requestModalRetry">Повторить</button>
+                            <a href="tel:+74951060741" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
+                            <a href="mailto:ev18011@yandex.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
+                        </div>
+                    </div>
+                    <div class="request-modal__no-embed request-modal__no-embed--hidden" id="requestModalNoEmbed" aria-hidden="true">
+                        <p class="request-modal__no-embed-text">Не настроен amoCRM embed. Укажите <code>AMO_FORM_IFRAME_SRC</code> в env или конфигурацию в <code>config.php</code> (amocrm.iframe_src / form_id + script_url).</p>
+                        <div class="request-modal__error-actions">
+                            <a href="tel:+74951060741" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
+                            <a href="mailto:ev18011@yandex.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
+                        </div>
+                    </div>
+                    <div class="amo-modal-embed request-modal__form-frame">
+                    <?php if (!empty($amocrm['iframe_src'])): ?>
+                        <iframe id="amoforms_iframe_<?= e($amoFormId) ?>" class="request-modal__iframe" title="amoCRM форма" src="" allow="clipboard-write; fullscreen" loading="lazy" aria-hidden="true" style="display:none;"></iframe>
+                    <?php else: ?>
+                        <div id="amoforms_<?= e($amoFormId) ?>" data-amoforms-id="<?= e($amoFormId) ?>" class="request-modal__amo-container" aria-hidden="false"></div>
+                    <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="container">
@@ -316,6 +364,299 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
             });
         }
     })();
+
+    (function() {
+        var overlay = document.getElementById('requestModalOverlay');
+        var modal = document.getElementById('requestModal');
+        var closeBtn = document.getElementById('requestModalClose');
+        var loader = document.getElementById('requestModalLoader');
+        var errorBlock = document.getElementById('requestModalError');
+        var retryBtn = document.getElementById('requestModalRetry');
+        var cfg = window.AMOCRM_EMBED_CONFIG || {};
+        var savedScrollY = 0;
+        var status = 'idle';
+        var loadTimeoutId = null;
+        var moveFormIntervalId = null;
+        var LOAD_TIMEOUT_MS = 12000;
+        var isDev = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.search.indexOf('amo_debug') !== -1));
+
+        function log() {
+            if (isDev && console && console.debug) {
+                console.debug.apply(console, ['[amo]'].concat(Array.prototype.slice.call(arguments)));
+            }
+        }
+
+        function lockBodyScroll() {
+            savedScrollY = window.scrollY || document.documentElement.scrollTop;
+            document.body.style.position = 'fixed';
+            document.body.style.top = '-' + savedScrollY + 'px';
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+        }
+        function unlockBodyScroll() {
+            var y = savedScrollY;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            window.scrollTo(0, y);
+        }
+
+        function setState(s) {
+            status = s;
+            log('state', s);
+        }
+
+        function showFormHideLoader() {
+            setState('ready');
+            if (loadTimeoutId) { clearTimeout(loadTimeoutId); loadTimeoutId = null; }
+            if (loader) { loader.setAttribute('aria-hidden', 'true'); loader.classList.add('request-modal__loader--hidden'); }
+            if (errorBlock) { errorBlock.classList.add('request-modal__error--hidden'); errorBlock.setAttribute('aria-hidden', 'true'); }
+            var noEmbed = document.getElementById('requestModalNoEmbed');
+            if (noEmbed) { noEmbed.classList.add('request-modal__no-embed--hidden'); noEmbed.setAttribute('aria-hidden', 'true'); }
+            var iframe = document.querySelector('.request-modal__iframe');
+            var container = document.querySelector('.request-modal__amo-container');
+            if (iframe) { iframe.style.display = ''; iframe.setAttribute('aria-hidden', 'false'); }
+            if (container) { container.style.display = ''; container.setAttribute('aria-hidden', 'false'); }
+            log('script loaded', true, 'form visible');
+        }
+
+        function showErrorState() {
+            if (status === 'ready') return;
+            setState('error');
+            if (loadTimeoutId) { clearTimeout(loadTimeoutId); loadTimeoutId = null; }
+            if (loader) { loader.setAttribute('aria-hidden', 'true'); loader.classList.add('request-modal__loader--hidden'); }
+            if (errorBlock) { errorBlock.classList.remove('request-modal__error--hidden'); errorBlock.setAttribute('aria-hidden', 'false'); }
+            var noEmbed = document.getElementById('requestModalNoEmbed');
+            if (noEmbed) { noEmbed.classList.add('request-modal__no-embed--hidden'); noEmbed.setAttribute('aria-hidden', 'true'); }
+            var container = document.querySelector('.request-modal__amo-container');
+            if (container) { container.style.display = 'none'; container.setAttribute('aria-hidden', 'true'); }
+            log('error state', 'timeout or load failed');
+        }
+
+        function showNoEmbedState() {
+            setState('error');
+            if (loader) { loader.setAttribute('aria-hidden', 'true'); loader.classList.add('request-modal__loader--hidden'); }
+            if (errorBlock) { errorBlock.classList.add('request-modal__error--hidden'); errorBlock.setAttribute('aria-hidden', 'true'); }
+            var noEmbed = document.getElementById('requestModalNoEmbed');
+            if (noEmbed) { noEmbed.classList.remove('request-modal__no-embed--hidden'); noEmbed.setAttribute('aria-hidden', 'false'); }
+            var container = document.querySelector('.request-modal__amo-container');
+            if (container) { container.style.display = 'none'; container.setAttribute('aria-hidden', 'true'); }
+        }
+
+        function tryResizeForm(formId) {
+            try {
+                if (window.amo_forms_params && typeof window.amo_forms_params.resizeForm === 'function') {
+                    window.amo_forms_params.resizeForm('amoforms_' + formId);
+                    setTimeout(function() {
+                        if (window.amo_forms_params && window.amo_forms_params.resizeForm) {
+                            window.amo_forms_params.resizeForm('amoforms_' + formId);
+                        }
+                    }, 500);
+                }
+            } catch (e) { log('resizeForm error', e); }
+        }
+
+        function startFormLoad(forceReload) {
+            setState('loading');
+            if (loader) { loader.setAttribute('aria-hidden', 'false'); loader.classList.remove('request-modal__loader--hidden'); }
+            if (errorBlock) { errorBlock.classList.add('request-modal__error--hidden'); errorBlock.setAttribute('aria-hidden', 'true'); }
+            var noEmbed = document.getElementById('requestModalNoEmbed');
+            if (noEmbed) { noEmbed.classList.add('request-modal__no-embed--hidden'); noEmbed.setAttribute('aria-hidden', 'true'); }
+            var container = document.querySelector('.request-modal__amo-container');
+            if (container) {
+                container.style.display = '';
+                container.setAttribute('aria-hidden', 'false');
+                if (forceReload) container.innerHTML = '';
+            }
+
+            if (loadTimeoutId) clearTimeout(loadTimeoutId);
+            loadTimeoutId = setTimeout(function() {
+                loadTimeoutId = null;
+                if (status === 'loading') showErrorState();
+            }, LOAD_TIMEOUT_MS);
+
+            var formId = cfg.form_id || '1663854';
+            var el = document.getElementById('amoforms_' + formId);
+            if (!el) { showErrorState(); return; }
+            var done = function() {
+                showFormHideLoader();
+                tryResizeForm(formId);
+            };
+            if (el.children.length || el.querySelector('iframe')) {
+                done();
+                return;
+            }
+            var obs = new MutationObserver(function() {
+                if (el.children.length || el.querySelector('iframe')) { obs.disconnect(); done(); }
+            });
+            obs.observe(el, { childList: true, subtree: true });
+        }
+
+        function moveAmocrmFormIntoModal() {
+            var container = document.querySelector('.request-modal__amo-container');
+            if (!container) return false;
+            var formId = cfg.form_id || '1663854';
+            var ourEl = document.getElementById('amoforms_' + formId);
+            if (ourEl && (ourEl.children.length || ourEl.querySelector('iframe') || ourEl.querySelector('#amofroms_main_wrapper'))) return true;
+            var wrapper = document.getElementById('amofroms_main_wrapper');
+            if (wrapper && wrapper.parentNode && wrapper.parentNode !== container) {
+                container.appendChild(wrapper);
+                log('moved form into modal');
+                return true;
+            }
+            var body = document.body;
+            for (var i = 0; i < body.children.length; i++) {
+                var node = body.children[i];
+                if (!node || node === modal || node === overlay) continue;
+                var cls = (node.className || '') + '';
+                var id = (node.id || '') + '';
+                if (id === 'amofroms_main_wrapper' || cls.indexOf('amofroms') !== -1 || cls.indexOf('amoforms') !== -1 || (id.indexOf('amoforms') !== -1 && node !== ourEl)) {
+                    container.appendChild(node);
+                    log('moved form into modal');
+                    return true;
+                }
+                if (node.querySelector && node.querySelector('[class*="amofroms"], [class*="amoforms"], #amofroms_main_wrapper')) {
+                    var inner = node.querySelector('#amofroms_main_wrapper') || node.querySelector('[class*="amofroms"], [class*="amoforms"]');
+                    if (inner) { container.appendChild(inner); log('moved form into modal'); return true; }
+                }
+            }
+            return false;
+        }
+
+        function observeAndMoveAmocrmForm() {
+            var container = document.querySelector('.request-modal__amo-container');
+            if (!container) return;
+            var body = document.body;
+            var observer = new MutationObserver(function(mutations) {
+                for (var m = 0; m < mutations.length; m++) {
+                    var added = mutations[m].addedNodes;
+                    for (var a = 0; a < added.length; a++) {
+                        var node = added[a];
+                        if (node && node.nodeType === 1) {
+                            if ((node.id === 'amofroms_main_wrapper') || ((node.className || '').indexOf('amofroms') !== -1) || ((node.className || '').indexOf('sidebar_bottom') !== -1)) {
+                                container.appendChild(node);
+                                observer.disconnect();
+                                if (moveFormIntervalId) { clearInterval(moveFormIntervalId); moveFormIntervalId = null; }
+                                showFormHideLoader();
+                                tryResizeForm(cfg.form_id || '1663854');
+                                log('moved form into modal (observer)');
+                                return;
+                            }
+                        }
+                    }
+                }
+            });
+            observer.observe(body, { childList: true, subtree: false });
+            setTimeout(function() { observer.disconnect(); }, 15000);
+        }
+
+        function openRequestModal() {
+            if (!modal || !overlay) return;
+            log('open', true);
+            lockBodyScroll();
+            modal.setAttribute('aria-hidden', 'false');
+            overlay.setAttribute('aria-hidden', 'false');
+            modal.classList.add('request-modal--open');
+            overlay.classList.add('request-modal-overlay--open');
+
+            var hasEmbed = (cfg.iframe_src && cfg.iframe_src.length > 0) || (cfg.form_id && cfg.script_url);
+            if (!hasEmbed) {
+                showNoEmbedState();
+                if (closeBtn) closeBtn.focus();
+                return;
+            }
+
+            if (cfg.iframe_src) {
+                var src = cfg.iframe_src;
+                log('src', src);
+                if (src && src.indexOf('https') !== 0) log('warn: src not https');
+                if (!src) { showErrorState(); return; }
+                setState('loading');
+                if (loader) { loader.setAttribute('aria-hidden', 'false'); loader.classList.remove('request-modal__loader--hidden'); }
+                if (errorBlock) { errorBlock.classList.add('request-modal__error--hidden'); errorBlock.setAttribute('aria-hidden', 'true'); }
+                loadTimeoutId = setTimeout(function() { loadTimeoutId = null; if (status === 'loading') showErrorState(); }, LOAD_TIMEOUT_MS);
+                var iframe = document.querySelector('.request-modal__iframe');
+                if (iframe && !iframe.src) {
+                    iframe.src = src;
+                    iframe.onload = function() { showFormHideLoader(); };
+                    iframe.onerror = function() { showErrorState(); };
+                } else if (iframe) {
+                    showFormHideLoader();
+                } else {
+                    showErrorState();
+                }
+            } else {
+                startFormLoad();
+                if (moveAmocrmFormIntoModal()) {
+                    showFormHideLoader();
+                    tryResizeForm(cfg.form_id || '1663854');
+                } else {
+                    observeAndMoveAmocrmForm();
+                    if (moveFormIntervalId) clearInterval(moveFormIntervalId);
+                    var moveAttempts = 0;
+                    moveFormIntervalId = setInterval(function() {
+                        moveAttempts++;
+                        if (moveAmocrmFormIntoModal()) {
+                            clearInterval(moveFormIntervalId);
+                            moveFormIntervalId = null;
+                            showFormHideLoader();
+                            tryResizeForm(cfg.form_id || '1663854');
+                        } else if (moveAttempts >= 15) {
+                            clearInterval(moveFormIntervalId);
+                            moveFormIntervalId = null;
+                        }
+                    }, 300);
+                }
+            }
+            requestAnimationFrame(function() {
+                if (closeBtn) closeBtn.focus();
+            });
+        }
+
+        function closeRequestModal() {
+            if (!modal || !overlay) return;
+            if (loadTimeoutId) { clearTimeout(loadTimeoutId); loadTimeoutId = null; }
+            if (moveFormIntervalId) { clearInterval(moveFormIntervalId); moveFormIntervalId = null; }
+            var active = document.activeElement;
+            if (active && active.blur) active.blur();
+            var iframe = document.querySelector('.request-modal__iframe');
+            if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
+            setState('idle');
+            modal.setAttribute('aria-hidden', 'true');
+            overlay.setAttribute('aria-hidden', 'true');
+            modal.classList.remove('request-modal--open');
+            overlay.classList.remove('request-modal-overlay--open');
+            unlockBodyScroll();
+        }
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', function() {
+                startFormLoad(true);
+            });
+        }
+
+        document.querySelectorAll('.js-open-request-modal').forEach(function(el) {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openRequestModal();
+                return false;
+            });
+        });
+        if (closeBtn) closeBtn.addEventListener('click', closeRequestModal);
+        if (overlay) overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closeRequestModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal && modal.classList.contains('request-modal--open')) closeRequestModal();
+        });
+    })();
     </script>
+    <!-- Форма amoCRM: скрипты при загрузке страницы (как в оригинальном коде вставки) -->
+    <script>!function(a,m,o,c,r,m){a[o+c]=a[o+c]||{setMeta:function(p){this.params=(this.params||[]).concat([p])}},a[o+r]=a[o+r]||function(f){a[o+r].f=(a[o+r].f||[]).concat([f])},a[o+r]({id:"<?= e($amocrm['form_id'] ?? '1663854') ?>",hash:"<?= e($amocrm['form_hash'] ?? '') ?>",locale:"<?= e($amocrm['locale'] ?? 'ru') ?>"}),a[o+m]=a[o+m]||function(f,k){a[o+m].f=(a[o+m].f||[]).concat([[f,k]])}}(window,0,"amo_forms_","params","load","loaded");</script>
+    <script id="amoforms_script_<?= e($amoFormId) ?>" async="async" charset="utf-8" src="<?= e($amocrm['script_url'] ?? 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770113409') ?>"></script>
 </body>
 </html>

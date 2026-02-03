@@ -73,37 +73,10 @@ $conditionLabels = [
                 </table>
 
                 <div class="product__cta" id="request" role="region" aria-label="Действия с товаром">
-                    <div class="product__cta-buttons">
-                        <a href="#request" class="btn btn--primary btn--large">Оставить заявку</a>
-                        <button type="button" 
-                                class="btn btn--secondary btn--large" 
-                                id="productCtaCustomOrder"
-                                title="Запросить изготовление/сроки"
-                                data-prefill="<?= e('Под заказ: ' . $product['name'] . ' / ' . ($product['category_name'] ?? '') . ($product['thickness'] ? ' / ' . $product['thickness'] . ' мм' : '') . ($product['width'] ? ' / ' . $product['width'] . ' мм' : '') . ($product['surface'] ? ' / ' . $product['surface'] : '')) ?>">
-                            Под заказ
-                        </button>
-                    </div>
-                    <p class="product__cta-hint" id="productCtaHint" aria-live="polite" hidden>Запрос по товару (под заказ). Укажите детали в форме ниже или свяжитесь с нами.</p>
+                    <button type="button" class="btn btn--primary btn--large product__cta-btn js-open-request-modal">Оставить заявку</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-(function() {
-    var btn = document.getElementById('productCtaCustomOrder');
-    var block = document.getElementById('request');
-    var hint = document.getElementById('productCtaHint');
-    if (!btn || !block) return;
-    btn.addEventListener('click', function() {
-        block.setAttribute('data-request-type', 'custom_order');
-        if (hint) {
-            hint.removeAttribute('hidden');
-            hint.style.display = '';
-        }
-        block.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        if (hint) setTimeout(function() { hint.setAttribute('hidden', ''); hint.style.display = 'none'; }, 4000);
-    });
-})();
-</script>

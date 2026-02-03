@@ -1,0 +1,11 @@
+{
+    "name": "lenta-aisi/catalog",
+    "description": "Каталог нержавеющей ленты AISI",
+    "require": {
+        "php": ">=7.4",
+        "phpoffice/phpspreadsheet": "^1.29"
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

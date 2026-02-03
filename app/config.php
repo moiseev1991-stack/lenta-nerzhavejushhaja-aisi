@@ -17,4 +17,13 @@ return [
     'upload_allowed_extensions' => ['jpg', 'jpeg', 'png', 'webp'],
     
     'db_path' => __DIR__ . '/../storage/database.sqlite',
+
+    /* amoCRM форма: один источник правды для embed. iframe_src: задайте env AMO_FORM_IFRAME_SRC или укажите URL здесь */
+    'amocrm' => [
+        'form_id' => '1663854',
+        'form_hash' => '81d6c52b4028728d57c87d1d9872cb22',
+        'locale' => 'ru',
+        'script_url' => 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770113409',
+        'iframe_src' => getenv('AMO_FORM_IFRAME_SRC') ?: null,
+    ],
 ];

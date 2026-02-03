@@ -36,7 +36,7 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                         <?php if ($minPrice): ?>
                         <div class="hero-card__price">от <?= format_price($minPrice) ?></div>
                         <?php endif; ?>
-                        <a href="<?= base_url($category['slug'] . '/') ?>#request" class="btn btn--primary hero-card__cta">Оставить заявку</a>
+                        <button type="button" class="btn btn--primary hero-card__cta js-open-request-modal">Оставить заявку</button>
                         <p class="hero-card__subtitle">Ответим за 15 минут, подберём марку и размеры</p>
                     </div>
                 </aside>
@@ -48,9 +48,70 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
     <!-- Каталог с фильтрами -->
     <section class="catalog">
         <div class="container">
+            <div class="catalog__filters-overlay" id="filtersOverlay" aria-hidden="true"></div>
             <div class="catalog__inner">
-                <!-- Фильтры -->
-                <aside class="catalog__filters">
+                <!-- Товары (первыми на мобилке) -->
+                <div class="catalog__products">
+                    <div class="catalog__toolbar">
+                        <div class="toolbar__left">
+                            <button type="button" class="catalog__filters-toggle" id="filtersToggle" aria-label="Открыть фильтры" aria-expanded="false" aria-controls="filtersForm">Фильтры</button>
+                            <span class="toolbar__count">Найдено: <?= count($products) ?></span>
+                        </div>
+                        <div class="toolbar__right">
+                            <span class="toolbar__sort">Сортировка: Цена ↑</span>
+                        </div>
+                    </div>
+
+                    <?php if (empty($products)): ?>
+                        <p class="catalog__empty">Товары не найдены</p>
+                    <?php else: ?>
+                        <div class="products-grid">
+                            <?php foreach ($products as $product): ?>
+                                <a href="<?= base_url('product/' . $product['slug'] . '/') ?>" class="product-card">
+                                    <div class="product-card__heart">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                            <path d="M10 17.5c-1.5-1.5-5-4-5-7.5a3 3 0 016 0 3 3 0 016 0c0 3.5-3.5 6-5 7.5z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="product-card__image">
+                                        <?php if ($product['image']): ?>
+                                            <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>">
+                                        <?php else: ?>
+                                            <div class="product-card__placeholder">Нет фото</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="product-card__content">
+                                        <h3 class="product-card__name"><?= e($product['name']) ?></h3>
+                                        <div class="product-card__meta">
+                                            <?php 
+                                            $meta = [];
+                                            if ($product['thickness']) $meta[] = $product['thickness'] . ' мм';
+                                            if ($product['condition'] === 'soft') $meta[] = 'Мягкая';
+                                            if ($product['condition'] === 'hard') $meta[] = 'Нагартованная';
+                                            if ($product['condition'] === 'semi_hard') $meta[] = 'Полугартованная';
+                                            if ($product['surface']) $meta[] = $product['surface'];
+                                            ?>
+                                            <?= e(implode(' • ', $meta)) ?>
+                                        </div>
+                                        <div class="product-card__footer">
+                                            <div class="product-card__price"><?= format_price($product['price_per_kg']) ?></div>
+                                            <div class="product-card__stock">
+                                                <?= $product['in_stock'] ? 'В наличии' : 'Под заказ' ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Фильтры (на мобилке — оффканвас) -->
+                <aside class="catalog__filters" id="catalogFilters" role="dialog" aria-label="Фильтры" aria-modal="true">
+                    <div class="catalog__filters-header">
+                        <h2 class="catalog__filters-title">Фильтры</h2>
+                        <button type="button" class="catalog__filters-close" id="filtersClose" aria-label="Закрыть фильтры">&times;</button>
+                    </div>
                     <form method="GET" action="" class="filters-form" id="filtersForm">
                         <!-- Толщина -->
                         <details class="filter-group" open>
@@ -158,61 +219,6 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                         </div>
                     </form>
                 </aside>
-
-                <!-- Товары -->
-                <div class="catalog__products">
-                    <div class="catalog__toolbar">
-                        <div class="toolbar__left">
-                            <span class="toolbar__count">Найдено: <?= count($products) ?></span>
-                        </div>
-                        <div class="toolbar__right">
-                            <span class="toolbar__sort">Сортировка: Цена ↑</span>
-                        </div>
-                    </div>
-
-                    <?php if (empty($products)): ?>
-                        <p class="catalog__empty">Товары не найдены</p>
-                    <?php else: ?>
-                        <div class="products-grid">
-                            <?php foreach ($products as $product): ?>
-                                <a href="<?= base_url('product/' . $product['slug'] . '/') ?>" class="product-card">
-                                    <div class="product-card__heart">
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                                            <path d="M10 17.5c-1.5-1.5-5-4-5-7.5a3 3 0 016 0 3 3 0 016 0c0 3.5-3.5 6-5 7.5z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="product-card__image">
-                                        <?php if ($product['image']): ?>
-                                            <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>">
-                                        <?php else: ?>
-                                            <div class="product-card__placeholder">Нет фото</div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="product-card__content">
-                                        <h3 class="product-card__name"><?= e($product['name']) ?></h3>
-                                        <div class="product-card__meta">
-                                            <?php 
-                                            $meta = [];
-                                            if ($product['thickness']) $meta[] = $product['thickness'] . ' мм';
-                                            if ($product['condition'] === 'soft') $meta[] = 'Мягкая';
-                                            if ($product['condition'] === 'hard') $meta[] = 'Нагартованная';
-                                            if ($product['condition'] === 'semi_hard') $meta[] = 'Полугартованная';
-                                            if ($product['surface']) $meta[] = $product['surface'];
-                                            ?>
-                                            <?= e(implode(' • ', $meta)) ?>
-                                        </div>
-                                        <div class="product-card__footer">
-                                            <div class="product-card__price"><?= format_price($product['price_per_kg']) ?></div>
-                                            <div class="product-card__stock">
-                                                <?= $product['in_stock'] ? 'В наличии' : 'Под заказ' ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
             </div>
         </div>
     </section>
@@ -241,4 +247,34 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
     });
 })();
 
+// Мобильные фильтры: открыть/закрыть оффканвас
+(function() {
+    var toggle = document.getElementById('filtersToggle');
+    var closeBtn = document.getElementById('filtersClose');
+    var overlay = document.getElementById('filtersOverlay');
+    var body = document.body;
+
+    function openFilters() {
+        body.classList.add('filters-open');
+        if (toggle) toggle.setAttribute('aria-expanded', 'true');
+        if (overlay) overlay.setAttribute('aria-hidden', 'false');
+        document.documentElement.style.overflow = 'hidden';
+    }
+    function closeFilters() {
+        body.classList.remove('filters-open');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        if (overlay) overlay.setAttribute('aria-hidden', 'true');
+        document.documentElement.style.overflow = '';
+    }
+
+    if (toggle) toggle.addEventListener('click', function() {
+        if (body.classList.contains('filters-open')) closeFilters();
+        else openFilters();
+    });
+    if (closeBtn) closeBtn.addEventListener('click', closeFilters);
+    if (overlay) overlay.addEventListener('click', closeFilters);
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && body.classList.contains('filters-open')) closeFilters();
+    });
+})();
 </script>
