@@ -50,6 +50,14 @@ return [
                     <li><strong>Почта России</strong> — для небольших партий</li>
                 </ul>
                 
+                <h3>Доставка авто</h3>
+                <p>Отдельно можно заказать доставку авто. Стоимость от грузоподъёмности:</p>
+                <ul>
+                    <li><strong>До 5 тн</strong> — от 10 000 ₽</li>
+                    <li><strong>До 10 тн</strong> — от 18 000 ₽</li>
+                    <li><strong>До 20 тн</strong> — от 25 000 ₽</li>
+                </ul>
+                
                 <h3>Доставка в основные города России</h3>
                 <table style="width: 100%; border-collapse: collapse; margin: 2rem 0;">
                     <thead>
@@ -247,18 +255,18 @@ return [
     'price' => [
         'h1' => 'Прайс-лист',
         'title' => 'Прайс-лист на нержавеющие ленты | Каталог AISI',
-        'description' => 'Актуальные цены на нержавеющие ленты различных марок AISI. Указаны цены за килограмм.',
+        'description' => 'Актуальные цены на нержавеющие ленты различных марок AISI. Цены за килограмм с НДС.',
         'content' => '
             <div style="max-width: 1000px; margin: 0 auto;">
                 <h2>Прайс-лист</h2>
-                <p>Цены указаны за 1 килограмм. Точную стоимость уточняйте у менеджера, так как цена может зависеть от объема заказа, толщины, ширины и других параметров.</p>
+                <p>Цены указаны за 1 килограмм с НДС. Точную стоимость уточняйте у менеджера, так как цена может зависеть от объема заказа, толщины, ширины и других параметров.</p>
                 
                 <table style="width: 100%; border-collapse: collapse; margin: 2rem 0;">
                     <thead>
                         <tr style="background: #f5f5f5;">
                             <th style="padding: 0.75rem; border: 1px solid #ddd; text-align: left;">Марка стали</th>
                             <th style="padding: 0.75rem; border: 1px solid #ddd; text-align: left;">Толщина (мм)</th>
-                            <th style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">Цена от (₽/кг)</th>
+                            <th style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">Цена от (₽/кг с НДС)</th>
                             <th style="padding: 0.75rem; border: 1px solid #ddd; text-align: left;">Примечание</th>
                         </tr>
                     </thead>
@@ -266,19 +274,19 @@ return [
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 201</strong></td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 310 ₽</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 210 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Экономичная марка</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 304</strong></td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 370 ₽</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 300 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Самая популярная</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 304L</strong></td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 380 ₽</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 270 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Низкоуглеродистая</td>
                         </tr>
                         <tr>
@@ -290,20 +298,26 @@ return [
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 316L</strong></td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 440 ₽</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 430 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Для сварных конструкций</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 321</strong></td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 420 ₽</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 340 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Стабилизированная титаном</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 430</strong></td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 280 ₽</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 150 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Ферритная</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 904L</strong></td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 1 300 ₽</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">Супер-аустенитная</td>
                         </tr>
                     </tbody>
                 </table>

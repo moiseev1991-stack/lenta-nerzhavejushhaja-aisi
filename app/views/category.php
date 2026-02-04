@@ -1,49 +1,12 @@
 <?php
-// Доступные толщины для фильтра (из всех товаров категории)
-$defaultThicknesses = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7];
+// Диапазон толщин для фильтра: от 0,05 до 4 мм
+$defaultThicknesses = [0.05, 0.1, 0.12, 0.15, 0.2, 0.25, 0.27, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.2, 1.4, 1.5, 2, 2.5, 3, 3.5, 4];
 $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $defaultThicknesses;
 ?>
 
+<?php $productsCount = count($products); ?>
 <div class="category-page">
-    <!-- Hero блок -->
-    <section class="category-hero">
-        <div class="container">
-            <div class="category-hero__inner">
-                <div class="category-hero__left">
-                    <div class="category-hero__header">
-                        <h1><?= e($category['h1'] ?: $category['name']) ?></h1>
-                        <span class="category-hero__count">Найдено: <?= count($products) ?></span>
-                    </div>
-                    <?php if ($category['intro']): ?>
-                    <p class="category-hero__intro" id="categoryIntro"><?= e($category['intro']) ?></p>
-                    <?php endif; ?>
-                    
-                    <div class="category-hero__chips">
-                        <span class="chips-label">Подкатегории:</span>
-                        <div class="chips" id="chipsContainer">
-                            <?php foreach ($allCategories as $cat): ?>
-                                <a href="<?= base_url($cat['slug'] . '/') ?>" 
-                                   class="chip <?= $cat['slug'] === $category['slug'] ? 'chip--active' : '' ?>">
-                                    <?= e($cat['name']) ?>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
-                
-                <aside class="category-hero__right">
-                    <div class="hero-card hero-card--compact">
-                        <?php if ($minPrice): ?>
-                        <div class="hero-card__price">от <?= format_price($minPrice) ?></div>
-                        <?php endif; ?>
-                        <button type="button" class="btn btn--primary hero-card__cta js-open-request-modal">Оставить заявку</button>
-                        <p class="hero-card__subtitle">Ответим за 15 минут, подберём марку и размеры</p>
-                    </div>
-                </aside>
-            </div>
-            <?php $benefitsVariant = 'category'; include __DIR__ . '/partials/benefits.php'; ?>
-        </div>
-    </section>
+    <?php include __DIR__ . '/partials/catalog_header.php'; ?>
 
     <!-- Каталог с фильтрами -->
     <section class="catalog">

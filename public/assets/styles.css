@@ -528,7 +528,7 @@ body {
 /* Category Hero - компактная версия */
 .category-hero {
     background: var(--bg-secondary);
-    padding: var(--spacing-lg) 0 var(--spacing-md) 0;
+    padding: 24px 0;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -539,11 +539,32 @@ body {
     align-items: start;
 }
 
+/* Хлебные крошки между H1 и описанием (страница товара) */
+.category-hero__breadcrumbs {
+    margin: 8px 0 10px;
+    font-size: 14px;
+    line-height: 1.2;
+    color: var(--text-muted, #7a7a7a);
+}
+
+.category-hero__breadcrumbs .breadcrumbs a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.category-hero__breadcrumbs .breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.category-hero__breadcrumbs .breadcrumbs span {
+    margin: 0 var(--spacing-xs);
+}
+
 .category-hero__header {
     display: flex;
     align-items: baseline;
     gap: var(--spacing-md);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 8px;
 }
 
 .category-hero__header h1 {
@@ -562,7 +583,8 @@ body {
 .category-hero__intro {
     font-size: var(--font-size-base);
     color: var(--text-muted);
-    margin-bottom: var(--spacing-md);
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -572,7 +594,7 @@ body {
 }
 
 .category-hero__chips {
-    margin-top: var(--spacing-md);
+    margin-top: var(--spacing-sm);
     max-width: 100%;
     overflow: hidden;
 }
@@ -1313,6 +1335,17 @@ details[open] .filter-group__title::before {
 /* Product Page */
 .product-page {
     padding: var(--spacing-2xl) 0;
+}
+
+/* Меньше пустого пространства над hero/крошками только на странице товара */
+.product-page {
+    padding-top: 0;
+}
+.product-page .category-hero {
+    padding-top: 20px;
+}
+.product-page .category-hero__breadcrumbs {
+    margin-bottom: 12px;
 }
 
 .breadcrumbs {

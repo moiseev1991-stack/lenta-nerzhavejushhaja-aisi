@@ -6,19 +6,22 @@ $conditionLabels = [
 ];
 ?>
 
+<?php
+ob_start();
+?><nav class="breadcrumbs" aria-label="Хлебные крошки">
+    <a href="<?= base_url() ?>">Главная</a>
+    <span>/</span>
+    <a href="<?= base_url($product['category_slug'] . '/') ?>"><?= e($product['category_name']) ?></a>
+    <span>/</span>
+    <span><?= e($product['name']) ?></span>
+</nav><?php
+$heroBreadcrumbs = ob_get_clean();
+?>
 <div class="product-page">
+    <?php include __DIR__ . '/partials/catalog_header.php'; ?>
     <div class="container">
-        <!-- Хлебные крошки -->
-        <nav class="breadcrumbs">
-            <a href="<?= base_url() ?>">Главная</a>
-            <span>/</span>
-            <a href="<?= base_url($product['category_slug'] . '/') ?>"><?= e($product['category_name']) ?></a>
-            <span>/</span>
-            <span><?= e($product['name']) ?></span>
-        </nav>
-
         <div class="product__inner">
-            <!-- Левая колонка: фото + преимущества -->
+            <!-- Левая колонка: фото -->
             <div class="product__left">
                 <div class="product__image">
                     <?php if ($product['image']): ?>
@@ -27,7 +30,6 @@ $conditionLabels = [
                         <div class="product__placeholder">Нет фото</div>
                     <?php endif; ?>
                 </div>
-                <?php $benefitsVariant = 'product'; include __DIR__ . '/partials/benefits.php'; ?>
             </div>
 
             <!-- Информация -->

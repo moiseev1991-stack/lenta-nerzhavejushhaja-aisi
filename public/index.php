@@ -208,7 +208,17 @@ if (preg_match('#^product/([^/]+)/?$#', $requestPath, $matches)) {
         exit;
     }
     
-    // Получаем все категории для хлебных крошек
+    // Категория товара для единой шапки каталога (заголовок, плашки AISI, преимущества, CTA)
+    $stmtCat = $pdo->prepare('SELECT * FROM categories WHERE id = ? AND is_active = 1');
+    $stmtCat->execute([$product['category_id']]);
+    $category = $stmtCat->fetch();
+    if (!$category) {
+        require __DIR__ . '/../app/views/404.php';
+        exit;
+    }
+    $minPrice = null;
+    
+    // Все категории для плашек подкатегорий (layout подставит allCategories при необходимости)
     $stmt = $pdo->query('SELECT slug, name FROM categories WHERE is_active = 1 ORDER BY name');
     $categories = $stmt->fetchAll();
     
