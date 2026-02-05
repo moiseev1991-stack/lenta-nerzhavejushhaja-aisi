@@ -1,10 +1,19 @@
 <?php
-// Диапазон толщин для фильтра: от 0,05 до 4 мм
-$defaultThicknesses = [0.05, 0.1, 0.12, 0.15, 0.2, 0.25, 0.27, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.2, 1.4, 1.5, 2, 2.5, 3, 3.5, 4];
-$availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $defaultThicknesses;
+// Фиксированный список толщин для фильтра «Толщина ленты, мм»
+$defaultThicknesses = get_filter_thicknesses();
 ?>
-
-<?php $productsCount = count($products); ?>
+<?php
+$pagination = $pagination ?? null;
+$productsCount = $pagination ? (int) $pagination['total'] : count($products);
+$showArticle = !empty($category['content_is_active']) && trim((string)($category['content_body'] ?? '')) !== '';
+ob_start();
+?><nav class="breadcrumbs" aria-label="Хлебные крошки">
+    <a href="<?= base_url() ?>">Главная</a>
+    <span>/</span>
+    <span><?= e($category['name']) ?></span>
+</nav><?php
+$heroBreadcrumbs = ob_get_clean();
+?>
 <div class="category-page">
     <?php include __DIR__ . '/partials/catalog_header.php'; ?>
 
@@ -18,19 +27,30 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                     <div class="catalog__toolbar">
                         <div class="toolbar__left">
                             <button type="button" class="catalog__filters-toggle" id="filtersToggle" aria-label="Открыть фильтры" aria-expanded="false" aria-controls="filtersForm">Фильтры</button>
-                            <span class="toolbar__count">Найдено: <?= count($products) ?></span>
+                            <span class="toolbar__count">Найдено: <?= $pagination ? (int) $pagination['total'] : count($products) ?></span>
                         </div>
                         <div class="toolbar__right">
-                            <span class="toolbar__sort">Сортировка: Цена ↑</span>
+                            <?php
+                            $sortOrder = $sortOrder ?? 'price_asc';
+                            $urlAsc = $categorySortUrlAsc ?? (base_url($category['slug'] . '/') . '?sort=price_asc');
+                            $urlDesc = $categorySortUrlDesc ?? (base_url($category['slug'] . '/') . '?sort=price_desc');
+                            $sortUrl = $sortOrder === 'price_asc' ? $urlDesc : $urlAsc;
+                            ?>
+                            <a href="<?= e($sortUrl) ?>" class="toolbar__sort">Сортировка: Цена <?= $sortOrder === 'price_asc' ? '↑' : '↓' ?></a>
                         </div>
                     </div>
 
                     <?php if (empty($products)): ?>
                         <p class="catalog__empty">Товары не найдены</p>
+                        <?php if ($showArticle): ?>
+                            <p class="catalog__to-article">
+                                <a href="#category-article" class="catalog__to-article-link">К описанию</a>
+                            </p>
+                        <?php endif; ?>
                     <?php else: ?>
                         <div class="products-grid">
                             <?php foreach ($products as $product): ?>
-                                <a href="<?= base_url('product/' . $product['slug'] . '/') ?>" class="product-card">
+                                <a href="<?= base_url($category['slug'] . '/' . $product['slug'] . '/') ?>" class="product-card">
                                     <div class="product-card__heart">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                                             <path d="M10 17.5c-1.5-1.5-5-4-5-7.5a3 3 0 016 0 3 3 0 016 0c0 3.5-3.5 6-5 7.5z"/>
@@ -66,6 +86,50 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                                 </a>
                             <?php endforeach; ?>
                         </div>
+                        <?php
+                        if ($pagination && $pagination['total_pages'] > 1):
+                            $base = $pagination['base_url'];
+                            $qp = $pagination['query_params'];
+                            $pageUrl = function ($num) use ($base, $qp) {
+                                $qp['page'] = $num;
+                                return $base . '?' . http_build_query(array_filter($qp, function ($v) { return $v !== '' && $v !== null; }));
+                            };
+                            $curr = (int) $pagination['current_page'];
+                            $totalP = (int) $pagination['total_pages'];
+                        ?>
+                        <nav class="pagination" aria-label="Пагинация каталога">
+                            <ul class="pagination__list">
+                                <li>
+                                    <?php if ($curr > 1): ?>
+                                        <a href="<?= e($pageUrl($curr - 1)) ?>" class="pagination__link pagination__prev" aria-label="Назад">← Назад</a>
+                                    <?php else: ?>
+                                        <span class="pagination__link pagination__link--disabled" aria-disabled="true">← Назад</span>
+                                    <?php endif; ?>
+                                </li>
+                                <?php for ($i = 1; $i <= $totalP; $i++): ?>
+                                    <li>
+                                        <?php if ($i === $curr): ?>
+                                            <span class="pagination__link pagination__link--current" aria-current="page"><?= $i ?></span>
+                                        <?php else: ?>
+                                            <a href="<?= e($pageUrl($i)) ?>" class="pagination__link"><?= $i ?></a>
+                                        <?php endif; ?>
+                                    </li>
+                                <?php endfor; ?>
+                                <li>
+                                    <?php if ($curr < $totalP): ?>
+                                        <a href="<?= e($pageUrl($curr + 1)) ?>" class="pagination__link pagination__next" aria-label="Вперёд">Вперёд →</a>
+                                    <?php else: ?>
+                                        <span class="pagination__link pagination__link--disabled" aria-disabled="true">Вперёд →</span>
+                                    <?php endif; ?>
+                                </li>
+                            </ul>
+                        </nav>
+                        <?php endif; ?>
+                        <?php if ($showArticle): ?>
+                            <p class="catalog__to-article">
+                                <a href="#category-article" class="catalog__to-article-link">К описанию</a>
+                            </p>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
@@ -76,6 +140,7 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
                         <button type="button" class="catalog__filters-close" id="filtersClose" aria-label="Закрыть фильтры">&times;</button>
                     </div>
                     <form method="GET" action="" class="filters-form" id="filtersForm">
+                        <input type="hidden" name="page" value="1">
                         <!-- Толщина -->
                         <details class="filter-group" open>
                             <summary class="filter-group__title">Толщина ленты, мм</summary>
@@ -185,6 +250,29 @@ $availableThicknesses = isset($availableThicknesses) ? $availableThicknesses : $
             </div>
         </div>
     </section>
+
+    <?php if ($showArticle):
+        $format = trim((string)($category['content_format'] ?? ''));
+        if ($format === 'html') {
+            $articleHtml = sanitize_category_content_html($category['content_body']);
+        } else {
+            $articleHtml = sanitize_category_content_html(markdown_to_html($category['content_body']));
+        }
+        $articleTitle = trim((string)($category['content_title'] ?? ''));
+    ?>
+    <section id="category-article" class="category-article">
+        <div class="container">
+            <div class="category-article__inner">
+                <?php if ($articleTitle !== ''): ?>
+                    <h2 class="category-article__title"><?= e($articleTitle) ?></h2>
+                <?php endif; ?>
+                <div class="category-article__content">
+                    <?= $articleHtml ?>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 </div>
 
 <script>

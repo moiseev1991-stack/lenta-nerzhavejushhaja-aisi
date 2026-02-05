@@ -1,0 +1,3 @@
+2026-02-05 09:12:17 — старт импорта
+Ошибка: выполните composer install в корне проекта (нужен phpoffice/phpspreadsheet).
+

@@ -72,7 +72,7 @@
                 ?>
                     <a href="<?= base_url($cat['slug'] . '/') ?>" class="category-card">
                         <?php if ($showBadge): ?><span class="series-badge"><?= e($seriesBadge) ?></span><?php endif; ?>
-                        <div class="category-card__name"><?= e($cat['name']) ?></div>
+                        <div class="category-card__name"><?= e(normalize_aisi_display_name($cat['name'])) ?></div>
                         <div class="category-card__link">Смотреть товары →</div>
                     </a>
                 <?php endforeach; ?>
@@ -96,7 +96,7 @@
             <h2 class="section-title">Популярные товары</h2>
             <div class="products-grid">
                 <?php foreach ($featuredProducts as $product): ?>
-                    <a href="<?= base_url('product/' . $product['slug'] . '/') ?>" class="product-card">
+                    <a href="<?= base_url($product['category_slug'] . '/' . $product['slug'] . '/') ?>" class="product-card">
                         <div class="product-card__heart">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                                 <path d="M10 17.5c-1.5-1.5-5-4-5-7.5a3 3 0 016 0 3 3 0 016 0c0 3.5-3.5 6-5 7.5z"/>

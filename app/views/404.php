@@ -1,19 +1,26 @@
 <?php
-$config = require __DIR__ . '/../config.php';
+/**
+ * Контент страницы 404 (вставляется в layout в <main>).
+ * Ожидает: base_url(), e() из helpers.
+ */
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 — Страница не найдена</title>
-    <link rel="stylesheet" href="<?= base_url('assets/styles.css') ?>">
-</head>
-<body>
-    <div class="container" style="padding: 4rem 1rem; text-align: center;">
-        <h1>404</h1>
-        <p>Страница не найдена</p>
-        <a href="<?= base_url('aisi-316l/') ?>" class="btn btn--primary">Перейти в каталог</a>
+<section class="not-found" aria-label="Страница не найдена">
+    <div class="container">
+        <div class="not-found__inner">
+            <h1 class="not-found__title"><span class="not-found__code">404</span> — страница не найдена</h1>
+            <p class="not-found__text">Похоже, вы перешли по неверной ссылке или страница была удалена.</p>
+            <p class="not-found__hint">Попробуйте перейти в нужный раздел:</p>
+            <div class="not-found__actions">
+                <a href="<?= base_url() ?>" class="btn btn--primary not-found__btn">На главную</a>
+                <a href="<?= base_url() ?>" class="btn btn--ghost not-found__btn">Марки AISI</a>
+            </div>
+            <ul class="not-found__links">
+                <li><a href="<?= base_url() ?>">Марки AISI</a></li>
+                <li><a href="<?= base_url('delivery/') ?>">Доставка</a></li>
+                <li><a href="<?= base_url('payment/') ?>">Оплата</a></li>
+                <li><a href="<?= base_url('contacts/') ?>">Контакты</a></li>
+                <li><a href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
+            </ul>
+        </div>
     </div>
-</body>
-</html>
+</section>

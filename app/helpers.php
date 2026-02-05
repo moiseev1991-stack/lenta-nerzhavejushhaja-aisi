@@ -6,6 +6,25 @@ if (!function_exists('e')) {
     }
 }
 
+/**
+ * Подставить картинку товару, если в БД пусто: по product_slug (часть URL без категории)
+ * ищется файл {slug}.jpg в папке img/product_images_named.
+ * $product передаётся по ссылке и может получить поле image.
+ * $imagesDir — полный путь к папке с картинками (например __DIR__ . '/../img/product_images_named').
+ */
+if (!function_exists('resolve_product_image')) {
+    function resolve_product_image(array &$product, $imagesDir) {
+        if (!empty($product['image'])) return;
+        $slug = isset($product['slug']) ? trim($product['slug']) : '';
+        if ($slug === '') return;
+        $filename = $slug . '.jpg';
+        $path = rtrim($imagesDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
+        if (is_file($path)) {
+            $product['image'] = '/img/product_images_named/' . $filename;
+        }
+    }
+}
+
 if (!function_exists('nowIso')) {
     function nowIso() {
         return date('Y-m-d H:i:s');
@@ -166,6 +185,39 @@ if (!function_exists('set_site_setting')) {
 }
 
 /**
+ * Ключ сортировки категорий AISI по возрастанию (201, 202, 304, 304L, 310, 316Ti, 904L и т.д.).
+ */
+if (!function_exists('aisi_category_sort_key')) {
+    function aisi_category_sort_key($slug) {
+        $slug = (string) $slug;
+        if (!preg_match('/^aisi-(\d+)(.*)$/i', $slug, $m)) return '9999';
+        return sprintf('%04d', (int) $m[1]) . mb_strtolower(trim($m[2]));
+    }
+}
+
+/**
+ * Сортирует массив категорий по возрастанию марки AISI (по slug).
+ */
+if (!function_exists('sort_aisi_categories')) {
+    function sort_aisi_categories(array &$categories) {
+        usort($categories, function ($a, $b) {
+            return strcasecmp(aisi_category_sort_key($a['slug'] ?? ''), aisi_category_sort_key($b['slug'] ?? ''));
+        });
+    }
+}
+
+/**
+ * Нормализует отображаемое название марки: «Aisi 202» → «AISI 202», «AISI 304L» без изменений.
+ */
+if (!function_exists('normalize_aisi_display_name')) {
+    function normalize_aisi_display_name($name) {
+        $name = trim((string) $name);
+        if ($name === '') return $name;
+        return preg_replace('/^Aisi\s/i', 'AISI ', $name);
+    }
+}
+
+/**
  * Определяет серию AISI по slug категории (aisi-304 -> 300, aisi-904l -> 900L).
  */
 if (!function_exists('aisi_series_from_slug')) {
@@ -177,5 +229,163 @@ if (!function_exists('aisi_series_from_slug')) {
             return (string) ($first * 100);
         }
         return 'other';
+    }
+}
+
+/**
+ * Фиксированный список значений для фильтра «Толщина ленты, мм».
+ * Единый источник правды для шаблонов и логики.
+ */
+/**
+ * Конвертирует базовый Markdown в HTML. Поддерживает: заголовки (##, ###), жирный (**),
+ * списки (- ), ссылки [text](url), параграфы (двойной перенос).
+ */
+if (!function_exists('markdown_to_html')) {
+    function markdown_to_html($text) {
+        if ($text === null || trim((string) $text) === '') {
+            return '';
+        }
+        $s = (string) $text;
+        $s = htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+        // Ссылки [text](url)
+        $s = preg_replace_callback('/\[([^\]]+)\]\(([^)]+)\)/', function ($m) {
+            $url = $m[2];
+            $t = $m[1];
+            if (preg_match('/^https?:\/\//i', $url)) {
+                return '<a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener">' . $t . '</a>';
+            }
+            return '<a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">' . $t . '</a>';
+        }, $s);
+        // Жирный **text**
+        $s = preg_replace('/\*\*(.+?)\*\*/s', '<strong>$1</strong>', $s);
+        $lines = explode("\n", $s);
+        $out = [];
+        $i = 0;
+        $n = count($lines);
+        while ($i < $n) {
+            $line = $lines[$i];
+            $trimmed = trim($line);
+            if ($trimmed === '') {
+                $i++;
+                continue;
+            }
+            if (preg_match('/^### (.+)$/', $trimmed, $m)) {
+                $out[] = '<h3>' . $m[1] . '</h3>';
+                $i++;
+                continue;
+            }
+            if (preg_match('/^## (.+)$/', $trimmed, $m)) {
+                $out[] = '<h2>' . $m[1] . '</h2>';
+                $i++;
+                continue;
+            }
+            if (preg_match('/^# (.+)$/', $trimmed, $m)) {
+                $out[] = '<h1>' . $m[1] . '</h1>';
+                $i++;
+                continue;
+            }
+            if (preg_match('/^- (.+)$/', $trimmed)) {
+                $list = [];
+                while ($i < $n && preg_match('/^- (.+)$/', trim($lines[$i]), $m)) {
+                    $list[] = '<li>' . $m[1] . '</li>';
+                    $i++;
+                }
+                $out[] = '<ul>' . implode('', $list) . '</ul>';
+                continue;
+            }
+            $para = [$trimmed];
+            $i++;
+            while ($i < $n && trim($lines[$i]) !== '' && !preg_match('/^#+\s/', trim($lines[$i])) && !preg_match('/^- /', trim($lines[$i]))) {
+                $para[] = trim($lines[$i]);
+                $i++;
+            }
+            $out[] = '<p>' . implode(' ', $para) . '</p>';
+        }
+        return implode("\n", $out);
+    }
+}
+
+/**
+ * Допустимые теги для вывода контента категории. Санитизация: белый список тегов,
+ * для <a> — только безопасный href (http/https или относительный), при target="_blank" добавляется rel="noopener noreferrer".
+ */
+if (!function_exists('sanitize_category_content_html')) {
+    function sanitize_category_content_html($html) {
+        if ($html === null || trim((string) $html) === '') {
+            return '';
+        }
+        $html = (string) $html;
+        $allowed = '<p><br><h1><h2><h3><h4><strong><b><em><i><u><s><blockquote><ul><ol><li><a><table><thead><tbody><tr><th><td><div><span><pre><code>';
+        $html = strip_tags($html, $allowed);
+        // Санитизация ссылок: только безопасный href, rel при target="_blank"
+        $html = preg_replace_callback('/<a\s+([^>]*)>/i', function ($m) {
+            $attrs = $m[1];
+            $href = '';
+            $title = '';
+            $rel = '';
+            $target = '';
+            if (preg_match('/href\s*=\s*["\']([^"\']*)["\']/i', $attrs, $h)) {
+                $url = trim($h[1]);
+                if (preg_match('/^(https?:|\/|#)/i', $url) && !preg_match('/^\s*javascript:/i', $url) && !preg_match('/^\s*data:/i', $url)) {
+                    $href = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+                } else {
+                    $href = '#';
+                }
+            }
+            if (preg_match('/title\s*=\s*["\']([^"\']*)["\']/i', $attrs, $t)) {
+                $title = ' title="' . htmlspecialchars($t[1], ENT_QUOTES, 'UTF-8') . '"';
+            }
+            if (preg_match('/target\s*=\s*["\']_blank["\']/i', $attrs)) {
+                $target = ' target="_blank"';
+                $rel = ' rel="noopener noreferrer"';
+            } elseif (preg_match('/rel\s*=\s*["\']([^"\']*)["\']/i', $attrs, $r)) {
+                $rel = ' rel="' . htmlspecialchars($r[1], ENT_QUOTES, 'UTF-8') . '"';
+            }
+            return '<a href="' . $href . '"' . $title . $rel . $target . '>';
+        }, $html);
+        return $html;
+    }
+}
+
+/**
+ * Очистка форматирования: удаление inline-стилей, class, id и прочего мусора (Word/копипаст).
+ * Для HTML: убираем атрибуты style, class, id у всех тегов.
+ */
+if (!function_exists('strip_article_formatting')) {
+    function strip_article_formatting($html, $format = 'html') {
+        if ($format === 'html') {
+            $html = preg_replace('/\s+style\s*=\s*["\'][^"\']*["\']/i', '', $html);
+            $html = preg_replace('/\s+class\s*=\s*["\'][^"\']*["\']/i', '', $html);
+            $html = preg_replace('/\s+id\s*=\s*["\'][^"\']*["\']/i', '', $html);
+            $html = preg_replace('/\s+lang\s*=\s*["\'][^"\']*["\']/i', '', $html);
+        }
+        return trim($html);
+    }
+}
+
+if (!function_exists('get_filter_thicknesses')) {
+    function get_filter_thicknesses() {
+        return [
+            0.05,
+            0.08,
+            0.1,
+            0.12,
+            0.15,
+            0.2,
+            0.25,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            1.0,
+            1.2,
+            1.5,
+            2.0,
+            2.5,
+            3.0,
+            4.0,
+        ];
     }
 }

@@ -1,0 +1,73 @@
+Список товаров без фото (после попытки подстановки из папки img/product_images_named и CSV docs/Lenta_Import_ADD_missing_categories.csv)
+Эти товары из сида (AISI 201, 304, 316L), в CSV их нет; файлов по slug в папке тоже нет.
+Чтобы подставить общую заглушку: положите изображение img/placeholder-product.jpg или public/img/placeholder-product.jpg и запустите скрипт снова.
+
+Дата: 2026-02-05 17:13:46
+Всего: 29
+
+AISI 201 | Лента нержавеющая 0.1x8 мм AISI 201 нагартованная BA | lenta-nerzhaveyuschaya-0-1x8-mm-aisi-201-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-1x8-mm-aisi-201-nagartovannaya-ba
+AISI 201 | Лента нержавеющая 0.25x10 мм AISI 201 нагартованная 2B | lenta-nerzhaveyuschaya-0-25x10-mm-aisi-201-nagartovannaya-2b | slug: lenta-nerzhaveyuschaya-0-25x10-mm-aisi-201-nagartovannaya-2b
+AISI 201 | Лента нержавеющая 0.2x10 мм AISI 201 мягкая BA | lenta-nerzhaveyuschaya-0-2x10-mm-aisi-201-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-2x10-mm-aisi-201-myagkaya-ba
+AISI 201 | Лента нержавеющая 0.35x12 мм AISI 201 мягкая BA | lenta-nerzhaveyuschaya-0-35x12-mm-aisi-201-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-35x12-mm-aisi-201-myagkaya-ba
+AISI 201 | Лента нержавеющая 0.3x12 мм AISI 201 нагартованная BA | lenta-nerzhaveyuschaya-0-3x12-mm-aisi-201-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-3x12-mm-aisi-201-nagartovannaya-ba
+AISI 201 | Лента нержавеющая 0.4x15 мм AISI 201 мягкая 2B | lenta-nerzhaveyuschaya-0-4x15-mm-aisi-201-myagkaya-2b | slug: lenta-nerzhaveyuschaya-0-4x15-mm-aisi-201-myagkaya-2b
+AISI 201 | Лента нержавеющая 0.5x20 мм AISI 201 нагартованная BA | lenta-nerzhaveyuschaya-0-5x20-mm-aisi-201-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-5x20-mm-aisi-201-nagartovannaya-ba
+AISI 201 | Лента нержавеющая 0.6x25 мм AISI 201 мягкая BA | lenta-nerzhaveyuschaya-0-6x25-mm-aisi-201-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-6x25-mm-aisi-201-myagkaya-ba
+AISI 201 | Лента нержавеющая 0.7x30 мм AISI 201 мягкая 2B | lenta-nerzhaveyuschaya-0-7x30-mm-aisi-201-myagkaya-2b | slug: lenta-nerzhaveyuschaya-0-7x30-mm-aisi-201-myagkaya-2b
+AISI 304 | Лента нержавеющая 0.15x10 мм AISI 304 нагартованная BA | lenta-nerzhaveyuschaya-0-15x10-mm-aisi-304-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-15x10-mm-aisi-304-nagartovannaya-ba
+AISI 304 | Лента нержавеющая 0.1x8 мм AISI 304 нагартованная BA | lenta-nerzhaveyuschaya-0-1x8-mm-aisi-304-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-1x8-mm-aisi-304-nagartovannaya-ba
+AISI 304 | Лента нержавеющая 0.25x10 мм AISI 304 нагартованная 2B | lenta-nerzhaveyuschaya-0-25x10-mm-aisi-304-nagartovannaya-2b | slug: lenta-nerzhaveyuschaya-0-25x10-mm-aisi-304-nagartovannaya-2b
+AISI 304 | Лента нержавеющая 0.2x10 мм AISI 304 мягкая BA | lenta-nerzhaveyuschaya-0-2x10-mm-aisi-304-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-2x10-mm-aisi-304-myagkaya-ba
+AISI 304 | Лента нержавеющая 0.35x12 мм AISI 304 мягкая BA | lenta-nerzhaveyuschaya-0-35x12-mm-aisi-304-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-35x12-mm-aisi-304-myagkaya-ba
+AISI 304 | Лента нержавеющая 0.3x12 мм AISI 304 нагартованная BA | lenta-nerzhaveyuschaya-0-3x12-mm-aisi-304-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-3x12-mm-aisi-304-nagartovannaya-ba
+AISI 304 | Лента нержавеющая 0.4x15 мм AISI 304 мягкая 2B | lenta-nerzhaveyuschaya-0-4x15-mm-aisi-304-myagkaya-2b | slug: lenta-nerzhaveyuschaya-0-4x15-mm-aisi-304-myagkaya-2b
+AISI 304 | Лента нержавеющая 0.5x20 мм AISI 304 нагартованная BA | lenta-nerzhaveyuschaya-0-5x20-mm-aisi-304-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-5x20-mm-aisi-304-nagartovannaya-ba
+AISI 304 | Лента нержавеющая 0.6x25 мм AISI 304 мягкая BA | lenta-nerzhaveyuschaya-0-6x25-mm-aisi-304-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-6x25-mm-aisi-304-myagkaya-ba
+AISI 304 | Лента нержавеющая 0.7x30 мм AISI 304 мягкая 2B | lenta-nerzhaveyuschaya-0-7x30-mm-aisi-304-myagkaya-2b | slug: lenta-nerzhaveyuschaya-0-7x30-mm-aisi-304-myagkaya-2b
+AISI 316L | Лента нержавеющая 0.15x10 мм AISI 316L мягкая BA | lenta-nerzhaveyuschaya-0-15x10-mm-aisi-316l-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-15x10-mm-aisi-316l-myagkaya-ba
+AISI 316L | Лента нержавеющая 0.1x8 мм AISI 316L мягкая BA | lenta-nerzhaveyuschaya-0-1x8-mm-aisi-316l-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-1x8-mm-aisi-316l-myagkaya-ba
+AISI 316L | Лента нержавеющая 0.25x10 мм AISI 316L мягкая 2B | lenta-nerzhaveyuschaya-0-25x10-mm-aisi-316l-myagkaya-2b | slug: lenta-nerzhaveyuschaya-0-25x10-mm-aisi-316l-myagkaya-2b
+AISI 316L | Лента нержавеющая 0.2x10 мм AISI 316L мягкая BA | lenta-nerzhaveyuschaya-0-2x10-mm-aisi-316l-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-2x10-mm-aisi-316l-myagkaya-ba
+AISI 316L | Лента нержавеющая 0.35x12 мм AISI 316L нагартованная BA | lenta-nerzhaveyuschaya-0-35x12-mm-aisi-316l-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-35x12-mm-aisi-316l-nagartovannaya-ba
+AISI 316L | Лента нержавеющая 0.3x12 мм AISI 316L мягкая BA | lenta-nerzhaveyuschaya-0-3x12-mm-aisi-316l-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-3x12-mm-aisi-316l-myagkaya-ba
+AISI 316L | Лента нержавеющая 0.4x15 мм AISI 316L нагартованная 2B | lenta-nerzhaveyuschaya-0-4x15-mm-aisi-316l-nagartovannaya-2b | slug: lenta-nerzhaveyuschaya-0-4x15-mm-aisi-316l-nagartovannaya-2b
+AISI 316L | Лента нержавеющая 0.5x20 мм AISI 316L мягкая BA | lenta-nerzhaveyuschaya-0-5x20-mm-aisi-316l-myagkaya-ba | slug: lenta-nerzhaveyuschaya-0-5x20-mm-aisi-316l-myagkaya-ba
+AISI 316L | Лента нержавеющая 0.6x25 мм AISI 316L нагартованная BA | lenta-nerzhaveyuschaya-0-6x25-mm-aisi-316l-nagartovannaya-ba | slug: lenta-nerzhaveyuschaya-0-6x25-mm-aisi-316l-nagartovannaya-ba
+AISI 316L | Лента нержавеющая 0.7x30 мм AISI 316L нагартованная 2B | lenta-nerzhaveyuschaya-0-7x30-mm-aisi-316l-nagartovannaya-2b | slug: lenta-nerzhaveyuschaya-0-7x30-mm-aisi-316l-nagartovannaya-2b
+
+--- по категориям ---
+
+AISI 201 (9)
+  - Лента нержавеющая 0.1x8 мм AISI 201 нагартованная BA (slug: lenta-nerzhaveyuschaya-0-1x8-mm-aisi-201-nagartovannaya-ba)
+  - Лента нержавеющая 0.25x10 мм AISI 201 нагартованная 2B (slug: lenta-nerzhaveyuschaya-0-25x10-mm-aisi-201-nagartovannaya-2b)
+  - Лента нержавеющая 0.2x10 мм AISI 201 мягкая BA (slug: lenta-nerzhaveyuschaya-0-2x10-mm-aisi-201-myagkaya-ba)
+  - Лента нержавеющая 0.35x12 мм AISI 201 мягкая BA (slug: lenta-nerzhaveyuschaya-0-35x12-mm-aisi-201-myagkaya-ba)
+  - Лента нержавеющая 0.3x12 мм AISI 201 нагартованная BA (slug: lenta-nerzhaveyuschaya-0-3x12-mm-aisi-201-nagartovannaya-ba)
+  - Лента нержавеющая 0.4x15 мм AISI 201 мягкая 2B (slug: lenta-nerzhaveyuschaya-0-4x15-mm-aisi-201-myagkaya-2b)
+  - Лента нержавеющая 0.5x20 мм AISI 201 нагартованная BA (slug: lenta-nerzhaveyuschaya-0-5x20-mm-aisi-201-nagartovannaya-ba)
+  - Лента нержавеющая 0.6x25 мм AISI 201 мягкая BA (slug: lenta-nerzhaveyuschaya-0-6x25-mm-aisi-201-myagkaya-ba)
+  - Лента нержавеющая 0.7x30 мм AISI 201 мягкая 2B (slug: lenta-nerzhaveyuschaya-0-7x30-mm-aisi-201-myagkaya-2b)
+
+AISI 304 (10)
+  - Лента нержавеющая 0.15x10 мм AISI 304 нагартованная BA (slug: lenta-nerzhaveyuschaya-0-15x10-mm-aisi-304-nagartovannaya-ba)
+  - Лента нержавеющая 0.1x8 мм AISI 304 нагартованная BA (slug: lenta-nerzhaveyuschaya-0-1x8-mm-aisi-304-nagartovannaya-ba)
+  - Лента нержавеющая 0.25x10 мм AISI 304 нагартованная 2B (slug: lenta-nerzhaveyuschaya-0-25x10-mm-aisi-304-nagartovannaya-2b)
+  - Лента нержавеющая 0.2x10 мм AISI 304 мягкая BA (slug: lenta-nerzhaveyuschaya-0-2x10-mm-aisi-304-myagkaya-ba)
+  - Лента нержавеющая 0.35x12 мм AISI 304 мягкая BA (slug: lenta-nerzhaveyuschaya-0-35x12-mm-aisi-304-myagkaya-ba)
+  - Лента нержавеющая 0.3x12 мм AISI 304 нагартованная BA (slug: lenta-nerzhaveyuschaya-0-3x12-mm-aisi-304-nagartovannaya-ba)
+  - Лента нержавеющая 0.4x15 мм AISI 304 мягкая 2B (slug: lenta-nerzhaveyuschaya-0-4x15-mm-aisi-304-myagkaya-2b)
+  - Лента нержавеющая 0.5x20 мм AISI 304 нагартованная BA (slug: lenta-nerzhaveyuschaya-0-5x20-mm-aisi-304-nagartovannaya-ba)
+  - Лента нержавеющая 0.6x25 мм AISI 304 мягкая BA (slug: lenta-nerzhaveyuschaya-0-6x25-mm-aisi-304-myagkaya-ba)
+  - Лента нержавеющая 0.7x30 мм AISI 304 мягкая 2B (slug: lenta-nerzhaveyuschaya-0-7x30-mm-aisi-304-myagkaya-2b)
+
+AISI 316L (10)
+  - Лента нержавеющая 0.15x10 мм AISI 316L мягкая BA (slug: lenta-nerzhaveyuschaya-0-15x10-mm-aisi-316l-myagkaya-ba)
+  - Лента нержавеющая 0.1x8 мм AISI 316L мягкая BA (slug: lenta-nerzhaveyuschaya-0-1x8-mm-aisi-316l-myagkaya-ba)
+  - Лента нержавеющая 0.25x10 мм AISI 316L мягкая 2B (slug: lenta-nerzhaveyuschaya-0-25x10-mm-aisi-316l-myagkaya-2b)
+  - Лента нержавеющая 0.2x10 мм AISI 316L мягкая BA (slug: lenta-nerzhaveyuschaya-0-2x10-mm-aisi-316l-myagkaya-ba)
+  - Лента нержавеющая 0.35x12 мм AISI 316L нагартованная BA (slug: lenta-nerzhaveyuschaya-0-35x12-mm-aisi-316l-nagartovannaya-ba)
+  - Лента нержавеющая 0.3x12 мм AISI 316L мягкая BA (slug: lenta-nerzhaveyuschaya-0-3x12-mm-aisi-316l-myagkaya-ba)
+  - Лента нержавеющая 0.4x15 мм AISI 316L нагартованная 2B (slug: lenta-nerzhaveyuschaya-0-4x15-mm-aisi-316l-nagartovannaya-2b)
+  - Лента нержавеющая 0.5x20 мм AISI 316L мягкая BA (slug: lenta-nerzhaveyuschaya-0-5x20-mm-aisi-316l-myagkaya-ba)
+  - Лента нержавеющая 0.6x25 мм AISI 316L нагартованная BA (slug: lenta-nerzhaveyuschaya-0-6x25-mm-aisi-316l-nagartovannaya-ba)
+  - Лента нержавеющая 0.7x30 мм AISI 316L нагартованная 2B (slug: lenta-nerzhaveyuschaya-0-7x30-mm-aisi-316l-nagartovannaya-2b)

@@ -32,9 +32,9 @@ $heroBreadcrumbs = ob_get_clean();
                 </div>
             </div>
 
-            <!-- Информация -->
+            <!-- Информация (H1 в hero сверху) -->
             <div class="product__info">
-                <h1><?= e($product['h1'] ?: $product['name']) ?></h1>
+                <h2 class="product__name"><?= e($product['h1'] ?: $product['name']) ?></h2>
                 
                 <div class="product__price-block">
                     <div class="product__price"><?= format_price($product['price_per_kg']) ?></div>

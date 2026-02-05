@@ -8,7 +8,7 @@ $pdo = db();
 
 // Фильтр по категории
 $categoryFilter = $_GET['category_id'] ?? null;
-$sql = 'SELECT p.*, c.name as category_name 
+$sql = 'SELECT p.*, c.name as category_name, c.slug as category_slug 
         FROM products p 
         JOIN categories c ON p.category_id = c.id';
 $params = [];
@@ -46,6 +46,7 @@ $categories = $stmt->fetchAll();
                         <a href="<?= base_url('admin/products') ?>">Товары</a>
                         <a href="<?= base_url('admin/categories') ?>">Категории</a>
                         <a href="<?= base_url('admin/home_text') ?>">Текст на главной</a>
+                        <a href="<?= base_url('admin/bonus_page') ?>">Страница: Получить бонус</a>
                         <a href="<?= base_url('admin/logout') ?>">Выход</a>
                     </nav>
                 </div>
@@ -94,7 +95,7 @@ $categories = $stmt->fetchAll();
                                     <td><?= $product['in_stock'] ? '✓' : '✗' ?></td>
                                     <td>
                                         <a href="/admin/product_edit?id=<?= $product['id'] ?>" class="btn btn--small">Редактировать</a>
-                                        <a href="<?= base_url('product/' . $product['slug'] . '/') ?>" target="_blank" class="btn btn--small btn--ghost">Открыть</a>
+                                        <a href="<?= base_url($product['category_slug'] . '/' . $product['slug'] . '/') ?>" target="_blank" class="btn btn--small btn--ghost">Открыть</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

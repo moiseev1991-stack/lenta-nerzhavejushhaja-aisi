@@ -8,6 +8,7 @@ $category = $category ?? null;
 $allCategories = $allCategories ?? [];
 $minPrice = $minPrice ?? null;
 if (!$category) return;
+sort_aisi_categories($allCategories);
 ?>
 <section class="category-hero">
     <div class="container">
@@ -26,12 +27,11 @@ if (!$category) return;
                 <p class="category-hero__intro" id="categoryIntro"><?= e($category['intro']) ?></p>
                 <?php endif; ?>
                 <div class="category-hero__chips">
-                    <span class="chips-label">Подкатегории:</span>
                     <div class="chips" id="chipsContainer">
                         <?php foreach ($allCategories as $cat): ?>
                             <a href="<?= base_url($cat['slug'] . '/') ?>"
                                class="chip <?= $cat['slug'] === $category['slug'] ? 'chip--active' : '' ?>">
-                                <?= e($cat['name']) ?>
+                                <?= e(normalize_aisi_display_name($cat['name'])) ?>
                             </a>
                         <?php endforeach; ?>
                     </div>

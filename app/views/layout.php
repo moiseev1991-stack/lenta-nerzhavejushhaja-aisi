@@ -1,11 +1,13 @@
 <?php
 // Определяем тип страницы и данные
-$isHome = isset($allCategories) && isset($featuredProducts) && !isset($category) && !isset($product) && !isset($isServicePage) && !isset($isAnalogs) && !isset($isAnalogPage);
+$isHome = isset($allCategories) && isset($featuredProducts) && !isset($category) && !isset($product) && !isset($isServicePage) && !isset($isAnalogs) && !isset($isAnalogPage) && !isset($isBonusPage) && !isset($is404);
 $isProduct = isset($product);
 $isCategory = isset($category);
 $isServicePage = isset($isServicePage);
 $isAnalogs = isset($isAnalogs);
 $isAnalogPage = isset($isAnalogPage);
+$isBonusPage = isset($isBonusPage);
+$is404 = isset($is404) && $is404;
 $pageTitle = $pageTitle ?? '';
 $pageDescription = $pageDescription ?? '';
 $pageH1 = $pageH1 ?? '';
@@ -17,6 +19,11 @@ if ($isHome) {
     $defaultHomeDescription = 'Каталог нержавеющей ленты AISI 200/300/400/900L. Подбор по толщине, ширине, состоянию и поверхности. Отмотка от 1 метра, резка от 2,5 мм.';
     $pageTitle = isset($homeTitle) && (string)$homeTitle !== '' ? $homeTitle : $defaultHomeTitle;
     $pageDescription = isset($homeDescription) && (string)$homeDescription !== '' ? $homeDescription : $defaultHomeDescription;
+}
+
+if ($isBonusPage && isset($bonusPage)) {
+    // Для bonus-страницы title/description уже заданы в index.php
+    $pageH1 = $bonusPage['title'] ?? 'Получить бонус';
 }
 
 if ($isProduct) {
@@ -60,7 +67,7 @@ if ($isProduct) {
                 '@type' => 'ListItem',
                 'position' => 3,
                 'name' => $product['name'],
-                'item' => base_url('product/' . $product['slug'] . '/'),
+                'item' => base_url($product['category_slug'] . '/' . $product['slug'] . '/'),
             ],
         ],
     ];
@@ -99,6 +106,7 @@ if (!isset($allCategories) && isset($pdo)) {
     try {
         $stmt = $pdo->query('SELECT slug, name FROM categories WHERE is_active = 1 ORDER BY name');
         $allCategories = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+        sort_aisi_categories($allCategories);
     } catch (Throwable $e) {
         $allCategories = [];
     }
@@ -128,8 +136,21 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle ?: $config['site_name']) ?></title>
+    <?php if ($is404): ?>
+    <meta name="robots" content="noindex, nofollow">
+    <?php endif; ?>
     <?php if ($pageDescription ?? ''): ?>
     <meta name="description" content="<?= e($pageDescription) ?>">
+    <?php endif; ?>
+    <?php if ($isProduct && !empty($product['category_slug']) && !empty($product['slug'])): ?>
+    <link rel="canonical" href="<?= e(base_url($product['category_slug'] . '/' . $product['slug'] . '/')) ?>">
+    <?php endif; ?>
+    <?php if ($isCategory):
+        $catCanonical = base_url($category['slug'] . '/');
+        if (!empty($_GET)) $catCanonical .= '?' . http_build_query($_GET);
+    ?>
+    <link rel="canonical" href="<?= e($catCanonical) ?>">
+    <meta name="robots" content="index,follow">
     <?php endif; ?>
     <link rel="stylesheet" href="<?= base_url('assets/styles.css') ?>">
     <?php if (!empty($jsonLd)): ?>
@@ -166,13 +187,14 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                                     <ul class="nav-dropdown__links">
                                         <?php foreach ($block['items'] as $item): ?>
                                             <li>
-                                                <a href="<?= base_url($item['slug'] . '/') ?>" role="menuitem" class="nav-dropdown__link <?= ($currentCategorySlug === $item['slug']) ? 'nav-dropdown__link--active' : '' ?>"><?= e($item['name']) ?></a>
+                                                <a href="<?= base_url($item['slug'] . '/') ?>" role="menuitem" class="nav-dropdown__link <?= ($currentCategorySlug === $item['slug']) ? 'nav-dropdown__link--active' : '' ?>"><?= e(normalize_aisi_display_name($item['name'])) ?></a>
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
                             </div>
                         <?php endforeach; ?>
+                        <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Получить бонус</a>
                     </div>
                     <div class="header__nav-contacts">
                         <a href="tel:+74951060741" class="header__contact header__contact--phone">+7 (495) 106-07-41</a>
@@ -181,13 +203,42 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                     </div>
                 </nav>
                 <a href="tel:+74951060741" class="header__phone-link" aria-label="Позвонить">+7 (495) 106-07-41</a>
-                <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="headerNav">
+                <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu" data-mobile-menu-open>
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
         <div class="header__nav-overlay" id="navOverlay" aria-hidden="true"></div>
     </header>
+
+    <!-- Мобильное меню (бургер): отдельная панель с кликабельными ссылками и раскрытием подменю -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+        <div class="mobile-menu__backdrop" data-close></div>
+        <aside class="mobile-menu__panel" role="dialog" aria-modal="true" aria-label="Навигация">
+            <button class="mobile-menu__close" type="button" data-close aria-label="Закрыть меню">×</button>
+            <nav class="mobile-menu__nav">
+                <ul class="mobile-menu__list">
+                    <li><a class="mobile-menu__link" href="<?= base_url() ?>">Главная</a></li>
+                    <li class="mobile-menu__item mobile-menu__item--accordion">
+                        <button type="button" class="mobile-menu__accordion" id="mobileMenuAisiAccordion" aria-expanded="false" aria-controls="mobileAisiSubmenu" aria-label="Раскрыть список марок AISI">
+                            <span class="mobile-menu__accordion-title">Марки AISI</span>
+                            <span class="mobile-menu__chevron" aria-hidden="true"></span>
+                        </button>
+                        <ul class="mobile-menu__sublist" id="mobileAisiSubmenu" hidden>
+                            <?php foreach ($allCategories as $cat): ?>
+                            <li><a class="mobile-menu__sublink" href="<?= base_url($cat['slug'] . '/') ?>"><?= e(normalize_aisi_display_name($cat['name'])) ?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                    <li><a class="mobile-menu__link" href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
+                    <li><a class="mobile-menu__link" href="<?= base_url('contacts/') ?>">Контакты</a></li>
+                    <li><a class="mobile-menu__link" href="tel:+74951060741">+7 (495) 106-07-41</a></li>
+                    <li><a class="mobile-menu__link" href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></li>
+                    <li><a class="mobile-menu__link" href="<?= base_url('admin/login') ?>">Админ</a></li>
+                </ul>
+            </nav>
+        </aside>
+    </div>
 
     <main class="main">
         <?php if ($isHome): ?>
@@ -200,6 +251,10 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
             <?php require __DIR__ . '/analogs.php'; ?>
         <?php elseif ($isServicePage): ?>
             <?php require __DIR__ . '/page.php'; ?>
+        <?php elseif ($isBonusPage): ?>
+            <?php require __DIR__ . '/bonus.php'; ?>
+        <?php elseif ($is404): ?>
+            <?php require __DIR__ . '/404.php'; ?>
         <?php endif; ?>
 
         <!-- Якорь #request (форма в модале) -->
@@ -265,6 +320,7 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                 <div class="footer__col">
                     <h3 class="footer__title">Информация</h3>
                     <ul class="footer__list">
+                        <li><a href="<?= base_url('bonus/') ?>" class="footer__link">Получить бонус</a></li>
                         <li><a href="<?= base_url('about/') ?>" class="footer__link">О компании</a></li>
                         <li><a href="<?= base_url('price/') ?>" class="footer__link">Прайс-лист</a></li>
                         <li><a href="<?= base_url('delivery/') ?>" class="footer__link">Доставка</a></li>
@@ -294,75 +350,67 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
     </footer>
     <script>
     (function() {
-        var nav = document.getElementById('headerNav');
-        var burger = document.querySelector('.header__burger');
-        var overlay = document.getElementById('navOverlay');
+        var menu = document.getElementById('mobileMenu');
+        if (!menu) return;
+
+        var openBtn = document.querySelector('[data-mobile-menu-open]');
+        var closeTargets = menu.querySelectorAll('[data-close]');
         var body = document.body;
 
-        function closeAllDropdowns() {
-            if (!nav) return;
-            var dropdowns = nav.querySelectorAll('.nav-dropdown--series');
-            dropdowns.forEach(function(d) {
-                d.classList.remove('nav-dropdown--open');
-                var t = d.querySelector('.nav-dropdown__trigger');
-                if (t) t.setAttribute('aria-expanded', 'false');
+        function openMenu() {
+            menu.classList.add('is-open');
+            menu.setAttribute('aria-hidden', 'false');
+            body.style.overflow = 'hidden';
+            if (openBtn) {
+                openBtn.setAttribute('aria-expanded', 'true');
+                openBtn.setAttribute('aria-label', 'Закрыть меню');
+            }
+        }
+
+        function closeMenu() {
+            menu.classList.remove('is-open');
+            menu.setAttribute('aria-hidden', 'true');
+            body.style.overflow = '';
+            if (openBtn) {
+                openBtn.setAttribute('aria-expanded', 'false');
+                openBtn.setAttribute('aria-label', 'Открыть меню');
+            }
+            var sublists = menu.querySelectorAll('.mobile-menu__sublist');
+            sublists.forEach(function(sub) { sub.hidden = true; });
+            menu.querySelectorAll('.mobile-menu__accordion').forEach(function(btn) {
+                btn.setAttribute('aria-expanded', 'false');
+                btn.classList.remove('is-open');
             });
         }
 
-        function openMobileMenu() {
-            body.classList.add('menu-open');
-            if (burger) { burger.setAttribute('aria-expanded', 'true'); burger.setAttribute('aria-label', 'Закрыть меню'); }
-            if (overlay) overlay.setAttribute('aria-hidden', 'false');
-            document.documentElement.style.overflow = 'hidden';
-        }
-        function closeMobileMenu() {
-            body.classList.remove('menu-open');
-            if (burger) { burger.setAttribute('aria-expanded', 'false'); burger.setAttribute('aria-label', 'Открыть меню'); }
-            if (overlay) overlay.setAttribute('aria-hidden', 'true');
-            document.documentElement.style.overflow = '';
-        }
-        function toggleMobileMenu() {
-            if (body.classList.contains('menu-open')) closeMobileMenu();
-            else openMobileMenu();
-        }
+        if (openBtn) openBtn.addEventListener('click', function() {
+            if (menu.classList.contains('is-open')) closeMenu();
+            else openMenu();
+        });
+        closeTargets.forEach(function(el) { el.addEventListener('click', closeMenu); });
 
-        if (burger && nav) {
-            burger.addEventListener('click', function() { toggleMobileMenu(); });
-        }
-        if (overlay) {
-            overlay.addEventListener('click', closeMobileMenu);
-        }
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeAllDropdowns();
-                if (body.classList.contains('menu-open')) closeMobileMenu();
-            }
+            if (e.key === 'Escape' && menu.classList.contains('is-open')) closeMenu();
         });
 
-        if (nav) {
-            var dropdowns = nav.querySelectorAll('.nav-dropdown--series');
-            dropdowns.forEach(function(container) {
-                var trigger = container.querySelector('.nav-dropdown__trigger');
-                var panel = container.querySelector('.nav-dropdown__panel');
-                if (!trigger || !panel) return;
-                trigger.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var isOpen = container.classList.contains('nav-dropdown--open');
-                    closeAllDropdowns();
-                    if (!isOpen) {
-                        container.classList.add('nav-dropdown--open');
-                        trigger.setAttribute('aria-expanded', 'true');
-                    }
-                });
-                panel.querySelectorAll('a[role="menuitem"]').forEach(function(a) {
-                    a.addEventListener('click', function() { closeAllDropdowns(); if (body.classList.contains('menu-open')) closeMobileMenu(); });
-                });
-            });
-            document.addEventListener('click', function(e) {
-                if (!nav.contains(e.target) && !(burger && burger.contains(e.target))) closeAllDropdowns();
+        var accordionBtn = document.getElementById('mobileMenuAisiAccordion');
+        var aisiSubmenu = document.getElementById('mobileAisiSubmenu');
+        if (accordionBtn && aisiSubmenu) {
+            accordionBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var isOpen = accordionBtn.getAttribute('aria-expanded') === 'true';
+                accordionBtn.setAttribute('aria-expanded', String(!isOpen));
+                accordionBtn.classList.toggle('is-open', !isOpen);
+                aisiSubmenu.hidden = isOpen;
             });
         }
+
+        menu.addEventListener('click', function(e) {
+            if (e.target.closest('.mobile-menu__accordion')) return;
+            var link = e.target.closest('a');
+            if (link && menu.contains(link)) closeMenu();
+        });
     })();
 
     (function() {
@@ -624,6 +672,8 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
             if (active && active.blur) active.blur();
             var iframe = document.querySelector('.request-modal__iframe');
             if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
+            var fileInputs = modal.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(function(inp) { inp.value = ''; });
             setState('idle');
             modal.setAttribute('aria-hidden', 'true');
             overlay.setAttribute('aria-hidden', 'true');

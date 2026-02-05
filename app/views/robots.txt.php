@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Allow: /aisi-*/
-Allow: /product/*/
 Allow: /analogi/
 Allow: /analogi/*/
 Allow: /contacts/

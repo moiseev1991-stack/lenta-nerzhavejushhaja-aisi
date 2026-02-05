@@ -56,6 +56,7 @@ $homeDescription = get_site_setting('home_description') ?? '';
                         <a href="<?= base_url('admin/products') ?>">Товары</a>
                         <a href="<?= base_url('admin/categories') ?>">Категории</a>
                         <a href="<?= base_url('admin/home_text') ?>">Текст на главной</a>
+                        <a href="<?= base_url('admin/bonus_page') ?>">Страница: Получить бонус</a>
                         <a href="<?= base_url('admin/logout') ?>">Выход</a>
                     </nav>
                 </div>

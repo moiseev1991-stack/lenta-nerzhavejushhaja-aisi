@@ -26,12 +26,29 @@ if ($categoryId) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'save';
     
-    if ($action === 'delete' && $categoryId) {
+    if ($action === 'clear_format') {
+        $contentFormat = (trim($_POST['content_format'] ?? '') === 'html') ? 'html' : 'markdown';
+        $cleaned = strip_article_formatting(trim($_POST['content_body'] ?? ''), $contentFormat);
+        $category = $category ?: [];
+        $category['content_body'] = $cleaned;
+        $category['content_format'] = $contentFormat;
+        $category['content_title'] = trim($_POST['content_title'] ?? $category['content_title'] ?? '');
+        $category['content_is_active'] = isset($_POST['content_is_active']) ? 1 : 0;
+        $category['name'] = $_POST['name'] ?? $category['name'] ?? '';
+        $category['slug'] = $_POST['slug'] ?? $category['slug'] ?? '';
+        $category['h1'] = $_POST['h1'] ?? $category['h1'] ?? '';
+        $category['title'] = $_POST['title'] ?? $category['title'] ?? '';
+        $category['description'] = $_POST['description'] ?? $category['description'] ?? '';
+        $category['intro'] = $_POST['intro'] ?? $category['intro'] ?? '';
+        $category['is_active'] = isset($_POST['is_active']) ? 1 : 0;
+        $success = 'Форматирование очищено. Проверьте текст и нажмите «Сохранить».';
+    } elseif ($action === 'delete' && $categoryId) {
         $stmt = $pdo->prepare('DELETE FROM categories WHERE id = ?');
         $stmt->execute([$categoryId]);
         redirect('/admin/categories');
     }
     
+    if ($action !== 'clear_format') {
     // Валидация
     $name = trim($_POST['name'] ?? '');
     $slugInput = trim($_POST['slug'] ?? '');
@@ -69,26 +86,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'description' => trim($_POST['description'] ?? ''),
             'intro' => trim($_POST['intro'] ?? ''),
             'is_active' => isset($_POST['is_active']) ? 1 : 0,
+            'content_title' => trim($_POST['content_title'] ?? ''),
+            'content_body' => trim($_POST['content_body'] ?? ''),
+            'content_format' => (trim($_POST['content_format'] ?? '') === 'html') ? 'html' : 'markdown',
+            'content_is_active' => isset($_POST['content_is_active']) ? 1 : 0,
         ];
         
         if ($categoryId) {
-            // Обновление
             $data['updated_at'] = nowIso();
+            $data['content_updated_at'] = $data['content_body'] !== '' ? nowIso() : null;
             $sql = 'UPDATE categories SET 
-                    slug = ?, name = ?, h1 = ?, title = ?, description = ?, intro = ?, is_active = ?, updated_at = ?
+                    slug = ?, name = ?, h1 = ?, title = ?, description = ?, intro = ?, is_active = ?,
+                    content_title = ?, content_body = ?, content_format = ?, content_is_active = ?, content_updated_at = ?, updated_at = ?
                     WHERE id = ?';
-            $params = array_merge(
-                array_values($data),
-                [$categoryId]
-            );
+            $params = [
+                $data['slug'], $data['name'], $data['h1'], $data['title'], $data['description'], $data['intro'], $data['is_active'],
+                $data['content_title'], $data['content_body'], $data['content_format'], $data['content_is_active'], $data['content_updated_at'], $data['updated_at'],
+                $categoryId
+            ];
         } else {
-            // Создание
             $data['created_at'] = nowIso();
             $data['updated_at'] = nowIso();
+            $data['content_updated_at'] = $data['content_body'] !== '' ? nowIso() : null;
             $sql = 'INSERT INTO categories 
-                    (slug, name, h1, title, description, intro, is_active, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            $params = array_values($data);
+                    (slug, name, h1, title, description, intro, is_active, content_title, content_body, content_format, content_is_active, content_updated_at, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            $params = [
+                $data['slug'], $data['name'], $data['h1'], $data['title'], $data['description'], $data['intro'], $data['is_active'],
+                $data['content_title'], $data['content_body'], $data['content_format'], $data['content_is_active'], $data['content_updated_at'],
+                $data['created_at'], $data['updated_at']
+            ];
         }
         
         try {
@@ -110,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -130,6 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="<?= base_url('admin/products') ?>">Товары</a>
                         <a href="<?= base_url('admin/categories') ?>">Категории</a>
                         <a href="<?= base_url('admin/home_text') ?>">Текст на главной</a>
+                        <a href="<?= base_url('admin/bonus_page') ?>">Страница: Получить бонус</a>
                         <a href="<?= base_url('admin/logout') ?>">Выход</a>
                     </nav>
                 </div>
@@ -204,6 +233,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </label>
                         </div>
 
+                        <hr class="form-divider">
+                        <h3 class="form-section-title">Контент / Статья (низ страницы)</h3>
+                        <div class="form-group">
+                            <label>Формат текста</label>
+                            <div class="form-radio-group">
+                                <label class="form-radio-label">
+                                    <input type="radio" name="content_format" value="markdown"
+                                           <?= (($category['content_format'] ?? $_POST['content_format'] ?? 'markdown') === 'markdown') ? 'checked' : '' ?>>
+                                    Markdown / Текст
+                                </label>
+                                <label class="form-radio-label">
+                                    <input type="radio" name="content_format" value="html"
+                                           <?= (($category['content_format'] ?? $_POST['content_format'] ?? '') === 'html') ? 'checked' : '' ?>>
+                                    HTML
+                                </label>
+                            </div>
+                            <p class="form-hint form-hint--format form-hint--markdown">Поддерживается Markdown: заголовки (#, ##, ###), жирный (**), списки (- ), ссылки [текст](url).</p>
+                            <p class="form-hint form-hint--format form-hint--html" style="display:none;">Можно вставлять HTML. Разрешены безопасные теги (таблицы поддерживаются).</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Заголовок статьи</label>
+                            <input type="text" name="content_title" value="<?= e($category['content_title'] ?? $_POST['content_title'] ?? '') ?>" placeholder="Например: Описание марки AISI 304">
+                        </div>
+                        <div class="form-group">
+                            <label>Текст статьи</label>
+                            <textarea name="content_body" rows="14" class="admin-textarea--wide" id="contentBody"><?= e($category['content_body'] ?? $_POST['content_body'] ?? '') ?></textarea>
+                            <?php
+                            $body = $category['content_body'] ?? $_POST['content_body'] ?? '';
+                            $words = $body ? count(preg_split('/\s+/u', trim($body), -1, PREG_SPLIT_NO_EMPTY)) : 0;
+                            $chars = mb_strlen($body);
+                            ?>
+                            <small class="form-meta">Символов: <?= $chars ?>, слов: <?= $words ?></small>
+                            <div class="form-group__actions">
+                                <button type="submit" name="action" value="clear_format" class="btn btn--ghost btn--sm">Очистить форматирование</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="content_is_active" value="1"
+                                       <?= ($category && !empty($category['content_is_active'])) ? 'checked' : '' ?>>
+                                Показывать на странице
+                            </label>
+                        </div>
+                        <?php if (!empty($category['content_updated_at'])): ?>
+                            <small class="form-meta">Обновлено: <?= e($category['content_updated_at']) ?></small>
+                        <?php endif; ?>
+
                         <div class="form-actions">
                             <button type="submit" name="action" value="save" class="btn btn--primary">Сохранить</button>
                             <?php if ($categoryId): ?>
@@ -216,5 +292,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </main>
     </div>
+    <script>
+    (function() {
+        var formatMarkdown = document.querySelector('input[name="content_format"][value="markdown"]');
+        var formatHtml = document.querySelector('input[name="content_format"][value="html"]');
+        var hintMarkdown = document.querySelector('.form-hint--markdown');
+        var hintHtml = document.querySelector('.form-hint--html');
+        function toggleHint() {
+            var isHtml = formatHtml && formatHtml.checked;
+            if (hintMarkdown) hintMarkdown.style.display = isHtml ? 'none' : 'block';
+            if (hintHtml) hintHtml.style.display = isHtml ? 'block' : 'none';
+        }
+        if (formatMarkdown) formatMarkdown.addEventListener('change', toggleHint);
+        if (formatHtml) formatHtml.addEventListener('change', toggleHint);
+        toggleHint();
+    })();
+    </script>
 </body>
 </html>

@@ -18,6 +18,9 @@ return [
     
     'db_path' => __DIR__ . '/../storage/database.sqlite',
 
+    /** Количество товаров на странице каталога (desktop + mobile) */
+    'catalog_per_page' => 24,
+
     /* amoCRM форма: один источник правды для embed. iframe_src: задайте env AMO_FORM_IFRAME_SRC или укажите URL здесь */
     'amocrm' => [
         'form_id' => '1663854',
