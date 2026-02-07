@@ -1,9 +1,11 @@
 <?php
 /**
  * Sitemap: главная, все страницы категорий, все страницы товаров.
- * Подключается из public/index.php при запросе sitemap.xml (доступны $pdo, base_url).
+ * Подключается из public/index.php при запросе sitemap.xml (доступны $pdo).
+ * Базовый URL берётся из config site_url (канонический адрес сайта).
  */
-$base = rtrim(base_url(), '/');
+$config = require __DIR__ . '/../config.php';
+$base = rtrim($config['site_url'] ?? 'https://www.lenta-nerzhavejushhaja-aisi.ru', '/');
 $today = date('Y-m-d');
 
 $stmt = $pdo->query('SELECT slug, updated_at FROM categories WHERE is_active = 1 ORDER BY slug');

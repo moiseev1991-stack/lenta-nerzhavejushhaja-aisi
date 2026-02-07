@@ -1,3 +1,4 @@
+<?php $config = require __DIR__ . '/../config.php'; $base = rtrim($config['site_url'] ?? '', '/'); ?>
 User-agent: *
 Allow: /$
 Allow: /aisi-
@@ -14,4 +15,4 @@ Disallow: /assets/
 Disallow: /uploads/
 Disallow: /*?
 
-Sitemap: <?= base_url('sitemap.xml') ?>
+Sitemap: <?= $base ?>/sitemap.xml
