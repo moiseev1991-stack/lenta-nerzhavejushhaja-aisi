@@ -11,10 +11,13 @@ $sectionTitle = $relatedData['is_popular_fallback'] ? 'Популярные то
             <?php foreach ($items as $rp): ?>
                 <a href="<?= base_url($rp['category_slug'] . '/' . $rp['slug'] . '/') ?>" class="related-products__card">
                     <div class="related-products__image">
-                        <?php if (!empty($rp['image'])): ?>
-                            <img src="<?= base_url($rp['image']) ?>" alt="<?= e($rp['name']) ?>" width="200" height="140" loading="lazy">
+                        <?php
+                        $ph = base_url('public/img/placeholder-product.svg');
+                        if (!empty($rp['image'])): ?>
+                            <img src="<?= base_url($rp['image']) ?>" alt="<?= e($rp['name']) ?>" width="200" height="140" loading="lazy"
+                                 onerror="this.onerror=null;this.src='<?= e($ph) ?>';this.classList.add('related-products__placeholder-img');">
                         <?php else: ?>
-                            <img src="<?= base_url('public/img/placeholder-product.svg') ?>" alt="" width="200" height="140" loading="lazy" class="related-products__placeholder-img">
+                            <img src="<?= $ph ?>" alt="" width="200" height="140" loading="lazy" class="related-products__placeholder-img">
                         <?php endif; ?>
                     </div>
                     <div class="related-products__content">

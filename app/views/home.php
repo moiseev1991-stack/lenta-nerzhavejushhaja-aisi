@@ -103,10 +103,13 @@
                             </svg>
                         </div>
                         <div class="product-card__image">
-                            <?php if ($product['image']): ?>
-                                <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>">
+                            <?php
+                            $ph = base_url('public/img/placeholder-product.svg');
+                            if ($product['image']): ?>
+                                <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
+                                     onerror="this.onerror=null;this.src='<?= e($ph) ?>';this.classList.add('product-card__placeholder-img');">
                             <?php else: ?>
-                                <img src="<?= base_url('public/img/placeholder-product.svg') ?>" alt="" class="product-card__placeholder-img">
+                                <img src="<?= $ph ?>" alt="" class="product-card__placeholder-img">
                             <?php endif; ?>
                         </div>
                         <div class="product-card__content">

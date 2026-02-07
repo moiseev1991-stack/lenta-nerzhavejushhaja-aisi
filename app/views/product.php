@@ -24,10 +24,13 @@ $heroBreadcrumbs = ob_get_clean();
             <!-- Левая колонка: фото -->
             <div class="product__left">
                 <div class="product__image">
-                    <?php if ($product['image']): ?>
-                        <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>">
+                    <?php
+                    $placeholderUrl = base_url('public/img/placeholder-product.svg');
+                    if ($product['image']): ?>
+                        <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
+                             onerror="this.onerror=null;this.src='<?= e($placeholderUrl) ?>';this.classList.add('product__placeholder-img');">
                     <?php else: ?>
-                        <img src="<?= base_url('public/img/placeholder-product.svg') ?>" alt="" class="product__placeholder-img">
+                        <img src="<?= $placeholderUrl ?>" alt="" class="product__placeholder-img">
                     <?php endif; ?>
                 </div>
             </div>
