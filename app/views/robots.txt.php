@@ -1,19 +1,17 @@
 User-agent: *
-Allow: /
-Allow: /aisi-*/
-Allow: /contacts/
-Allow: /delivery/
-Allow: /payment/
-Allow: /about/
-Allow: /price/
-Allow: /privacy-policy/
+Allow: /$
+Allow: /aisi-
 
 Disallow: /admin/
-Disallow: /*?th[]=*
-Disallow: /*?cond[]=*
-Disallow: /*?spring=*
-Disallow: /*?surf[]=*
+Disallow: /bonus
+Disallow: /contacts
+Disallow: /delivery
+Disallow: /payment
+Disallow: /about
+Disallow: /price
+Disallow: /privacy-policy
 Disallow: /assets/
 Disallow: /uploads/
+Disallow: /*?
 
 Sitemap: <?= base_url('sitemap.xml') ?>
