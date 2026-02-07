@@ -1,42 +1,40 @@
 # Деплой на Space Web через GitHub Actions
 
-После настройки обновление сайта: правки в Cursor → **git push** → через 1–2 минуты сайт обновлён. FileZilla не нужен.
+Файлы заливаются в **public_html**. Обновление: правки в Cursor → **git push** → через 1–2 минуты сайт обновлён.
 
 ---
 
-## Один раз: добавить секрет в GitHub
+## Один раз: секрет в GitHub
 
-1. Открой репозиторий на **github.com**.
-2. **Settings** → слева **Secrets and variables** → **Actions**.
-3. **New repository secret**:
-   - **Name:** `SFTP_PASSWORD`
-   - **Value:** пароль от аккаунта Space Web (тот же, что для SSH/FTP, логин `infogkmeta`).
+1. Репозиторий на github.com → **Settings** → **Secrets and variables** → **Actions**.
+2. **New repository secret**: Name = `SFTP_PASSWORD`, Value = пароль от аккаунта Space Web (логин infogkmeta).
+
+---
+
+## ЧТО СДЕЛАТЬ В ПАНЕЛИ (один раз после первого деплоя)
+
+1. Панель Space Web → **Хостинг** → **Сайты** (или настройки домена).
+2. Найти поле **«Корневая папка»** / **«Document root»** / **«Каталог сайта»**.
+3. Указать: **public_html/public** (или полный путь: `/home/infogkmeta/public_html/public`).
 4. Сохранить.
 
-Папка на сервере должна уже существовать: `/home/infogkmeta/lenta-nerzhavejushhaja-aisi` (если раньше заходил по SFTP — она там есть).
+Без этого откроется не тот каталог и сайт не заработает.
+
+**Если сайт пишет ошибку про базу данных:** скопировать с локального ПК файл `storage/database.sqlite` в папку **public_html/storage/** на сервере (через файловый менеджер панели). Либо один раз локально выполнить `php storage/seed.php`, потом залить получившийся `storage/database.sqlite` в **public_html/storage/**.
 
 ---
 
-## Как деплоить
+## Как деплоить дальше
 
-1. В Cursor правишь код.
-2. В терминале:
-   ```bash
-   git add .
-   git commit -m "описание изменений"
-   git push
-   ```
-3. На GitHub: вкладка **Actions** — там видно запуск «Deploy to Space Web» и результат (успех/ошибка).
-
-При **push в ветку `main`** workflow сам подключается к хостингу по SFTP и заливает файлы. Логин и хост прописаны в `.github/workflows/deploy.yml`, пароль берётся из секрета `SFTP_PASSWORD`.
+В Cursor: правки → в терминале `git add .` → `git commit -m "..."` → `git push`. Статус смотреть во вкладке **Actions** на GitHub.
 
 ---
 
 ## Если деплой падает
 
-- **Permission denied** — проверь пароль в секрете `SFTP_PASSWORD` (без лишних пробелов).
-- **No such file** — на сервере должна быть папка `/home/infogkmeta/lenta-nerzhavejushhaja-aisi` (создай через файловый менеджер панели, если нет).
-- Логи по шагам смотри во вкладке **Actions** → выбери последний запуск → шаг «Deploy via SFTP».
+- **Permission denied** — проверить секрет `SFTP_PASSWORD` (пароль без пробелов).
+- **No such file** — папка `public_html` должна существовать (обычно есть по умолчанию).
+- Логи: GitHub → **Actions** → последний запуск → шаг «Deploy via SFTP».
 
 ---
 

@@ -1,6 +1,6 @@
-# Деплой на Space Web по SFTP при push в main
-# Секрет: в настройках репо GitHub → Settings → Secrets and variables → Actions
-# Добавить: SFTP_PASSWORD = пароль от аккаунта (логин infogkmeta)
+# Деплой на Space Web при push в main (SFTP в public_html).
+# Секрет: SFTP_PASSWORD в репо → Settings → Secrets and variables → Actions.
+# ВРУЧНУЮ: в панели Space Web для домена указать корень сайта = public_html/public (иначе сайт не откроется).
 
 name: Deploy to Space Web
 
@@ -23,7 +23,7 @@ jobs:
           port: "22"
           password: ${{ secrets.SFTP_PASSWORD }}
           local_path: "./"
-          remote_path: "/home/infogkmeta/lenta-nerzhavejushhaja-aisi/"
+          remote_path: "/home/infogkmeta/public_html/"
           sftp_only: true
           sftpArgs: "-o ConnectTimeout=10"
           rsyncArgs: "--exclude=.git --exclude=.github --exclude=.vscode --exclude=.idea --exclude=node_modules --exclude=*.log"
