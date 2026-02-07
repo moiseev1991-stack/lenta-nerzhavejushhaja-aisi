@@ -23,7 +23,7 @@ jobs:
           port: "22"
           password: ${{ secrets.SFTP_PASSWORD }}
           local_path: "./"
-          remote_path: "/home/infogkmeta/lenta-nerzhavejushhaja-aisi"
+          remote_path: "/home/infogkmeta/lenta-nerzhavejushhaja-aisi/"
           sftp_only: true
           sftpArgs: "-o ConnectTimeout=10"
           rsyncArgs: "--exclude=.git --exclude=.github --exclude=.vscode --exclude=.idea --exclude=node_modules --exclude=*.log"
