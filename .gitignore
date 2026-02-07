@@ -2,6 +2,7 @@
 storage/database.sqlite
 storage/*.sqlite
 storage/*.db
+storage/admin_login_attempts.json
 
 # Загруженные файлы
 public/uploads/*

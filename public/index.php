@@ -63,10 +63,10 @@ if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.(png|webp))$#', $requestPat
     }
 }
 
-// Картинки товаров из img/product_images_named (корень проекта)
-if (preg_match('#^img/product_images_named/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
-    $filename = basename($m[1]);
-    if (preg_match('/\.(jpg|jpeg|png)$/i', $filename)) {
+// Картинки товаров из img/product_images_named (корень проекта). Имена могут содержать пробелы, «—», кириллицу.
+if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
+    $filename = basename(rawurldecode($m[1]));
+    if ($filename !== '' && strpos($filename, '..') === false && preg_match('/\.(jpg|jpeg|png)$/i', $filename)) {
         $imgFile = __DIR__ . '/../img/product_images_named/' . $filename;
         if (file_exists($imgFile) && is_file($imgFile)) {
             $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));

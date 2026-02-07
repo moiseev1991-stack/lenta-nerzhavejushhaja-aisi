@@ -7,20 +7,38 @@ if (!function_exists('e')) {
 }
 
 /**
- * Подставить картинку товару, если в БД пусто: по product_slug (часть URL без категории)
- * ищется файл {slug}.jpg в папке img/product_images_named.
+ * Подставить картинку товару, если в БД пусто: по product_slug ищется файл в img/product_images_named.
+ * Пробует: {slug}.jpg, {slug}.png, {slug} — копия.jpg (и варианты с пробелами).
  * $product передаётся по ссылке и может получить поле image.
- * $imagesDir — полный путь к папке с картинками (например __DIR__ . '/../img/product_images_named').
+ * $imagesDir — полный путь к папке с картинками.
  */
 if (!function_exists('resolve_product_image')) {
     function resolve_product_image(array &$product, $imagesDir) {
         if (!empty($product['image'])) return;
         $slug = isset($product['slug']) ? trim($product['slug']) : '';
         if ($slug === '') return;
-        $filename = $slug . '.jpg';
-        $path = rtrim($imagesDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
-        if (is_file($path)) {
-            $product['image'] = '/img/product_images_named/' . $filename;
+        $dir = rtrim($imagesDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $candidates = [
+            $slug . '.jpg',
+            $slug . '.png',
+            $slug . ' — копия.jpg',
+            $slug . ' - копия.jpg',
+        ];
+        foreach ($candidates as $filename) {
+            $path = $dir . $filename;
+            if (is_file($path)) {
+                $product['image'] = '/img/product_images_named/' . $filename;
+                return;
+            }
+        }
+        // Поиск по началу имени (напр. slug в имени "slug — копия.jpg" или "slug-1.jpg")
+        $safeSlug = preg_quote($slug, '#');
+        foreach (['jpg', 'jpeg', 'png'] as $ext) {
+            $list = @glob($dir . $slug . '*.' . $ext);
+            if (!empty($list) && is_file($list[0])) {
+                $product['image'] = '/img/product_images_named/' . basename($list[0]);
+                return;
+            }
         }
     }
 }
