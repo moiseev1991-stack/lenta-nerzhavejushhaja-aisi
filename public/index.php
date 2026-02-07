@@ -63,6 +63,22 @@ if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.(png|webp))$#', $requestPat
     }
 }
 
+// Загруженные в админке картинки товаров (public/uploads/)
+if (preg_match('#^uploads/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
+    $filename = $m[1];
+    if (preg_match('/\.(jpg|jpeg|png|webp|gif)$/i', $filename)) {
+        $uploadFile = __DIR__ . '/uploads/' . $filename;
+        if (file_exists($uploadFile) && is_file($uploadFile)) {
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $types = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp', 'gif' => 'image/gif'];
+            header('Content-Type: ' . ($types[$ext] ?? 'image/jpeg'));
+            header('Cache-Control: public, max-age=86400');
+            readfile($uploadFile);
+            exit;
+        }
+    }
+}
+
 // Картинки товаров из img/product_images_named (корень проекта). Имена могут содержать пробелы, «—», кириллицу.
 if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
     $filename = basename(rawurldecode($m[1]));
