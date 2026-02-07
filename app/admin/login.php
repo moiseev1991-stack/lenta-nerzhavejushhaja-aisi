@@ -33,7 +33,7 @@ if (!empty($_SESSION['admin'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход в админку</title>
-    <link rel="stylesheet" href="<?= base_url('assets/styles.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
 </head>
 <body>
     <div class="admin-login">

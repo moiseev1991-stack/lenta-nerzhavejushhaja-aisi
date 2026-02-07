@@ -37,7 +37,7 @@ if ($isHome) {
         'name' => $company['name'] ?? 'Компания',
         'url' => $company['url'] ?? base_url(),
         'telephone' => $company['phone'] ?? '',
-        'logo' => base_url('img/logo_aisi_lenta_full.png'),
+        'logo' => base_url('public/img/logo_aisi_lenta_full.png'),
         'address' => [
             '@type' => 'PostalAddress',
             'addressLocality' => 'Москва',
@@ -224,7 +224,7 @@ if ($isServicePage && isset($pageH1)) {
             'name' => $company['name'] ?? 'Компания',
             'url' => $company['url'] ?? base_url(),
             'telephone' => $company['phone'] ?? '',
-            'logo' => base_url('img/logo_aisi_lenta_full.png'),
+            'logo' => base_url('public/img/logo_aisi_lenta_full.png'),
             'address' => [
                 '@type' => 'PostalAddress',
                 'addressLocality' => 'Москва',
@@ -266,7 +266,7 @@ if ($isServicePage && isset($pageH1)) {
     <meta property="og:image" content="<?= e(base_url(ltrim($product['image'], '/'))) ?>">
     <?php endif; ?>
     <?php endif; ?>
-    <link rel="stylesheet" href="<?= base_url('assets/styles.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
     <?php if (!empty($jsonLd)): ?>
     <script type="application/ld+json">
     <?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
@@ -279,11 +279,11 @@ if ($isServicePage && isset($pageH1)) {
             <div class="header__inner">
                 <a href="<?= base_url() ?>" class="logo header__logo">
                     <?php
-                    $logoPath = __DIR__ . '/../../img/logo_aisi_lenta_full.png';
+                    $logoPath = __DIR__ . '/../../public/img/logo_aisi_lenta_full.png';
                     $hasLogo = file_exists($logoPath);
                     ?>
                     <?php if ($hasLogo): ?>
-                        <img src="<?= base_url('img/logo_aisi_lenta_full.png') ?>" alt="<?= e($config['site_name']) ?>" class="logo__img">
+                        <img src="<?= base_url('public/img/logo_aisi_lenta_full.png') ?>" alt="<?= e($config['site_name']) ?>" class="logo__img">
                     <?php else: ?>
                         <span class="logo__text"><?= e($config['site_name']) ?></span>
                     <?php endif; ?>

@@ -44,7 +44,7 @@ $homeDescription = get_site_setting('home_description') ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Текст на главной — Админка</title>
-    <link rel="stylesheet" href="<?= base_url('assets/styles.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
 </head>
 <body>
     <div class="admin-layout">
