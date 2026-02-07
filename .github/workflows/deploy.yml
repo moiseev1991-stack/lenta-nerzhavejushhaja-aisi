@@ -1,5 +1,5 @@
-# Деплой на Space Web при push в main (SFTP в public_html).
-# Секрет: SFTP_PASSWORD в репо → Settings → Secrets and variables → Actions.
+# Деплой на Space Web при push в main (FTP в public_html).
+# Секрет: SFTP_PASSWORD в репо → Settings → Secrets and variables → Actions (тот же пароль для FTP).
 # ВРУЧНУЮ: в панели Space Web для домена указать корень сайта = public_html/public (иначе сайт не откроется).
 
 name: Deploy to Space Web
@@ -15,17 +15,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: "77.222.40.49"
-          username: "infogkmeta"
-          port: "22"
+          server: 77.222.40.49
+          username: infogkmeta
           password: ${{ secrets.SFTP_PASSWORD }}
-          local_path: "./"
-          remote_path: "/home/infogkmeta/public_html/"
-          sftp_only: true
-          sftpArgs: "-o ConnectTimeout=10"
-          rsyncArgs: "--exclude=.git --exclude=.github --exclude=.vscode --exclude=.idea --exclude=node_modules --exclude=*.log"
+          port: 21
+          protocol: ftp
+          local-dir: ./
+          server-dir: public_html/
+          exclude: |
+            .git
+            .gitignore
+            .github
+            .vscode
+            .idea
+            node_modules
+            *.log
+            DEPLOY.md
+            deploy.ps1
+            deploy-sftp-batch.txt
+            sftp-config.json
+            start-server*.bat
+            start-server*.ps1
         env:
           TZ: Europe/Moscow
