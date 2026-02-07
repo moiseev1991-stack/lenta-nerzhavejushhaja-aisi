@@ -15,7 +15,11 @@ sort_aisi_categories($allCategories);
         <div class="category-hero__inner">
             <div class="category-hero__left">
                 <div class="category-hero__header">
-                    <h1><?= e($category['h1'] ?: $category['name']) ?></h1>
+                    <?php if (!isset($product)): ?>
+                    <h1><?= e($pageH1) ?></h1>
+                    <?php else: ?>
+                    <p class="category-hero__breadcrumb-title"><?= e($category['name']) ?></p>
+                    <?php endif; ?>
                     <?php if (isset($productsCount)): ?>
                     <span class="category-hero__count">Найдено: <?= (int) $productsCount ?></span>
                     <?php endif; ?>

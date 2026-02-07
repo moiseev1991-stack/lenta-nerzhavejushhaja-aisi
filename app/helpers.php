@@ -155,6 +155,122 @@ if (!function_exists('format_price')) {
     }
 }
 
+/**
+ * Цена для SEO title: "от X XXX ₽/кг" или "Цена по запросу"
+ */
+if (!function_exists('seo_price_string')) {
+    function seo_price_string($pricePerKg) {
+        if ($pricePerKg === null || $pricePerKg === '' || !is_numeric($pricePerKg) || (float) $pricePerKg <= 0) {
+            return 'Цена по запросу';
+        }
+        return 'от ' . number_format((float) $pricePerKg, 0, '.', ' ') . ' ₽/кг';
+    }
+}
+
+/**
+ * Спеки товара для SEO: толщина и опционально ширина (мм)
+ */
+if (!function_exists('seo_product_specs')) {
+    function seo_product_specs(array $product) {
+        $parts = [];
+        if (isset($product['thickness']) && $product['thickness'] !== null && $product['thickness'] !== '') {
+            $t = (float) $product['thickness'];
+            $parts[] = str_replace('.', ',', $t == (int) $t ? (string) (int) $t : (string) $t) . ' мм';
+        }
+        if (!empty($product['width']) && is_numeric($product['width'])) {
+            $w = (float) $product['width'];
+            $parts[] = str_replace('.', ',', $w == (int) $w ? (string) (int) $w : (string) $w) . ' мм';
+        }
+        return implode(' × ', $parts);
+    }
+}
+
+/** Нормализовать марку для SEO: если уже содержит "AISI", не дублировать */
+if (!function_exists('seo_grade_part')) {
+    function seo_grade_part($grade) {
+        $g = trim($grade ?? 'AISI');
+        return (stripos($g, 'AISI') === 0) ? $g : 'AISI ' . $g;
+    }
+}
+
+/**
+ * SEO Title для карточки товара
+ * Шаблон: [Тип] AISI [Марка] [Спеки] купить в [Город] — [Цена] | [Компания]
+ */
+if (!function_exists('seo_product_title')) {
+    function seo_product_title(array $product, array $config) {
+        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $grade = seo_grade_part($product['category_name'] ?? 'AISI');
+        $city = $product['city'] ?? ($config['seo']['city_default'] ?? 'Москве и РФ');
+        $specs = seo_product_specs($product);
+        $priceStr = seo_price_string($product['price_per_kg'] ?? null);
+        $company = $config['company']['name'] ?? 'Каталог AISI';
+        $middle = $specs !== '' ? trim($type . ' ' . $grade . ' ' . $specs) : trim($type . ' ' . $grade);
+        return $middle . ' купить в ' . $city . ' — ' . $priceStr . ' | ' . $company;
+    }
+}
+
+/**
+ * SEO Description для карточки товара
+ */
+if (!function_exists('seo_product_description')) {
+    function seo_product_description(array $product, array $config) {
+        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $grade = seo_grade_part($product['category_name'] ?? 'AISI');
+        $phone = $config['company']['phone'] ?? '+7 (800) 200-39-43';
+        return 'Продажа ' . $type . ' ' . $grade . ' оптом и в розницу. ✅ В наличии на складе. ✅ Доставка по России от 1 дня. ✅ Сертификаты качества. Звоните: ' . $phone . '!';
+    }
+}
+
+/**
+ * SEO H1 для товара: строго [Тип] AISI [Марка] [Размер]
+ */
+if (!function_exists('seo_product_h1')) {
+    function seo_product_h1(array $product, array $config) {
+        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $grade = seo_grade_part($product['category_name'] ?? 'AISI');
+        $specs = seo_product_specs($product);
+        return $specs !== '' ? trim($type . ' ' . $grade . ' ' . $specs) : trim($type . ' ' . $grade);
+    }
+}
+
+/**
+ * SEO Title для категории
+ */
+if (!function_exists('seo_category_title')) {
+    function seo_category_title(array $category, $minPrice, array $config) {
+        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $grade = seo_grade_part($category['name'] ?? 'AISI');
+        $city = $config['seo']['city_default'] ?? 'Москве и РФ';
+        $priceStr = $minPrice !== null && $minPrice > 0 ? seo_price_string($minPrice) : 'Цена по запросу';
+        $company = $config['company']['name'] ?? 'Каталог AISI';
+        return trim($type . ' ' . $grade) . ' купить в ' . $city . ' — ' . $priceStr . ' | ' . $company;
+    }
+}
+
+/**
+ * SEO Description для категории
+ */
+if (!function_exists('seo_category_description')) {
+    function seo_category_description(array $category, array $config) {
+        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $grade = seo_grade_part($category['name'] ?? 'AISI');
+        $phone = $config['company']['phone'] ?? '+7 (800) 200-39-43';
+        return 'Продажа ' . $type . ' ' . $grade . ' оптом и в розницу. ✅ В наличии на складе. ✅ Доставка по России от 1 дня. ✅ Сертификаты качества. Звоните: ' . $phone . '!';
+    }
+}
+
+/**
+ * SEO H1 для категории: [Тип] AISI [Марка]
+ */
+if (!function_exists('seo_category_h1')) {
+    function seo_category_h1(array $category, array $config) {
+        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $grade = seo_grade_part($category['name'] ?? 'AISI');
+        return trim($type . ' ' . $grade);
+    }
+}
+
 /** Файл настроек сайта (ключ-значение) */
 if (!defined('SITE_SETTINGS_FILE')) {
     define('SITE_SETTINGS_FILE', __DIR__ . '/../storage/site_settings.json');
@@ -360,6 +476,70 @@ if (!function_exists('strip_article_formatting')) {
             $html = preg_replace('/\s+lang\s*=\s*["\'][^"\']*["\']/i', '', $html);
         }
         return trim($html);
+    }
+}
+
+/**
+ * Похожие/популярные товары для страницы товара.
+ * Возвращает ['items' => array до 4 товаров с category_slug, category_name, 'is_popular_fallback' => true если все из fallback].
+ */
+if (!function_exists('get_related_products')) {
+    function get_related_products(PDO $pdo, array $product, $limit = 4) {
+        $cid = (int) $product['category_id'];
+        $pid = (int) $product['id'];
+        $th = $product['thickness'] !== null && $product['thickness'] !== '' ? (float) $product['thickness'] : null;
+        $w = $product['width'] !== null && $product['width'] !== '' ? (float) $product['width'] : null;
+        $surf = isset($product['surface']) && trim((string) $product['surface']) !== '' ? trim($product['surface']) : null;
+        $orderClause = 'ORDER BY (ABS(COALESCE(p.thickness, 0) - ' . ($th !== null ? (float) $th : '0') . ') + ABS(COALESCE(p.width, 0) - ' . ($w !== null ? (float) $w : '0') . '))';
+        $related = [];
+        $excludeIds = [$pid];
+
+        // Шаг A: та же марка (category), та же поверхность, по близости толщина/ширина
+        $sqlA = "SELECT p.*, c.slug AS category_slug, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id WHERE p.category_id = ? AND p.id != ?";
+        $paramsA = [$cid, $pid];
+        if ($surf !== null && $surf !== '') {
+            $sqlA .= " AND p.surface = ?";
+            $paramsA[] = $surf;
+        } else {
+            $sqlA .= " AND (p.surface IS NULL OR p.surface = '')";
+        }
+        $sqlA .= " " . $orderClause . " LIMIT " . (int) $limit;
+        $stmt = $pdo->prepare($sqlA);
+        $stmt->execute($paramsA);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $related[] = $row;
+            $excludeIds[] = (int) $row['id'];
+        }
+
+        $fromSimilar = count($related);
+
+        // Шаг B: та же категория, без фильтра по поверхности, добить до limit
+        if (count($related) < $limit) {
+            $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
+            $sqlB = "SELECT p.*, c.slug AS category_slug, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id WHERE p.category_id = ? AND p.id NOT IN ($placeholders) " . $orderClause . " LIMIT " . ((int) $limit - count($related));
+            $stmt = $pdo->prepare($sqlB);
+            $stmt->execute(array_merge([$cid], $excludeIds));
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $related[] = $row;
+                $excludeIds[] = (int) $row['id'];
+            }
+        }
+
+        // Шаг C: популярные (с картинкой, в наличии, с ценой), добить слоты
+        if (count($related) < $limit) {
+            $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
+            $sqlC = "SELECT p.*, c.slug AS category_slug, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id WHERE p.category_id = ? AND p.id NOT IN ($placeholders) ORDER BY (CASE WHEN p.image IS NOT NULL AND p.image != '' THEN 1 ELSE 0 END) DESC, (CASE WHEN p.in_stock = 1 THEN 1 ELSE 0 END) DESC, (CASE WHEN p.price_per_kg IS NOT NULL AND p.price_per_kg > 0 THEN 1 ELSE 0 END) DESC, p.id LIMIT " . ((int) $limit - count($related));
+            $stmt = $pdo->prepare($sqlC);
+            $stmt->execute(array_merge([$cid], $excludeIds));
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $related[] = $row;
+            }
+        }
+
+        return [
+            'items' => array_slice($related, 0, $limit),
+            'is_popular_fallback' => ($fromSimilar === 0 && count($related) > 0),
+        ];
     }
 }
 

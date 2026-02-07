@@ -1,6 +1,7 @@
 <?php
 // Фиксированный список толщин для фильтра «Толщина ленты, мм»
 $defaultThicknesses = get_filter_thicknesses();
+$products = $products ?? [];
 ?>
 <?php
 $pagination = $pagination ?? null;

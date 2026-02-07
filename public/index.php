@@ -51,11 +51,12 @@ if ($requestPath === 'img/logo_aisi_lenta_full.png') {
 }
 
 // Картинки секции «Товарные группы» на /bonus/ (img/bonus_groups/ в корне проекта)
-if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.png)$#', $requestPath, $m)) {
+if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.(png|webp))$#', $requestPath, $m)) {
     $filename = basename($m[1]);
     $imgFile = __DIR__ . '/../img/bonus_groups/' . $filename;
     if (is_file($imgFile)) {
-        header('Content-Type: image/png');
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        header('Content-Type: ' . ($ext === 'webp' ? 'image/webp' : 'image/png'));
         header('Cache-Control: public, max-age=86400');
         readfile($imgFile);
         exit;
@@ -215,40 +216,6 @@ if ($requestPath === 'bonus' || $requestPath === 'bonus/') {
     exit;
 }
 
-// Раздел "Аналоги"
-if (strpos($requestPath, 'analogi/') === 0) {
-    $analogsData = require __DIR__ . '/../app/data/analogs.php';
-    $analogSlug = substr($requestPath, 8); // убираем 'analogi/'
-    $analogSlug = rtrim($analogSlug, '/');
-    
-    // Страницы аналогов по slug
-    $foundPage = null;
-    foreach ($analogsData['pages'] as $key => $page) {
-        if ($page['slug'] === 'analogi/' . $analogSlug || $page['slug'] === $requestPath) {
-            $foundPage = $page;
-            break;
-        }
-    }
-    
-    if ($foundPage) {
-        $pageTitle = $foundPage['title'];
-        $pageDescription = $foundPage['description'];
-        $pageH1 = $foundPage['h1'];
-        $pageIntro = $foundPage['intro'] ?? '';
-        $pageBullets = $foundPage['bullets'] ?? [];
-        $isAnalogPage = true;
-        require __DIR__ . '/../app/views/layout.php';
-        exit;
-    }
-    
-    // 404 если не найдено
-    http_response_code(404);
-    $is404 = true;
-    $pageTitle = '404 — Страница не найдена';
-    require __DIR__ . '/../app/views/layout.php';
-    exit;
-}
-
 // Сервисные страницы (проверяем до категорий и товаров)
 $servicePagesData = require __DIR__ . '/../app/data/pages.php';
 
@@ -297,6 +264,7 @@ if (preg_match('#^(aisi-[^/]+)/([^/]+)/?$#', $requestPath, $matches)) {
         http_response_code(404);
         $is404 = true;
         $pageTitle = '404 — Страница не найдена';
+        unset($category, $product);
         require __DIR__ . '/../app/views/layout.php';
         exit;
     }
@@ -327,6 +295,7 @@ if (preg_match('#^(aisi-[^/]+)/([^/]+)/?$#', $requestPath, $matches)) {
         http_response_code(404);
         $is404 = true;
         $pageTitle = '404 — Страница не найдена';
+        unset($category, $product);
         require __DIR__ . '/../app/views/layout.php';
         exit;
     }
@@ -334,6 +303,13 @@ if (preg_match('#^(aisi-[^/]+)/([^/]+)/?$#', $requestPath, $matches)) {
     $minPrice = null;
     $stmt = $pdo->query('SELECT slug, name FROM categories WHERE is_active = 1 ORDER BY name');
     $categories = $stmt->fetchAll();
+    
+    $relatedProducts = get_related_products($pdo, $product, 4);
+    $imagesDir = __DIR__ . '/../img/product_images_named';
+    foreach ($relatedProducts['items'] as &$rp) {
+        resolve_product_image($rp, $imagesDir);
+    }
+    unset($rp);
     
     require __DIR__ . '/../app/views/layout.php';
     exit;

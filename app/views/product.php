@@ -32,9 +32,9 @@ $heroBreadcrumbs = ob_get_clean();
                 </div>
             </div>
 
-            <!-- Информация (H1 в hero сверху) -->
+            <!-- Информация (H1 по SEO-шаблону: тип + AISI + марка + размер) -->
             <div class="product__info">
-                <h2 class="product__name"><?= e($product['h1'] ?: $product['name']) ?></h2>
+                <h1 class="product__name"><?= e($pageH1) ?></h1>
                 
                 <div class="product__price-block">
                     <div class="product__price"><?= format_price($product['price_per_kg']) ?></div>
@@ -80,5 +80,6 @@ $heroBreadcrumbs = ob_get_clean();
             </div>
         </div>
     </div>
+    <?php include __DIR__ . '/partials/related_products.php'; ?>
 </div>
 

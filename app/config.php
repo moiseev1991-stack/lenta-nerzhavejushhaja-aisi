@@ -8,7 +8,12 @@ return [
     'company' => [
         'name' => 'Компания',
         'url' => 'https://example.com',
+        'phone' => '+7 (800) 200-39-43',
         // Задел для будущей Organization microdata
+    ],
+    'seo' => [
+        'product_type' => 'Лента нержавеющая',
+        'city_default' => 'Москве и РФ',
     ],
     
     'upload_dir' => __DIR__ . '/../public/uploads',
@@ -26,7 +31,7 @@ return [
         'form_id' => '1663854',
         'form_hash' => '81d6c52b4028728d57c87d1d9872cb22',
         'locale' => 'ru',
-        'script_url' => 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770113409',
+        'script_url' => 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770385476',
         'iframe_src' => getenv('AMO_FORM_IFRAME_SRC') ?: null,
     ],
 ];

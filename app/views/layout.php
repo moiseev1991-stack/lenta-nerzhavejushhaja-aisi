@@ -1,24 +1,49 @@
 <?php
 // Определяем тип страницы и данные
-$isHome = isset($allCategories) && isset($featuredProducts) && !isset($category) && !isset($product) && !isset($isServicePage) && !isset($isAnalogs) && !isset($isAnalogPage) && !isset($isBonusPage) && !isset($is404);
-$isProduct = isset($product);
-$isCategory = isset($category);
-$isServicePage = isset($isServicePage);
-$isAnalogs = isset($isAnalogs);
-$isAnalogPage = isset($isAnalogPage);
-$isBonusPage = isset($isBonusPage);
 $is404 = isset($is404) && $is404;
+$isHome = !$is404 && isset($allCategories) && isset($featuredProducts) && !isset($category) && !isset($product) && !isset($isServicePage) && !isset($isBonusPage);
+$isProduct = !$is404 && isset($product) && is_array($product);
+$isCategory = !$is404 && isset($category) && is_array($category);
+$isServicePage = isset($isServicePage);
+$isBonusPage = isset($isBonusPage);
 $pageTitle = $pageTitle ?? '';
 $pageDescription = $pageDescription ?? '';
 $pageH1 = $pageH1 ?? '';
 $jsonLd = [];
+$config = require __DIR__ . '/../config.php';
 
 if ($isHome) {
-    $config = require __DIR__ . '/../config.php';
     $defaultHomeTitle = 'Лента нержавеющая AISI — каталог нержавеющей ленты по маркам';
     $defaultHomeDescription = 'Каталог нержавеющей ленты AISI 200/300/400/900L. Подбор по толщине, ширине, состоянию и поверхности. Отмотка от 1 метра, резка от 2,5 мм.';
     $pageTitle = isset($homeTitle) && (string)$homeTitle !== '' ? $homeTitle : $defaultHomeTitle;
     $pageDescription = isset($homeDescription) && (string)$homeDescription !== '' ? $homeDescription : $defaultHomeDescription;
+    // WebSite + Organization (только на главной)
+    $siteName = $config['site_name'] ?? 'Каталог AISI';
+    $company = $config['company'] ?? [];
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebSite',
+        'name' => $siteName,
+        'url' => base_url(),
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => base_url('search/?q={search_term_string}'),
+            'query-input' => 'required name=search_term_string',
+        ],
+    ];
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => $company['name'] ?? 'Компания',
+        'url' => $company['url'] ?? base_url(),
+        'telephone' => $company['phone'] ?? '',
+        'logo' => base_url('img/logo_aisi_lenta_full.png'),
+        'address' => [
+            '@type' => 'PostalAddress',
+            'addressLocality' => 'Москва',
+            'addressCountry' => 'RU',
+        ],
+    ];
 }
 
 if ($isBonusPage && isset($bonusPage)) {
@@ -27,24 +52,56 @@ if ($isBonusPage && isset($bonusPage)) {
 }
 
 if ($isProduct) {
-    $pageTitle = $product['title'] ?: $product['name'];
-    $pageDescription = $product['description'] ?: '';
-    $pageH1 = $product['h1'] ?: $product['name'];
+    $pageTitle = seo_product_title($product, $config);
+    $pageDescription = seo_product_description($product, $config);
+    $pageH1 = seo_product_h1($product, $config);
     
-    // JSON-LD Product
-    $jsonLd[] = [
+    $productUrl = base_url($product['category_slug'] . '/' . $product['slug'] . '/');
+    $productOffer = [
+        '@type' => 'Offer',
+        'url' => $productUrl,
+        'priceCurrency' => 'RUB',
+        'price' => (string)(float)$product['price_per_kg'],
+        'priceValidUntil' => date('Y') . '-12-31',
+        'availability' => $product['in_stock'] ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        'itemCondition' => 'https://schema.org/NewCondition',
+        'priceSpecification' => [
+            '@type' => 'UnitPriceSpecification',
+            'price' => (string)(float)$product['price_per_kg'],
+            'priceCurrency' => 'RUB',
+            'referenceQuantity' => [
+                '@type' => 'QuantitativeValue',
+                'value' => 1,
+                'unitCode' => 'KGM',
+            ],
+        ],
+    ];
+    $productLd = [
         '@context' => 'https://schema.org',
         '@type' => 'Product',
         'name' => $product['name'],
         'sku' => (string)$product['id'],
-        'image' => $product['image'] ? base_url($product['image']) : null,
-        'offers' => [
-            '@type' => 'Offer',
-            'priceCurrency' => 'RUB',
-            'price' => (string)$product['price_per_kg'],
-            'availability' => $product['in_stock'] ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-        ],
+        'brand' => ['@type' => 'Brand', 'name' => 'AISI'],
+        'image' => !empty($product['image']) ? base_url(ltrim($product['image'], '/')) : null,
+        'offers' => $productOffer,
     ];
+    if (!empty($product['description'])) {
+        $productLd['description'] = $product['description'];
+    }
+    $additionalProps = [];
+    if (isset($product['thickness']) && $product['thickness'] !== '' && $product['thickness'] !== null) {
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Толщина', 'value' => (string)$product['thickness']];
+    }
+    if (!empty($product['surface'])) {
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Поверхность', 'value' => (string)$product['surface']];
+    }
+    if (!empty($product['condition'])) {
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Состояние', 'value' => (string)$product['condition']];
+    }
+    if (!empty($additionalProps)) {
+        $productLd['additionalProperty'] = $additionalProps;
+    }
+    $jsonLd[] = $productLd;
     
     // BreadcrumbList для товара
     $jsonLd[] = [
@@ -67,16 +124,17 @@ if ($isProduct) {
                 '@type' => 'ListItem',
                 'position' => 3,
                 'name' => $product['name'],
-                'item' => base_url($product['category_slug'] . '/' . $product['slug'] . '/'),
+                'item' => $productUrl,
             ],
         ],
     ];
 }
 
 if ($isCategory) {
-    $pageTitle = $category['title'] ?: $category['name'];
-    $pageDescription = $category['description'] ?: '';
-    $pageH1 = $category['h1'] ?: $category['name'];
+    $minPrice = $minPrice ?? null;
+    $pageTitle = seo_category_title($category, $minPrice, $config);
+    $pageDescription = seo_category_description($category, $config);
+    $pageH1 = seo_category_h1($category, $config);
     
     // BreadcrumbList для категории
     $jsonLd[] = [
@@ -97,9 +155,24 @@ if ($isCategory) {
             ],
         ],
     ];
+    // ItemList — список товаров на странице категории
+    $categoryProducts = $products ?? [];
+    $itemListElements = [];
+    foreach ($categoryProducts as $index => $prod) {
+        $itemListElements[] = [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'item' => base_url($category['slug'] . '/' . ($prod['slug'] ?? '') . '/'),
+        ];
+    }
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        'name' => $category['h1'] ?: $category['name'],
+        'numberOfItems' => count($categoryProducts),
+        'itemListElement' => $itemListElements,
+    ];
 }
-
-$config = require __DIR__ . '/../config.php';
 
 // Категории для меню AISI (если ещё не загружены)
 if (!isset($allCategories) && isset($pdo)) {
@@ -129,6 +202,37 @@ $aisiTabs = array_values($aisiTabs);
 
 $currentCategorySlug = isset($category) && isset($category['slug']) ? $category['slug'] : null;
 $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySlug) : null;
+
+// Сервисные страницы: WebPage + Article; на контактах — дублируем Organization
+if ($isServicePage && isset($pageH1)) {
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => $pageH1,
+        'description' => $pageDescription ?? '',
+        'mainEntity' => [
+            '@type' => 'Article',
+            'headline' => $pageH1,
+            'articleBody' => isset($pageContent) ? strip_tags($pageContent) : '',
+        ],
+    ];
+    if (isset($servicePageKey) && $servicePageKey === 'contacts') {
+        $company = $config['company'] ?? [];
+        $jsonLd[] = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => $company['name'] ?? 'Компания',
+            'url' => $company['url'] ?? base_url(),
+            'telephone' => $company['phone'] ?? '',
+            'logo' => base_url('img/logo_aisi_lenta_full.png'),
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Москва',
+                'addressCountry' => 'RU',
+            ],
+        ];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -151,6 +255,16 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
     ?>
     <link rel="canonical" href="<?= e($catCanonical) ?>">
     <meta name="robots" content="index,follow">
+    <?php endif; ?>
+    <?php if ($isProduct || $isCategory): ?>
+    <meta property="og:type" content="<?= $isProduct ? 'product' : 'website' ?>">
+    <meta property="og:title" content="<?= e($pageTitle) ?>">
+    <meta property="og:description" content="<?= e($pageDescription) ?>">
+    <meta property="og:url" content="<?= e($isProduct ? base_url($product['category_slug'] . '/' . $product['slug'] . '/') : base_url($category['slug'] . '/')) ?>">
+    <meta property="og:locale" content="ru_RU">
+    <?php if ($isProduct && !empty($product['image'])): ?>
+    <meta property="og:image" content="<?= e(base_url(ltrim($product['image'], '/'))) ?>">
+    <?php endif; ?>
     <?php endif; ?>
     <link rel="stylesheet" href="<?= base_url('assets/styles.css') ?>">
     <?php if (!empty($jsonLd)): ?>
@@ -197,12 +311,11 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                         <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Получить бонус</a>
                     </div>
                     <div class="header__nav-contacts">
-                        <a href="tel:+74951060741" class="header__contact header__contact--phone">+7 (495) 106-07-41</a>
+                        <a href="tel:+78002003943" class="header__contact header__contact--phone">+7 (800) 200-39-43</a>
                         <a href="mailto:ev18011@yandex.ru" class="header__contact header__contact--email">ev18011@yandex.ru</a>
-                        <a href="<?= base_url('admin/login') ?>" class="admin-link">Админ</a>
                     </div>
                 </nav>
-                <a href="tel:+74951060741" class="header__phone-link" aria-label="Позвонить">+7 (495) 106-07-41</a>
+                <a href="tel:+78002003943" class="header__phone-link" aria-label="Позвонить">+7 (800) 200-39-43</a>
                 <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu" data-mobile-menu-open>
                     <span></span><span></span><span></span>
                 </button>
@@ -232,9 +345,8 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                     </li>
                     <li><a class="mobile-menu__link" href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
                     <li><a class="mobile-menu__link" href="<?= base_url('contacts/') ?>">Контакты</a></li>
-                    <li><a class="mobile-menu__link" href="tel:+74951060741">+7 (495) 106-07-41</a></li>
+                    <li><a class="mobile-menu__link" href="tel:+78002003943">+7 (800) 200-39-43</a></li>
                     <li><a class="mobile-menu__link" href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></li>
-                    <li><a class="mobile-menu__link" href="<?= base_url('admin/login') ?>">Админ</a></li>
                 </ul>
             </nav>
         </aside>
@@ -247,8 +359,6 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
             <?php require __DIR__ . '/product.php'; ?>
         <?php elseif ($isCategory): ?>
             <?php require __DIR__ . '/category.php'; ?>
-        <?php elseif ($isAnalogs || $isAnalogPage): ?>
-            <?php require __DIR__ . '/analogs.php'; ?>
         <?php elseif ($isServicePage): ?>
             <?php require __DIR__ . '/page.php'; ?>
         <?php elseif ($isBonusPage): ?>
@@ -282,14 +392,14 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                         <p class="request-modal__error-text">Попробуйте ещё раз или свяжитесь с нами по телефону.</p>
                         <div class="request-modal__error-actions">
                             <button type="button" class="request-modal__error-btn request-modal__error-btn--primary" id="requestModalRetry">Повторить</button>
-                            <a href="tel:+74951060741" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
+                            <a href="tel:+78002003943" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
                             <a href="mailto:ev18011@yandex.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
                         </div>
                     </div>
                     <div class="request-modal__no-embed request-modal__no-embed--hidden" id="requestModalNoEmbed" aria-hidden="true">
                         <p class="request-modal__no-embed-text">Не настроен amoCRM embed. Укажите <code>AMO_FORM_IFRAME_SRC</code> в env или конфигурацию в <code>config.php</code> (amocrm.iframe_src / form_id + script_url).</p>
                         <div class="request-modal__error-actions">
-                            <a href="tel:+74951060741" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
+                            <a href="tel:+78002003943" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
                             <a href="mailto:ev18011@yandex.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
                         </div>
                     </div>
@@ -314,7 +424,6 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                         <?php foreach ($allCategories as $cat): ?>
                             <li><a href="<?= base_url($cat['slug'] . '/') ?>" class="footer__link"><?= e($cat['name']) ?></a></li>
                         <?php endforeach; ?>
-                        <li><a href="<?= base_url('analogi/') ?>" class="footer__link">Аналоги</a></li>
                     </ul>
                 </div>
                 <div class="footer__col">
@@ -338,7 +447,7 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
                 <div class="footer__col footer__col--contacts">
                     <h3 class="footer__title">Контакты</h3>
                     <ul class="footer__list">
-                        <li><a href="tel:+74951060741" class="footer__link">+7 (495) 106-07-41</a></li>
+                        <li><a href="tel:+78002003943" class="footer__link">+7 (800) 200-39-43</a></li>
                         <li><a href="mailto:ev18011@yandex.ru" class="footer__link">ev18011@yandex.ru</a></li>
                     </ul>
                 </div>
@@ -707,6 +816,6 @@ $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySl
     </script>
     <!-- Форма amoCRM: скрипты при загрузке страницы (как в оригинальном коде вставки) -->
     <script>!function(a,m,o,c,r,m){a[o+c]=a[o+c]||{setMeta:function(p){this.params=(this.params||[]).concat([p])}},a[o+r]=a[o+r]||function(f){a[o+r].f=(a[o+r].f||[]).concat([f])},a[o+r]({id:"<?= e($amocrm['form_id'] ?? '1663854') ?>",hash:"<?= e($amocrm['form_hash'] ?? '') ?>",locale:"<?= e($amocrm['locale'] ?? 'ru') ?>"}),a[o+m]=a[o+m]||function(f,k){a[o+m].f=(a[o+m].f||[]).concat([[f,k]])}}(window,0,"amo_forms_","params","load","loaded");</script>
-    <script id="amoforms_script_<?= e($amoFormId) ?>" async="async" charset="utf-8" src="<?= e($amocrm['script_url'] ?? 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770113409') ?>"></script>
+    <script id="amoforms_script_<?= e($amoFormId) ?>" async="async" charset="utf-8" src="<?= e($amocrm['script_url'] ?? 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770385476') ?>"></script>
 </body>
 </html>

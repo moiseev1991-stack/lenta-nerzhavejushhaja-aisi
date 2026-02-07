@@ -1,0 +1,16 @@
+mkdir lenta-nerzhavejushhaja-aisi
+cd lenta-nerzhavejushhaja-aisi
+mkdir public_html
+mkdir app
+mkdir storage
+mkdir img
+lcd public
+cd public_html
+put -r .
+lcd ..
+cd ..
+cd lenta-nerzhavejushhaja-aisi
+put -r app
+put -r storage
+put -r img
+bye
