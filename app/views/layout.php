@@ -240,6 +240,7 @@ if ($isServicePage && isset($pageH1)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle ?: $config['site_name']) ?></title>
+    <link rel="icon" href="<?= base_url('public/img/favicon.svg') ?>" type="image/svg+xml">
     <?php if ($is404): ?>
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>

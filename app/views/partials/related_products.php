@@ -14,7 +14,7 @@ $sectionTitle = $relatedData['is_popular_fallback'] ? 'Популярные то
                         <?php if (!empty($rp['image'])): ?>
                             <img src="<?= base_url($rp['image']) ?>" alt="<?= e($rp['name']) ?>" width="200" height="140" loading="lazy">
                         <?php else: ?>
-                            <div class="related-products__placeholder">Нет фото</div>
+                            <img src="<?= base_url('public/img/placeholder-product.svg') ?>" alt="" width="200" height="140" loading="lazy" class="related-products__placeholder-img">
                         <?php endif; ?>
                     </div>
                     <div class="related-products__content">

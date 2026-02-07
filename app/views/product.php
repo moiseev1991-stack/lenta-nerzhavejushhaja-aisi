@@ -27,7 +27,7 @@ $heroBreadcrumbs = ob_get_clean();
                     <?php if ($product['image']): ?>
                         <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>">
                     <?php else: ?>
-                        <div class="product__placeholder">Нет фото</div>
+                        <img src="<?= base_url('public/img/placeholder-product.svg') ?>" alt="" class="product__placeholder-img">
                     <?php endif; ?>
                 </div>
             </div>
