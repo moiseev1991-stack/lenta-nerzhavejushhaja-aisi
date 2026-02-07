@@ -159,6 +159,11 @@ if (strpos($requestPath, 'admin/') === 0) {
         require __DIR__ . '/../app/admin/bonus_page.php';
         exit;
     }
+
+    if ($adminPath === 'restore_db') {
+        require __DIR__ . '/../app/admin/restore_db.php';
+        exit;
+    }
     
     // 404 для админки
     http_response_code(404);
