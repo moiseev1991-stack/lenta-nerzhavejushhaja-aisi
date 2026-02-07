@@ -1,0 +1,31 @@
+# Деплой на Space Web по SFTP при push в main
+# Секрет: в настройках репо GitHub → Settings → Secrets and variables → Actions
+# Добавить: SFTP_PASSWORD = пароль от аккаунта (логин infogkmeta)
+
+name: Deploy to Space Web
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          server: "77.222.40.49"
+          username: "infogkmeta"
+          port: "22"
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_path: "./"
+          remote_path: "/home/infogkmeta/lenta-nerzhavejushhaja-aisi"
+          sftp_only: true
+          sftpArgs: "-o ConnectTimeout=10"
+          rsyncArgs: "--exclude=.git --exclude=.github --exclude=.vscode --exclude=.idea --exclude=node_modules --exclude=*.log"
+        env:
+          TZ: Europe/Moscow

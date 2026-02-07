@@ -33,6 +33,10 @@ php -S localhost:8000 -t public public/router.php
 - Товар: http://localhost:8000/product/{slug}/
 - Админка: http://localhost:8000/admin/login
 
+## Деплой на хостинг (Space Web)
+
+Обновление сайта через GitHub: при **push** в `main` файлы автоматически заливаются на сервер по SFTP. Один раз нужно добавить секрет `SFTP_PASSWORD` в настройках репозитория. Подробно: [DEPLOY.md](DEPLOY.md).
+
 ## Доступ к админке
 
 - **Логин:** `admin`
