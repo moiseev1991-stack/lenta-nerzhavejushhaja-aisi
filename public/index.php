@@ -115,8 +115,9 @@ if ($requestPath === '' || $requestPath === '/') {
     ');
     $featuredProducts = $stmt->fetchAll();
     $imagesDir = __DIR__ . '/../img/product_images_named';
+    $uploadsDir = __DIR__ . '/uploads';
     foreach ($featuredProducts as &$fp) {
-        resolve_product_image($fp, $imagesDir);
+        ensure_product_image($fp, $imagesDir, $uploadsDir);
     }
     unset($fp);
     
@@ -300,8 +301,7 @@ if (preg_match('#^(aisi-[^/]+)/([^/]+)/?$#', $requestPath, $matches)) {
     $product = $stmt->fetch();
     
     if ($product) {
-        // Подстановка картинки по product_slug (часть URL без /aisi-XXX/): ищем {slug}.jpg
-        resolve_product_image($product, __DIR__ . '/../img/product_images_named');
+        ensure_product_image($product, __DIR__ . '/../img/product_images_named', __DIR__ . '/uploads');
     }
     
     if (!$product) {
@@ -327,8 +327,9 @@ if (preg_match('#^(aisi-[^/]+)/([^/]+)/?$#', $requestPath, $matches)) {
     
     $relatedProducts = get_related_products($pdo, $product, 4);
     $imagesDir = __DIR__ . '/../img/product_images_named';
+    $uploadsDir = __DIR__ . '/uploads';
     foreach ($relatedProducts['items'] as &$rp) {
-        resolve_product_image($rp, $imagesDir);
+        ensure_product_image($rp, $imagesDir, $uploadsDir);
     }
     unset($rp);
     
@@ -482,10 +483,11 @@ if ($requestPath && strpos($requestPath, '/') === false) {
     $stmt->execute($params);
     $products = $stmt->fetchAll();
     
-    // Подстановка картинок по product_slug: для каждого товара без image ищем {slug}.jpg
+    // Подстановка картинок: если /uploads/ нет на диске — берём из img/product_images_named по slug
     $imagesDir = __DIR__ . '/../img/product_images_named';
+    $uploadsDir = __DIR__ . '/uploads';
     foreach ($products as &$p) {
-        resolve_product_image($p, $imagesDir);
+        ensure_product_image($p, $imagesDir, $uploadsDir);
     }
     unset($p);
     

@@ -32,13 +32,35 @@ if (!function_exists('resolve_product_image')) {
             }
         }
         // Поиск по началу имени (напр. slug в имени "slug — копия.jpg" или "slug-1.jpg")
-        $safeSlug = preg_quote($slug, '#');
         foreach (['jpg', 'jpeg', 'png'] as $ext) {
             $list = @glob($dir . $slug . '*.' . $ext);
             if (!empty($list) && is_file($list[0])) {
                 $product['image'] = '/img/product_images_named/' . basename($list[0]);
                 return;
             }
+        }
+    }
+}
+
+/**
+ * Если у товара картинка из /uploads/ и файла нет на диске — подставить из img/product_images_named по slug.
+ * $uploadsDir — полный путь к public/uploads (например __DIR__ . '/uploads' из public/index.php).
+ */
+if (!function_exists('ensure_product_image')) {
+    function ensure_product_image(array &$product, $imagesDir, $uploadsDir) {
+        if (empty($product['image'])) {
+            resolve_product_image($product, $imagesDir);
+            return;
+        }
+        $img = ltrim($product['image'], '/');
+        if (strpos($img, 'uploads/') !== 0) {
+            return;
+        }
+        $filename = basename($product['image']);
+        $path = rtrim($uploadsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
+        if (!is_file($path)) {
+            $product['image'] = '';
+            resolve_product_image($product, $imagesDir);
         }
     }
 }
