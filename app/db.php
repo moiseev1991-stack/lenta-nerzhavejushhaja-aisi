@@ -23,6 +23,16 @@ if (!function_exists('db')) {
             
             // Включаем foreign keys
             $pdo->exec('PRAGMA foreign_keys = ON');
+            
+            // Если таблиц нет (новый сервер/деплой) — создаём по init.sql
+            $hasCategories = $pdo->query("SELECT 1 FROM sqlite_master WHERE type='table' AND name='categories'")->fetch();
+            if (!$hasCategories) {
+                $initFile = dirname($dbPath) . '/init.sql';
+                if (is_readable($initFile)) {
+                    $sql = file_get_contents($initFile);
+                    $pdo->exec($sql);
+                }
+            }
         }
         
         return $pdo;
