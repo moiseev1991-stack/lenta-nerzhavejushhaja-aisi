@@ -1,7 +1,8 @@
 <?php
 // Определяем тип страницы и данные
 $is404 = isset($is404) && $is404;
-$isHome = !$is404 && isset($allCategories) && isset($featuredProducts) && !isset($category) && !isset($product) && !isset($isServicePage) && !isset($isBonusPage);
+$isSitemapPage = isset($isSitemapPage);
+$isHome = !$is404 && !$isSitemapPage && isset($allCategories) && isset($featuredProducts) && !isset($category) && !isset($product) && !isset($isServicePage) && !isset($isBonusPage);
 $isProduct = !$is404 && isset($product) && is_array($product);
 $isCategory = !$is404 && isset($category) && is_array($category);
 $isServicePage = isset($isServicePage);
@@ -313,7 +314,6 @@ if ($isServicePage && isset($pageH1)) {
                     </div>
                     <div class="header__nav-contacts">
                         <a href="tel:+78002003943" class="header__contact header__contact--phone">+7 (800) 200-39-43</a>
-                        <a href="mailto:ev18011@yandex.ru" class="header__contact header__contact--email">ev18011@yandex.ru</a>
                     </div>
                 </nav>
                 <a href="tel:+78002003943" class="header__phone-link" aria-label="Позвонить">+7 (800) 200-39-43</a>
@@ -347,7 +347,6 @@ if ($isServicePage && isset($pageH1)) {
                     <li><a class="mobile-menu__link" href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
                     <li><a class="mobile-menu__link" href="<?= base_url('contacts/') ?>">Контакты</a></li>
                     <li><a class="mobile-menu__link" href="tel:+78002003943">+7 (800) 200-39-43</a></li>
-                    <li><a class="mobile-menu__link" href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></li>
                 </ul>
             </nav>
         </aside>
@@ -364,6 +363,8 @@ if ($isServicePage && isset($pageH1)) {
             <?php require __DIR__ . '/page.php'; ?>
         <?php elseif ($isBonusPage): ?>
             <?php require __DIR__ . '/bonus.php'; ?>
+        <?php elseif ($isSitemapPage): ?>
+            <?php require __DIR__ . '/sitemap.php'; ?>
         <?php elseif ($is404): ?>
             <?php require __DIR__ . '/404.php'; ?>
         <?php endif; ?>
@@ -442,7 +443,7 @@ if ($isServicePage && isset($pageH1)) {
                     <h3 class="footer__title">Документы</h3>
                     <ul class="footer__list">
                         <li><a href="<?= base_url('privacy-policy/') ?>" class="footer__link">Политика конфиденциальности</a></li>
-                        <li><a href="<?= base_url('sitemap.xml') ?>" class="footer__link">Карта сайта</a></li>
+                        <li><a href="<?= base_url('sitemap/') ?>" class="footer__link">Карта сайта</a></li>
                     </ul>
                 </div>
                 <div class="footer__col footer__col--contacts">

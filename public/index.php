@@ -203,6 +203,29 @@ if ($requestPath === 'sitemap.xml') {
     exit;
 }
 
+// HTML-страница «Карта сайта»
+if ($requestPath === 'sitemap' || $requestPath === 'sitemap/') {
+    $config = require __DIR__ . '/../app/config.php';
+    $stmt = $pdo->query('SELECT slug, name FROM categories WHERE is_active = 1 ORDER BY name');
+    $allCategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    sort_aisi_categories($allCategories);
+    $sitemapCategories = $allCategories;
+    $stmt = $pdo->query('
+        SELECT p.slug AS product_slug, p.name AS product_name, c.slug AS category_slug
+        FROM products p
+        JOIN categories c ON p.category_id = c.id
+        WHERE c.is_active = 1
+        ORDER BY c.slug, p.slug
+    ');
+    $sitemapProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $pageTitle = 'Карта сайта — ' . ($config['site_name'] ?? 'Каталог AISI');
+    $pageDescription = 'Полный список разделов и страниц сайта: главная, марки AISI, товары, контакты, доставка, оплата.';
+    $pageH1 = 'Карта сайта';
+    $isSitemapPage = true;
+    require __DIR__ . '/../app/views/layout.php';
+    exit;
+}
+
 // Страница «Получить бонус» из таблицы pages
 if ($requestPath === 'bonus' || $requestPath === 'bonus/') {
     // На старых БД может не быть таблицы pages — создаём при первом обращении

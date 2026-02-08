@@ -23,7 +23,8 @@
                 </div>
                 <div class="bonus-hero__visual">
                     <div class="bonus-hero-image" aria-hidden="true">
-                        <img src="<?= base_url('public/img/bonus_groups/s.webp') ?>" alt="Баннер программы лояльности" class="bonus-hero-image__img" width="400" height="240" loading="lazy">
+                        <img src="<?= base_url('img/bonus_groups/s.webp') ?>" alt="Баннер программы лояльности" class="bonus-hero-image__img" width="400" height="240" loading="lazy" onerror="this.style.display='none';var n=this.nextElementSibling;if(n)n.style.display='block';">
+                        <div class="bonus-hero-image__fallback" style="display:none;width:100%;height:100%;background:url('<?= base_url('img/bonus_groups/steel_rods.png') ?>') center/cover no-repeat;"></div>
                     </div>
                 </div>
             </div>
@@ -61,10 +62,10 @@
                     <article class="bonus-group-card">
                         <div class="bonus-group-card__image">
                             <?php if ($img): ?>
-                                <img src="<?= base_url('public/img/bonus_groups/' . $img) ?>" alt="<?= e($alt) ?>" width="160" height="96" loading="lazy" class="bonus-group-card__img" onerror="this.style.display='none';var p=this.nextElementSibling;if(p)p.style.display='block';">
-                                <div class="bonus-group-card__placeholder" style="display:none" aria-hidden="true"></div>
+                                <img src="<?= base_url('img/bonus_groups/' . $img) ?>" alt="<?= e($alt) ?>" width="160" height="96" loading="lazy" class="bonus-group-card__img" onerror="this.style.display='none';var p=this.nextElementSibling;if(p)p.style.display='block';">
+                                <div class="bonus-group-card__placeholder" style="display:none" aria-hidden="true"><img src="<?= base_url('img/bonus_groups/steel_rods.png') ?>" alt="" width="160" height="96" loading="lazy" class="bonus-group-card__placeholder-img"></div>
                             <?php else: ?>
-                                <div class="bonus-group-card__placeholder" aria-hidden="true"></div>
+                                <div class="bonus-group-card__placeholder" aria-hidden="true"><img src="<?= base_url('img/bonus_groups/steel_rods.png') ?>" alt="" width="160" height="96" loading="lazy" class="bonus-group-card__placeholder-img"></div>
                             <?php endif; ?>
                         </div>
                         <h3 class="bonus-group-card__label"><?= e($label) ?></h3>
