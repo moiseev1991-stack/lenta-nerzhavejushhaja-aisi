@@ -268,6 +268,7 @@ if ($isServicePage && isset($pageH1)) {
     <meta property="og:image" content="<?= e(base_url(ltrim($product['image'], '/'))) ?>">
     <?php endif; ?>
     <?php endif; ?>
+    <link rel="preload" href="<?= base_url('public/assets/styles.css') ?>" as="style">
     <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
     <?php if (!empty($jsonLd)): ?>
     <script type="application/ld+json">
@@ -748,6 +749,42 @@ if ($isServicePage && isset($pageH1)) {
                     showErrorState();
                 }
             } else {
+                var scriptId = 'amoforms_script_<?= e($amoFormId) ?>';
+                var scriptEl = document.getElementById(scriptId);
+                if (!scriptEl && (cfg.script_url || '').length > 0) {
+                    scriptEl = document.createElement('script');
+                    scriptEl.id = scriptId;
+                    scriptEl.async = true;
+                    scriptEl.charset = 'utf-8';
+                    scriptEl.src = cfg.script_url;
+                    scriptEl.onload = scriptEl.onreadystatechange = function() {
+                        if (scriptEl.readyState && scriptEl.readyState !== 'load' && scriptEl.readyState !== 'complete') return;
+                        scriptEl.onload = scriptEl.onreadystatechange = null;
+                        startFormLoad();
+                        if (moveAmocrmFormIntoModal()) {
+                            showFormHideLoader();
+                            tryResizeForm(cfg.form_id || '1663854');
+                        } else {
+                            observeAndMoveAmocrmForm();
+                            if (moveFormIntervalId) clearInterval(moveFormIntervalId);
+                            var moveAttempts = 0;
+                            moveFormIntervalId = setInterval(function() {
+                                moveAttempts++;
+                                if (moveAmocrmFormIntoModal()) {
+                                    clearInterval(moveFormIntervalId);
+                                    moveFormIntervalId = null;
+                                    showFormHideLoader();
+                                    tryResizeForm(cfg.form_id || '1663854');
+                                } else if (moveAttempts >= 15) {
+                                    clearInterval(moveFormIntervalId);
+                                    moveFormIntervalId = null;
+                                }
+                            }, 300);
+                        }
+                    };
+                    document.body.appendChild(scriptEl);
+                    return;
+                }
                 startFormLoad();
                 if (moveAmocrmFormIntoModal()) {
                     showFormHideLoader();
@@ -816,8 +853,7 @@ if ($isServicePage && isset($pageH1)) {
         });
     })();
     </script>
-    <!-- Форма amoCRM: скрипты при загрузке страницы (как в оригинальном коде вставки) -->
+    <!-- Форма amoCRM: конфиг для отложенной загрузки (скрипт подгружается при первом открытии модалки) -->
     <script>!function(a,m,o,c,r,m){a[o+c]=a[o+c]||{setMeta:function(p){this.params=(this.params||[]).concat([p])}},a[o+r]=a[o+r]||function(f){a[o+r].f=(a[o+r].f||[]).concat([f])},a[o+r]({id:"<?= e($amocrm['form_id'] ?? '1663854') ?>",hash:"<?= e($amocrm['form_hash'] ?? '') ?>",locale:"<?= e($amocrm['locale'] ?? 'ru') ?>"}),a[o+m]=a[o+m]||function(f,k){a[o+m].f=(a[o+m].f||[]).concat([[f,k]])}}(window,0,"amo_forms_","params","load","loaded");</script>
-    <script id="amoforms_script_<?= e($amoFormId) ?>" async="async" charset="utf-8" src="<?= e($amocrm['script_url'] ?? 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770385476') ?>"></script>
 </body>
 </html>

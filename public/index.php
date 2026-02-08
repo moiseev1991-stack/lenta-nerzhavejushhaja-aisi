@@ -44,7 +44,7 @@ if ($requestPath === 'img/logo_aisi_lenta_full.png') {
     $logoFile = __DIR__ . '/../img/logo_aisi_lenta_full.png';
     if (file_exists($logoFile) && is_file($logoFile)) {
         header('Content-Type: image/png');
-        header('Cache-Control: public, max-age=86400');
+        header('Cache-Control: public, max-age=604800');
         readfile($logoFile);
         exit;
     }
@@ -57,7 +57,7 @@ if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.(png|webp))$#', $requestPat
     if (is_file($imgFile)) {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         header('Content-Type: ' . ($ext === 'webp' ? 'image/webp' : 'image/png'));
-        header('Cache-Control: public, max-age=86400');
+        header('Cache-Control: public, max-age=604800');
         readfile($imgFile);
         exit;
     }
@@ -72,7 +72,7 @@ if (preg_match('#^uploads/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
             $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
             $types = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp', 'gif' => 'image/gif'];
             header('Content-Type: ' . ($types[$ext] ?? 'image/jpeg'));
-            header('Cache-Control: public, max-age=86400');
+            header('Cache-Control: public, max-age=604800');
             readfile($uploadFile);
             exit;
         }
@@ -87,7 +87,7 @@ if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
         if (file_exists($imgFile) && is_file($imgFile)) {
             $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
             header('Content-Type: ' . ($ext === 'png' ? 'image/png' : 'image/jpeg'));
-            header('Cache-Control: public, max-age=86400');
+            header('Cache-Control: public, max-age=604800');
             readfile($imgFile);
             exit;
         }
