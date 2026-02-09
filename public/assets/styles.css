@@ -4141,7 +4141,8 @@ body > .sidebar_bottom,
 .branches__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 14px 14px;
+    row-gap: 24px;
 }
 .branch {
     padding: 14px 16px;
