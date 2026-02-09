@@ -4130,3 +4130,30 @@ body > .sidebar_bottom,
 .sitemap-products li { margin: 0.15rem 0; }
 .sitemap-products a { color: var(--text-primary); font-weight: 400; }
 .sitemap-products a:hover { color: var(--accent); }
+
+/* Контакты: филиалы и адреса отгрузки */
+.contacts-branches { max-width: 800px; margin-left: auto; margin-right: auto; }
+.contacts-branches__title { font-size: 1.25rem; margin: 0 0 var(--spacing-md); }
+.contacts-branches__grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-md); }
+@media (min-width: 640px) {
+    .contacts-branches__grid { grid-template-columns: repeat(2, 1fr); }
+}
+.contacts-branches__card {
+    display: block;
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.contacts-branches__card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+.contacts-branches__city { display: block; margin-bottom: 0.5rem; font-size: 1rem; }
+.contacts-branches__address,
+.contacts-branches__index { display: block; font-size: var(--font-size-sm); color: var(--text-muted); }
+.contacts-branches__index { margin-top: 0.25rem; }
