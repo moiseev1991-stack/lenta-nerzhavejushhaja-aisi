@@ -279,11 +279,16 @@ if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$se
     if ($servicePageKey === 'contacts') {
         $branchesHtml = '';
         if (!empty($pageData['branches'])) {
-            $branchesHtml = '<p class="contacts-branches__heading">Филиалы и адреса отгрузки</p><div class="contacts-branches"><div class="contacts-branches__grid">';
+            $branchesHtml = '<p class="branches__heading">Филиалы и адреса отгрузки</p><div class="branches"><div class="branches__grid">';
             foreach ($pageData['branches'] as $b) {
                 $fullAddress = $b['index'] . ', Россия, ' . $b['city'] . ', ' . $b['address'];
                 $mapsUrl = 'https://yandex.ru/maps/?text=' . rawurlencode($fullAddress);
-                $branchesHtml .= '<a href="' . htmlspecialchars($mapsUrl) . '" target="_blank" rel="noopener noreferrer" class="contacts-branches__card"><strong class="contacts-branches__city">' . htmlspecialchars($b['city']) . '</strong><span class="contacts-branches__address">Адрес: ' . htmlspecialchars($b['address']) . '</span><span class="contacts-branches__index">Индекс: ' . htmlspecialchars($b['index']) . '</span></a>';
+                $branchesHtml .= '<div class="branch">'
+                    . '<div class="branch__city">' . htmlspecialchars($b['city']) . '</div>'
+                    . '<div class="branch__address">Адрес: ' . htmlspecialchars($b['address']) . '</div>'
+                    . '<div class="branch__index">Индекс: ' . htmlspecialchars($b['index']) . '</div>'
+                    . '<a href="' . htmlspecialchars($mapsUrl) . '" target="_blank" rel="noopener noreferrer" class="branch__mapLink">На карте</a>'
+                    . '</div>';
             }
             $branchesHtml .= '</div></div>';
         }

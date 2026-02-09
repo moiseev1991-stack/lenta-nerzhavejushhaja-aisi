@@ -4131,29 +4131,32 @@ body > .sidebar_bottom,
 .sitemap-products a { color: var(--text-primary); font-weight: 400; }
 .sitemap-products a:hover { color: var(--accent); }
 
-/* Контакты: филиалы и адреса отгрузки (внутри раздела Адрес) */
-.contacts-branches { margin-top: 1.25rem; }
-.contacts-branches__heading { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.75rem; color: var(--text-primary); }
-.contacts-branches__grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-md); }
-@media (min-width: 640px) {
-    .contacts-branches__grid { grid-template-columns: repeat(2, 1fr); }
+/* Контакты: филиалы и адреса отгрузки (внутри раздела Адрес), без обёртки <a> */
+.branches { margin-top: 12px; }
+.branches__heading { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.75rem; color: var(--text-primary); }
+.branches__grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 769px) {
+    .branches__grid { grid-template-columns: repeat(2, 1fr); }
 }
-.contacts-branches__card {
-    display: block;
-    padding: var(--spacing-md);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-sm);
+.branch {
+    padding: 10px 12px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: #fff;
+}
+.branch__city { font-weight: 700; margin-bottom: 6px; font-size: 1rem; color: var(--text-primary); }
+.branch__address,
+.branch__index { font-size: var(--font-size-sm); color: var(--text-muted); margin: 0; line-height: 1.4; }
+.branch__index { margin-top: 4px; }
+.branch__mapLink {
+    display: inline-block;
+    font-size: 12px;
+    margin-top: 8px;
+    color: #666;
     text-decoration: none;
-    color: var(--text-primary);
-    transition: box-shadow 0.2s, border-color 0.2s;
+    border: 1px solid #ddd;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #f5f5f5;
 }
-.contacts-branches__card:hover {
-    box-shadow: var(--shadow-md);
-    border-color: var(--accent);
-}
-.contacts-branches__city { display: block; margin-bottom: 0.5rem; font-size: 1rem; }
-.contacts-branches__address,
-.contacts-branches__index { display: block; font-size: var(--font-size-sm); color: var(--text-muted); }
-.contacts-branches__index { margin-top: 0.25rem; }
+.branch__mapLink:hover { color: var(--accent); border-color: var(--accent); background: #fff; }
