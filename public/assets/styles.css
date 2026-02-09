@@ -4131,9 +4131,9 @@ body > .sidebar_bottom,
 .sitemap-products a { color: var(--text-primary); font-weight: 400; }
 .sitemap-products a:hover { color: var(--accent); }
 
-/* Контакты: филиалы и адреса отгрузки */
-.contacts-branches { max-width: 800px; margin-left: auto; margin-right: auto; }
-.contacts-branches__title { font-size: 1.25rem; margin: 0 0 var(--spacing-md); }
+/* Контакты: филиалы и адреса отгрузки (внутри раздела Адрес) */
+.contacts-branches { margin-top: 1.25rem; }
+.contacts-branches__heading { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.75rem; color: var(--text-primary); }
 .contacts-branches__grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-md); }
 @media (min-width: 640px) {
     .contacts-branches__grid { grid-template-columns: repeat(2, 1fr); }

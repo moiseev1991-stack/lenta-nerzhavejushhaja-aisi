@@ -276,15 +276,18 @@ if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$se
     $pageDescription = $pageData['description'];
     $pageH1 = $pageData['h1'];
     $pageContent = $pageData['content'] ?? '';
-    if ($servicePageKey === 'contacts' && !empty($pageData['branches'])) {
-        $branchesHtml = '<div class="contacts-branches" style="margin-top: 2rem;"><h3 class="contacts-branches__title">Филиалы и адреса отгрузки</h3><div class="contacts-branches__grid">';
-        foreach ($pageData['branches'] as $b) {
-            $fullAddress = $b['index'] . ', Россия, ' . $b['city'] . ', ' . $b['address'];
-            $mapsUrl = 'https://yandex.ru/maps/?text=' . rawurlencode($fullAddress);
-            $branchesHtml .= '<a href="' . htmlspecialchars($mapsUrl) . '" target="_blank" rel="noopener noreferrer" class="contacts-branches__card"><strong class="contacts-branches__city">' . htmlspecialchars($b['city']) . '</strong><span class="contacts-branches__address">Адрес: ' . htmlspecialchars($b['address']) . '</span><span class="contacts-branches__index">Индекс: ' . htmlspecialchars($b['index']) . '</span></a>';
+    if ($servicePageKey === 'contacts') {
+        $branchesHtml = '';
+        if (!empty($pageData['branches'])) {
+            $branchesHtml = '<p class="contacts-branches__heading">Филиалы и адреса отгрузки</p><div class="contacts-branches"><div class="contacts-branches__grid">';
+            foreach ($pageData['branches'] as $b) {
+                $fullAddress = $b['index'] . ', Россия, ' . $b['city'] . ', ' . $b['address'];
+                $mapsUrl = 'https://yandex.ru/maps/?text=' . rawurlencode($fullAddress);
+                $branchesHtml .= '<a href="' . htmlspecialchars($mapsUrl) . '" target="_blank" rel="noopener noreferrer" class="contacts-branches__card"><strong class="contacts-branches__city">' . htmlspecialchars($b['city']) . '</strong><span class="contacts-branches__address">Адрес: ' . htmlspecialchars($b['address']) . '</span><span class="contacts-branches__index">Индекс: ' . htmlspecialchars($b['index']) . '</span></a>';
+            }
+            $branchesHtml .= '</div></div>';
         }
-        $branchesHtml .= '</div></div>';
-        $pageContent .= $branchesHtml;
+        $pageContent = str_replace('{{BRANCHES}}', $branchesHtml, $pageContent);
     }
     $isServicePage = true;
     require __DIR__ . '/../app/views/layout.php';
