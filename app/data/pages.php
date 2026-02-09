@@ -274,49 +274,49 @@ return [
                     <tbody>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 201</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 210 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Экономичная марка</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 304</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 300 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Самая популярная</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 304L</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 270 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Низкоуглеродистая</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 316</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 450 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Повышенная стойкость</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 316L</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 430 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Для сварных конструкций</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 321</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 340 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Стабилизированная титаном</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 430</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 150 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Ферритная</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;"><strong>AISI 904L</strong></td>
-                            <td style="padding: 0.75rem; border: 1px solid #ddd;">0.1 - 0.7</td>
+                            <td style="padding: 0.75rem; border: 1px solid #ddd;">от 0,05 до 4 мм</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: right;">от 1 300 ₽</td>
                             <td style="padding: 0.75rem; border: 1px solid #ddd;">Супер-аустенитная</td>
                         </tr>
