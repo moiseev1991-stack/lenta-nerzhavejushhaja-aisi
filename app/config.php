@@ -7,7 +7,7 @@ return [
     
     'site_name' => 'Каталог AISI',
     /** Канонический URL сайта (для robots.txt Sitemap и URL в sitemap.xml). Задайте SITE_URL в env при необходимости. */
-    'site_url' => getenv('SITE_URL') ?: 'https://www.lenta-nerzhavejushhaja-aisi.ru',
+    'site_url' => getenv('SITE_URL') ?: 'https://lenta-nerzhavejushhaja-aisi.ru',
     'company' => [
         'name' => 'Компания',
         'url' => 'https://example.com',

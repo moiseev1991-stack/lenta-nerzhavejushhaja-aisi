@@ -5,7 +5,7 @@
  * Базовый URL берётся из config site_url (канонический адрес сайта).
  */
 $config = require __DIR__ . '/../config.php';
-$base = rtrim($config['site_url'] ?? 'https://www.lenta-nerzhavejushhaja-aisi.ru', '/');
+$base = rtrim($config['site_url'] ?? 'https://lenta-nerzhavejushhaja-aisi.ru', '/');
 $today = date('Y-m-d');
 
 $stmt = $pdo->query('SELECT slug, updated_at FROM categories WHERE is_active = 1 ORDER BY slug');
