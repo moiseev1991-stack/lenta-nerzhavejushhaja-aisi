@@ -4131,32 +4131,36 @@ body > .sidebar_bottom,
 .sitemap-products a { color: var(--text-primary); font-weight: 400; }
 .sitemap-products a:hover { color: var(--accent); }
 
-/* Контакты: филиалы и адреса отгрузки (внутри раздела Адрес), без обёртки <a> */
-.branches { margin-top: 12px; }
-.branches__heading { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.75rem; color: var(--text-primary); }
-.branches__grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-@media (min-width: 769px) {
-    .branches__grid { grid-template-columns: repeat(2, 1fr); }
+/* Контакты: филиалы и адреса отгрузки (внутри раздела Адрес) */
+.branches { margin-top: 16px; }
+.branches__title {
+    margin-top: 16px;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+.branches__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
 .branch {
-    padding: 10px 12px;
-    border: 1px solid #eee;
+    padding: 14px 16px;
+    border: 1px solid #eaeaea;
     border-radius: 12px;
     background: #fff;
 }
-.branch__city { font-weight: 700; margin-bottom: 6px; font-size: 1rem; color: var(--text-primary); }
-.branch__address,
-.branch__index { font-size: var(--font-size-sm); color: var(--text-muted); margin: 0; line-height: 1.4; }
-.branch__index { margin-top: 4px; }
-.branch__mapLink {
-    display: inline-block;
-    font-size: 12px;
-    margin-top: 8px;
-    color: #666;
-    text-decoration: none;
-    border: 1px solid #ddd;
-    padding: 4px 10px;
-    border-radius: 6px;
-    background: #f5f5f5;
+.branch__city { font-weight: 700; margin-bottom: 10px; }
+.branch__row {
+    margin-bottom: 6px;
+    line-height: 1.35;
 }
-.branch__mapLink:hover { color: var(--accent); border-color: var(--accent); background: #fff; }
+.branch__row span { font-weight: 600; }
+.branch__map {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 14px;
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .branches__grid { grid-template-columns: 1fr; }
+}
