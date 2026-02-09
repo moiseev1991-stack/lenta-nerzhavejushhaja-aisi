@@ -4149,15 +4149,33 @@ body > .sidebar_bottom,
     border-radius: 12px;
     background: #fff;
 }
-.branch__city { font-weight: 700; margin-bottom: 10px; }
+.branch-item {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #eee;
+}
+.branch-item:last-child {
+    border-bottom: none;
+    padding-bottom: 14px;
+    margin-bottom: 0;
+}
+.branch__city,
+.branch-city {
+    font-weight: 700;
+    margin-top: 14px;
+    margin-bottom: 6px;
+}
+.branch:first-child .branch__city { margin-top: 0; }
 .branch__row {
     margin-bottom: 6px;
     line-height: 1.35;
 }
 .branch__row span { font-weight: 600; }
-.branch__map {
+.branch__map,
+.branch-map {
     display: inline-block;
     margin-top: 8px;
+    margin-bottom: 18px;
     font-size: 14px;
     text-decoration: underline;
 }

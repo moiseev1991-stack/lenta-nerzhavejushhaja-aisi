@@ -240,6 +240,9 @@ if ($isServicePage && isset($pageH1)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="lJje2oYts7avFx49DQ9UI7FABZxaWvGc_agsddRglJ8" />
+    <meta name="yandex-verification" content="47319e102ce82280" />
+    <meta name="msvalidate.01" content="CE786B4895642D0D8F4F389F90B18CC6" />
     <title><?= e($pageTitle ?: $config['site_name']) ?></title>
     <link rel="icon" href="<?= base_url('public/img/favicon.svg') ?>" type="image/svg+xml">
     <?php if ($is404): ?>
