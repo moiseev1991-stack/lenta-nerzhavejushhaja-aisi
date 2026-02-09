@@ -4164,6 +4164,7 @@ body > .sidebar_bottom,
     font-weight: 700;
     margin-top: 14px;
     margin-bottom: 6px;
+    font-size: 1rem;
 }
 .branch:first-child .branch__city { margin-top: 0; }
 .branch__row {
@@ -4175,7 +4176,7 @@ body > .sidebar_bottom,
 .branch-map {
     display: inline-block;
     margin-top: 8px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     font-size: 14px;
     text-decoration: underline;
 }
