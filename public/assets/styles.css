@@ -4149,6 +4149,8 @@ body > .sidebar_bottom,
     border-radius: 12px;
     background: #fff;
 }
+.branch p { margin: 0 0 6px 0; }
+.branch p:last-child { margin-bottom: 0; }
 .branch-item {
     margin-bottom: 18px;
     padding-bottom: 18px;
