@@ -39,6 +39,19 @@ $requestPath = parse_url($requestUri, PHP_URL_PATH);
 // Убираем начальный и конечный слэш
 $requestPath = trim($requestPath, '/');
 
+// Фон главной (img/ в корне проекта)
+if (preg_match('#^img/fon\.(jpg|jpeg|png|webp)$#', $requestPath, $m)) {
+    $ext = strtolower($m[1]);
+    $fonFile = __DIR__ . '/../img/fon.' . $ext;
+    if (is_file($fonFile)) {
+        $types = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp'];
+        header('Content-Type: ' . ($types[$ext] ?? 'image/jpeg'));
+        header('Cache-Control: public, max-age=604800');
+        readfile($fonFile);
+        exit;
+    }
+}
+
 // Логотип из папки img/ в корне проекта (не из public/img/)
 if ($requestPath === 'img/logo_aisi_lenta_full.png') {
     $logoFile = __DIR__ . '/../img/logo_aisi_lenta_full.png';

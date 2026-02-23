@@ -104,7 +104,7 @@
                         </div>
                         <div class="product-card__image">
                             <?php
-                            $ph = base_url('public/img/placeholder-product.svg');
+                            $ph = asset_url('img/placeholder-product.svg');
                             if ($product['image']): ?>
                                 <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
                                      onerror="this.onerror=null;this.src='<?= e($ph) ?>';this.classList.add('product-card__placeholder-img');">
@@ -135,6 +135,18 @@
                     </a>
                 <?php endforeach; ?>
             </div>
+        </div>
+    </section>
+
+    <!-- Прайс/каталог PDF -->
+    <section class="home-pdf-section">
+        <div class="container">
+            <h2 class="section-title">Прайс/каталог (PDF)</h2>
+            <div class="pdf-viewer">
+                <iframe src="<?= e(base_url('files/metallinvest_lenta_shtrips.pdf')) ?>#view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="lazy" title="Просмотр каталога PDF"></iframe>
+            </div>
+            <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="<?= e(base_url('files/metallinvest_lenta_shtrips.pdf')) ?>" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
+            <p><a class="btn btn--primary" href="<?= e(base_url('files/metallinvest_lenta_shtrips.pdf')) ?>" download>Скачать PDF</a></p>
         </div>
     </section>
 </div>

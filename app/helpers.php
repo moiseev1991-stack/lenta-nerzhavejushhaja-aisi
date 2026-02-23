@@ -92,6 +92,17 @@ if (!function_exists('redirect')) {
     }
 }
 
+if (!function_exists('asset_url')) {
+    function asset_url($path) {
+        static $basePath;
+        if ($basePath === null) {
+            $cfg = @(require __DIR__ . '/config.php');
+            $basePath = $cfg['base_path'] ?? '';
+        }
+        return base_url($basePath . ltrim($path, '/'));
+    }
+}
+
 if (!function_exists('base_url')) {
     function base_url($path = '') {
         $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')

@@ -12,7 +12,7 @@ $sectionTitle = $relatedData['is_popular_fallback'] ? 'Популярные то
                 <a href="<?= base_url($rp['category_slug'] . '/' . $rp['slug'] . '/') ?>" class="related-products__card">
                     <div class="related-products__image">
                         <?php
-                        $ph = base_url('public/img/placeholder-product.svg');
+                        $ph = asset_url('img/placeholder-product.svg');
                         if (!empty($rp['image'])): ?>
                             <img src="<?= base_url($rp['image']) ?>" alt="<?= e($rp['name']) ?>" width="200" height="140" loading="lazy"
                                  onerror="this.onerror=null;this.src='<?= e($ph) ?>';this.classList.add('related-products__placeholder-img');">

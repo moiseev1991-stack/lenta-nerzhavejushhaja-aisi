@@ -3145,7 +3145,7 @@ a.toolbar__sort:hover {
 .hero--home {
     position: relative;
     background-color: var(--bg-primary);
-    background-image: url('/public/assets/img/fon.jpg');
+    background-image: url('/img/fon.png');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -4185,4 +4185,29 @@ body > .sidebar_bottom,
 }
 @media (max-width: 768px) {
     .branches__grid { grid-template-columns: 1fr; }
+}
+
+/* PDF viewer (страница О компании, главная) */
+.pdf-viewer {
+    margin: var(--spacing-lg, 24px) 0;
+}
+.pdf-viewer__iframe {
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 12px;
+    width: 100%;
+    height: 900px;
+}
+.pdf-viewer__fallback {
+    margin-top: var(--spacing-sm, 8px);
+    font-size: var(--font-size-sm, 14px);
+    color: var(--text-muted, #6c757d);
+}
+@media (max-width: 768px) {
+    .pdf-viewer__iframe {
+        height: 70vh;
+        min-height: 500px;
+    }
+}
+.home-pdf-section {
+    padding: var(--spacing-2xl, 48px) 0;
 }

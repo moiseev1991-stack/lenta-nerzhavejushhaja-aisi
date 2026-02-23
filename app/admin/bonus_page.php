@@ -64,7 +64,7 @@ $page = $stmt->fetch() ?: ['title' => 'Получить бонус', 'content' =
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Страница «Получить бонус» — Админка</title>
-    <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('assets/styles.css') ?>">
 </head>
 <body>
     <div class="admin-layout">

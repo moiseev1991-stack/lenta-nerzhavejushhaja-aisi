@@ -1,6 +1,9 @@
 <?php
 
 return [
+    /** Префикс для статики. '' когда document root = public/. 'public/' когда root = корень проекта. */
+    'base_path' => getenv('BASE_PATH') ?: '',
+
     // Логин и хеш пароля. На сервере лучше задать через переменные окружения ADMIN_USER и ADMIN_PASS_HASH.
     'admin_user' => getenv('ADMIN_USER') ?: 'admin',
     'admin_pass_hash' => getenv('ADMIN_PASS_HASH') ?: '$2y$10$8Aq/GZZwHpneygV2cpi8Iefm0MLyph9AWVJ1ZW85aTFoTZqGq..5i',
