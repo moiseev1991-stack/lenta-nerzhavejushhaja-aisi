@@ -38,7 +38,7 @@ if ($isHome) {
         'name' => $company['name'] ?? 'Компания',
         'url' => $company['url'] ?? base_url(),
         'telephone' => $company['phone'] ?? '',
-        'logo' => asset_url('img/logo_aisi_lenta_full.png'),
+        'logo' => base_url('public/img/logo_aisi_lenta_full.png'),
         'address' => [
             '@type' => 'PostalAddress',
             'addressLocality' => 'Москва',
@@ -225,7 +225,7 @@ if ($isServicePage && isset($pageH1)) {
             'name' => $company['name'] ?? 'Компания',
             'url' => $company['url'] ?? base_url(),
             'telephone' => $company['phone'] ?? '',
-            'logo' => asset_url('img/logo_aisi_lenta_full.png'),
+            'logo' => base_url('public/img/logo_aisi_lenta_full.png'),
             'address' => [
                 '@type' => 'PostalAddress',
                 'addressLocality' => 'Москва',
@@ -244,7 +244,7 @@ if ($isServicePage && isset($pageH1)) {
     <meta name="yandex-verification" content="47319e102ce82280" />
     <meta name="msvalidate.01" content="CE786B4895642D0D8F4F389F90B18CC6" />
     <title><?= e($pageTitle ?: $config['site_name']) ?></title>
-    <link rel="icon" href="<?= asset_url('img/favicon.svg') ?>" type="image/svg+xml">
+    <link rel="icon" href="<?= base_url('public/img/favicon.svg') ?>" type="image/svg+xml">
     <?php if ($is404): ?>
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
@@ -271,8 +271,8 @@ if ($isServicePage && isset($pageH1)) {
     <meta property="og:image" content="<?= e(base_url(ltrim($product['image'], '/'))) ?>">
     <?php endif; ?>
     <?php endif; ?>
-    <link rel="preload" href="<?= asset_url('assets/styles.css') ?>" as="style">
-    <link rel="stylesheet" href="<?= asset_url('assets/styles.css') ?>">
+    <link rel="preload" href="<?= base_url('public/assets/styles.css') ?>" as="style">
+    <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
     <?php if (!empty($jsonLd)): ?>
     <script type="application/ld+json">
     <?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
@@ -289,7 +289,7 @@ if ($isServicePage && isset($pageH1)) {
                     $hasLogo = file_exists($logoPath);
                     ?>
                     <?php if ($hasLogo): ?>
-                        <img src="<?= asset_url('img/logo_aisi_lenta_full.png') ?>" alt="<?= e($config['site_name']) ?>" class="logo__img">
+                        <img src="<?= base_url('public/img/logo_aisi_lenta_full.png') ?>" alt="<?= e($config['site_name']) ?>" class="logo__img">
                     <?php else: ?>
                         <span class="logo__text"><?= e($config['site_name']) ?></span>
                     <?php endif; ?>

@@ -267,6 +267,8 @@ return [
                 <h3>Контакты</h3>
                 <p><strong>Телефон:</strong> <a href="tel:+78002003943">+7 (800) 200-39-43</a></p>
                 <p><strong>Email:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></p>
+
+                {{PDF_CATALOG}}
             </div>
         ',
     ],

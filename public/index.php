@@ -25,6 +25,7 @@ try {
     require __DIR__ . '/../app/config.php';
     require __DIR__ . '/../app/db.php';
     require __DIR__ . '/../app/helpers.php';
+    require __DIR__ . '/../app/seo.php';
 
     $pdo = db();
 } catch (Exception $e) {
@@ -38,55 +39,6 @@ $requestPath = parse_url($requestUri, PHP_URL_PATH);
 
 // Убираем начальный и конечный слэш
 $requestPath = trim($requestPath, '/');
-
-// Статика из public/ — поддержка обоих форматов: /assets/ и /public/assets/ (для SpaceWeb)
-$staticPath = $requestPath;
-if (strpos($staticPath, 'public/') === 0) {
-    $staticPath = substr($staticPath, 7); // убираем "public/"
-}
-if (preg_match('#^assets/([a-zA-Z0-9_\-/]+\.(css|js))$#', $staticPath, $m) && strpos($m[1], '..') === false) {
-    $file = __DIR__ . '/assets/' . $m[1];
-    if (is_file($file)) {
-        header('Content-Type: ' . ($m[2] === 'css' ? 'text/css' : 'application/javascript'));
-        header('Cache-Control: public, max-age=604800');
-        readfile($file);
-        exit;
-    }
-}
-if (preg_match('#^img/([a-zA-Z0-9_\-]+\.(svg|png|ico))$#', $staticPath, $m)) {
-    $file = __DIR__ . '/img/' . $m[1];
-    if (is_file($file)) {
-        $ct = ['svg' => 'image/svg+xml', 'png' => 'image/png', 'ico' => 'image/x-icon'][$m[2]] ?? 'application/octet-stream';
-        header('Content-Type: ' . $ct);
-        header('Cache-Control: public, max-age=604800');
-        readfile($file);
-        exit;
-    }
-}
-// PDF из public/files/
-if (preg_match('#^files/([a-zA-Z0-9_\-]+\.pdf)$#', $staticPath, $m) && strpos($m[1], '..') === false) {
-    $file = __DIR__ . '/files/' . $m[1];
-    if (is_file($file)) {
-        header('Content-Type: application/pdf');
-        header('Cache-Control: public, max-age=604800');
-        header('Content-Disposition: inline; filename="' . basename($m[1]) . '"');
-        readfile($file);
-        exit;
-    }
-}
-
-// Фон главной (img/ в корне проекта)
-if (preg_match('#^img/fon\.(jpg|jpeg|png|webp)$#', $requestPath, $m)) {
-    $ext = strtolower($m[1]);
-    $fonFile = __DIR__ . '/../img/fon.' . $ext;
-    if (is_file($fonFile)) {
-        $types = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp'];
-        header('Content-Type: ' . ($types[$ext] ?? 'image/jpeg'));
-        header('Cache-Control: public, max-age=604800');
-        readfile($fonFile);
-        exit;
-    }
-}
 
 // Логотип из папки img/ в корне проекта (не из public/img/)
 if ($requestPath === 'img/logo_aisi_lenta_full.png') {
@@ -325,6 +277,18 @@ if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$se
     $pageDescription = $pageData['description'];
     $pageH1 = $pageData['h1'];
     $pageContent = $pageData['content'] ?? '';
+    if ($servicePageKey === 'about') {
+        $pdfUrl = base_url('files/metallinvest_lenta_shtrips.pdf');
+        $pdfBlock = '
+            <h3>Прайс / каталог (PDF)</h3>
+            <div class="pdf-viewer">
+                <iframe src="' . e($pdfUrl) . '#view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="lazy" title="Просмотр каталога PDF"></iframe>
+            </div>
+            <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="' . e($pdfUrl) . '" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
+            <p><a class="btn btn--primary pdf-viewer__download" href="' . e($pdfUrl) . '" download>Скачать PDF</a></p>
+        ';
+        $pageContent = str_replace('{{PDF_CATALOG}}', $pdfBlock, $pageContent);
+    }
     if ($servicePageKey === 'contacts') {
         $branchesHtml = '';
         if (!empty($pageData['branches'])) {

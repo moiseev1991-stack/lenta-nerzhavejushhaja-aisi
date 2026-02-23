@@ -25,7 +25,7 @@ $heroBreadcrumbs = ob_get_clean();
             <div class="product__left">
                 <div class="product__image">
                     <?php
-                    $placeholderUrl = asset_url('img/placeholder-product.svg');
+                    $placeholderUrl = base_url('public/img/placeholder-product.svg');
                     if ($product['image']): ?>
                         <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
                              onerror="this.onerror=null;this.src='<?= e($placeholderUrl) ?>';this.classList.add('product__placeholder-img');">

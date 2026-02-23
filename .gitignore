@@ -32,7 +32,3 @@ composer.lock
 # Конфигурация (если нужно скрыть)
 # app/config.php
 sftp-config.json
-
-# Локальные переменные окружения
-.env
-.env.local
