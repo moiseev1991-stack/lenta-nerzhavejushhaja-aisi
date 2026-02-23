@@ -63,6 +63,17 @@ if (preg_match('#^img/([a-zA-Z0-9_\-]+\.(svg|png|ico))$#', $staticPath, $m)) {
         exit;
     }
 }
+// PDF из public/files/
+if (preg_match('#^files/([a-zA-Z0-9_\-]+\.pdf)$#', $staticPath, $m) && strpos($m[1], '..') === false) {
+    $file = __DIR__ . '/files/' . $m[1];
+    if (is_file($file)) {
+        header('Content-Type: application/pdf');
+        header('Cache-Control: public, max-age=604800');
+        header('Content-Disposition: inline; filename="' . basename($m[1]) . '"');
+        readfile($file);
+        exit;
+    }
+}
 
 // Фон главной (img/ в корне проекта)
 if (preg_match('#^img/fon\.(jpg|jpeg|png|webp)$#', $requestPath, $m)) {

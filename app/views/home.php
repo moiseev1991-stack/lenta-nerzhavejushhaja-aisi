@@ -143,10 +143,10 @@
         <div class="container">
             <h2 class="section-title">Прайс/каталог (PDF)</h2>
             <div class="pdf-viewer">
-                <iframe src="<?= e(base_url('files/metallinvest_lenta_shtrips.pdf')) ?>#view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="lazy" title="Просмотр каталога PDF"></iframe>
+                <iframe src="<?= e(asset_url('files/metallinvest_lenta_shtrips.pdf')) ?>#view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="lazy" title="Просмотр каталога PDF"></iframe>
             </div>
-            <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="<?= e(base_url('files/metallinvest_lenta_shtrips.pdf')) ?>" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
-            <p><a class="btn btn--primary" href="<?= e(base_url('files/metallinvest_lenta_shtrips.pdf')) ?>" download>Скачать PDF</a></p>
+            <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="<?= e(asset_url('files/metallinvest_lenta_shtrips.pdf')) ?>" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
+            <p><a class="btn btn--primary" href="<?= e(asset_url('files/metallinvest_lenta_shtrips.pdf')) ?>" download>Скачать PDF</a></p>
         </div>
     </section>
 </div>
