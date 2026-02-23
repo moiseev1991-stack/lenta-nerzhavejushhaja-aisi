@@ -92,6 +92,23 @@ if (!function_exists('redirect')) {
     }
 }
 
+if (!function_exists('asset_url')) {
+    function asset_url($path) {
+        static $basePath = null;
+        if ($basePath === null) {
+            $configPath = __DIR__ . '/config.php';
+            $basePath = '';
+            if (is_file($configPath)) {
+                $cfg = include $configPath;
+                if (is_array($cfg) && array_key_exists('base_path', $cfg)) {
+                    $basePath = (string)($cfg['base_path'] ?? '');
+                }
+            }
+        }
+        return base_url($basePath . ltrim($path ?? '', '/'));
+    }
+}
+
 if (!function_exists('base_url')) {
     function base_url($path = '') {
         $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
