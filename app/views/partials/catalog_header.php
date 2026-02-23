@@ -18,7 +18,7 @@ sort_aisi_categories($allCategories);
                     <?php if (!isset($product)): ?>
                     <h1><?= e($pageH1) ?></h1>
                     <?php else: ?>
-                    <p class="category-hero__breadcrumb-title"><?= e($category['name']) ?></p>
+                    <h1><?= e($pageH1) ?></h1>
                     <?php endif; ?>
                     <?php if (isset($productsCount)): ?>
                     <span class="category-hero__count">Найдено: <?= (int) $productsCount ?></span>
@@ -48,7 +48,6 @@ sort_aisi_categories($allCategories);
                     <?php endif; ?>
                     <button type="button" class="btn btn--primary hero-card__cta js-open-request-modal">Оставить заявку</button>
                     <p class="hero-card__subtitle">Ответим за 15 минут, подберём марку и размеры</p>
-                    <p class="hero-card__pdf" style="margin-top: 12px;"><a class="btn btn--primary btn--block" href="<?= e(asset_url('files/metallinvest_lenta_shtrips.pdf')) ?>" download>Скачать PDF</a></p>
                 </div>
             </aside>
         </div>

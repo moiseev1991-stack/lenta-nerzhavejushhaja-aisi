@@ -25,7 +25,7 @@ $heroBreadcrumbs = ob_get_clean();
             <div class="product__left">
                 <div class="product__image">
                     <?php
-                    $placeholderUrl = base_url('public/img/placeholder-product.svg');
+                    $placeholderUrl = asset_url('img/placeholder-product.svg');
                     if ($product['image']): ?>
                         <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
                              onerror="this.onerror=null;this.src='<?= e($placeholderUrl) ?>';this.classList.add('product__placeholder-img');">
@@ -35,9 +35,9 @@ $heroBreadcrumbs = ob_get_clean();
                 </div>
             </div>
 
-            <!-- Информация (H1 по SEO-шаблону: тип + AISI + марка + размер) -->
+            <!-- Информация (H1 уже в hero, здесь — название товара для блока) -->
             <div class="product__info">
-                <h1 class="product__name"><?= e($pageH1) ?></h1>
+                <p class="product__name"><?= e($pageH1) ?></p>
                 
                 <div class="product__price-block">
                     <div class="product__price"><?= format_price($product['price_per_kg']) ?></div>
