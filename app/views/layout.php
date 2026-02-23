@@ -248,8 +248,11 @@ if ($isServicePage && isset($pageH1)) {
     <?php if ($is404): ?>
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
-    <?php if ($pageDescription ?? ''): ?>
-    <meta name="description" content="<?= e($pageDescription) ?>">
+    <?php
+    $metaDescription = trim(preg_replace('/\s+/', ' ', (string)($pageDescription ?? '')));
+    if ($metaDescription !== ''):
+    ?>
+    <meta name="description" content="<?= e($metaDescription) ?>">
     <?php endif; ?>
     <?php if ($isProduct && !empty($product['category_slug']) && !empty($product['slug'])): ?>
     <link rel="canonical" href="<?= e(base_url($product['category_slug'] . '/' . $product['slug'] . '/')) ?>">
@@ -264,7 +267,8 @@ if ($isServicePage && isset($pageH1)) {
     <?php if ($isProduct || $isCategory): ?>
     <meta property="og:type" content="<?= $isProduct ? 'product' : 'website' ?>">
     <meta property="og:title" content="<?= e($pageTitle) ?>">
-    <meta property="og:description" content="<?= e($pageDescription) ?>">
+    <meta property="og:description" content="<?= e($metaDescription ?? '') ?>">
+    <meta name="twitter:description" content="<?= e($metaDescription ?? '') ?>">
     <meta property="og:url" content="<?= e($isProduct ? base_url($product['category_slug'] . '/' . $product['slug'] . '/') : base_url($category['slug'] . '/')) ?>">
     <meta property="og:locale" content="ru_RU">
     <?php if ($isProduct && !empty($product['image'])): ?>

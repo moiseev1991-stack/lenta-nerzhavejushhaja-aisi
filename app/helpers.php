@@ -271,13 +271,23 @@ if (!function_exists('seo_product_title')) {
 
 /**
  * SEO Description для карточки товара
+ * Шаблон: {Название товара}. Подберём марку и размеры, ответим за 15 минут. Доставка по РФ. Цена по запросу.
+ * Уникален для каждого товара.
  */
 if (!function_exists('seo_product_description')) {
     function seo_product_description(array $product, array $config) {
-        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
-        $grade = seo_grade_part($product['category_name'] ?? 'AISI');
-        $phone = $config['company']['phone'] ?? '+7 (800) 200-39-43';
-        return 'Продажа ' . $type . ' ' . $grade . ' оптом и в розницу. ✅ В наличии на складе. ✅ Доставка по России от 1 дня. ✅ Сертификаты качества. Звоните: ' . $phone . '!';
+        $overrideDesc = trim((string) ($product['meta_description'] ?? ''));
+        if ($overrideDesc !== '') {
+            return $overrideDesc;
+        }
+        $baseName = trim((string) ($product['name'] ?? ''));
+        if ($baseName === '') {
+            $baseName = str_replace('-', ' ', $product['slug'] ?? '');
+            $baseName = preg_replace('/\s+/', ' ', $baseName);
+            $baseName = str_ireplace([' aisi ', ' mm '], [' AISI ', ' мм '], ' ' . $baseName . ' ');
+            $baseName = trim($baseName);
+        }
+        return $baseName . '. Подберём марку и размеры, ответим за 15 минут. Доставка по РФ. Цена по запросу.';
     }
 }
 
