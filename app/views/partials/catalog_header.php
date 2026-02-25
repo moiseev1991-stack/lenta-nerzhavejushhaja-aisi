@@ -48,6 +48,7 @@ sort_aisi_categories($allCategories);
                     <?php endif; ?>
                     <button type="button" class="btn btn--primary hero-card__cta js-open-request-modal">Оставить заявку</button>
                     <p class="hero-card__subtitle">Ответим за 15 минут, подберём марку и размеры</p>
+                    <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" download class="btn btn--primary hero-card__cta hero-card__pdf-btn">Скачать PDF</a>
                 </div>
             </aside>
         </div>

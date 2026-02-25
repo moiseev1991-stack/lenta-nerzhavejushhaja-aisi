@@ -321,6 +321,7 @@ if ($isServicePage && isset($pageH1)) {
                         <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Получить бонус</a>
                     </div>
                     <div class="header__nav-contacts">
+                        <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" download class="btn btn--primary header__pdf-btn">Скачать PDF</a>
                         <a href="tel:+78002003943" class="header__contact header__contact--phone">+7 (800) 200-39-43</a>
                     </div>
                 </nav>
@@ -461,6 +462,13 @@ if ($isServicePage && isset($pageH1)) {
                         <li><a href="mailto:ev18011@yandex.ru" class="footer__link">ev18011@yandex.ru</a></li>
                     </ul>
                 </div>
+            </div>
+            <div class="footer__pdf-row">
+                <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" download class="btn btn--primary footer__pdf-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Скачать PDF
+                </a>
+                <span class="footer__pdf-hint">Прайс-лист нержавеющей ленты AISI</span>
             </div>
             <p class="footer__copy">
                 &copy; <?= date('Y') ?> <?= e($config['site_name']) ?>

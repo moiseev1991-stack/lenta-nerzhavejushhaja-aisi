@@ -90,6 +90,36 @@
     </section>
     <?php endif; ?>
 
+    <!-- PDF прайс-лист / каталог -->
+    <section class="pdf-section">
+        <div class="container">
+            <div class="pdf-section__inner">
+                <div class="pdf-section__header">
+                    <h2 class="pdf-section__title">Прайс-лист нержавеющей ленты</h2>
+                    <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" download class="btn btn--primary pdf-section__btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Скачать PDF
+                    </a>
+                </div>
+                <div class="pdf-viewer">
+                    <iframe
+                        src="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>#view=FitH"
+                        width="100%"
+                        height="700"
+                        class="pdf-viewer__iframe"
+                        loading="lazy"
+                        title="Прайс-лист нержавеющей ленты AISI"
+                    ></iframe>
+                </div>
+                <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
+                <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" download class="btn btn--primary pdf-viewer__download">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Скачать PDF
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Популярные товары -->
     <section class="products-section">
         <div class="container">
