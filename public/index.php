@@ -132,8 +132,8 @@ if ($requestPath === '' || $requestPath === '/') {
 }
 
 // Админка
-if (strpos($requestPath, 'admin/') === 0) {
-    $adminPath = substr($requestPath, 6); // убираем 'admin/'
+if ($requestPath === 'admin' || strpos($requestPath, 'admin/') === 0) {
+    $adminPath = $requestPath === 'admin' ? '' : substr($requestPath, 6); // убираем 'admin/'
     
     if ($adminPath === 'login') {
         require __DIR__ . '/../app/admin/login.php';
