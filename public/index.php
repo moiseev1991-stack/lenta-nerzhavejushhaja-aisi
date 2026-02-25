@@ -64,6 +64,23 @@ if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.(png|webp))$#', $requestPat
     }
 }
 
+// Скачиваемые файлы (public/files/) — PDF и другие документы
+if (preg_match('#^files/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
+    $filename = basename($m[1]);
+    if ($filename !== '' && strpos($filename, '..') === false && preg_match('/\.(pdf|doc|docx|xls|xlsx)$/i', $filename)) {
+        $file = __DIR__ . '/files/' . $filename;
+        if (file_exists($file) && is_file($file)) {
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $mimeTypes = ['pdf' => 'application/pdf', 'doc' => 'application/msword', 'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'xls' => 'application/vnd.ms-excel', 'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            header('Content-Type: ' . ($mimeTypes[$ext] ?? 'application/octet-stream'));
+            header('Content-Length: ' . filesize($file));
+            header('Cache-Control: public, max-age=86400');
+            readfile($file);
+            exit;
+        }
+    }
+}
+
 // Загруженные в админке картинки товаров (public/uploads/)
 if (preg_match('#^uploads/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
     $filename = $m[1];
