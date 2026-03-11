@@ -3284,7 +3284,7 @@ a.toolbar__sort:hover {
 .hero--home {
     position: relative;
     background-color: var(--bg-primary);
-    background-image: url('/img/fon-hero.png');
+    /* background-image задаётся inline через asset_url() в home.php (учитывает base_path хостинга) */
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;

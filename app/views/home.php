@@ -4,7 +4,7 @@
 
 <div class="home-page">
     <!-- Hero блок главной -->
-    <section class="hero hero--home">
+    <section class="hero hero--home" style="background-image: url('<?= asset_url('img/fon-hero.png') ?>')">
         <div class="container">
             <div class="hero__inner hero__inner--centered">
                 <div class="hero__logo">
