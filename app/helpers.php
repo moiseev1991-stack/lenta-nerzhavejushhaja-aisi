@@ -401,7 +401,7 @@ if (!function_exists('generate_product_description_auto')) {
             $applicationBlock,
             $weightBlock,
             $serviceBlock,
-        ], fn($b) => $b !== '');
+        ], function($b) { return $b !== ''; });
 
         return implode(' ', $blocks);
     }
