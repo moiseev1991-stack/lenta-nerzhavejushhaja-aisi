@@ -14,6 +14,21 @@ $requestPath = parse_url($requestUri, PHP_URL_PATH);
 $requestPath = ltrim($requestPath, '/');
 
 
+// Картинки товаров из img/product_images_named (в корне проекта, не в public/)
+if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
+    $filename = basename(rawurldecode($m[1]));
+    if ($filename !== '' && strpos($filename, '..') === false && preg_match('/\.(jpg|jpeg|png)$/i', $filename)) {
+        $imgFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'product_images_named' . DIRECTORY_SEPARATOR . $filename;
+        if (file_exists($imgFile) && is_file($imgFile)) {
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            header('Content-Type: ' . ($ext === 'png' ? 'image/png' : 'image/jpeg'));
+            header('Cache-Control: public, max-age=604800');
+            readfile($imgFile);
+            exit;
+        }
+    }
+}
+
 // Если это файл и он существует - отдаем как есть
 if ($requestPath && $requestPath !== 'index.php' && $requestPath !== 'router.php') {
     // Проверяем в __DIR__ (public/) и в document root (может быть корень проекта при -t .)

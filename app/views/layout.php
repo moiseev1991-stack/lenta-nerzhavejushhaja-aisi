@@ -38,7 +38,7 @@ if ($isHome) {
         'name' => $company['name'] ?? 'Компания',
         'url' => $company['url'] ?? base_url(),
         'telephone' => $company['phone'] ?? '',
-        'logo' => base_url('public/img/logo_aisi_lenta_full.png'),
+        'logo' => asset_url('img/logo_aisi_lenta_full.png'),
         'address' => [
             '@type' => 'PostalAddress',
             'addressLocality' => 'Москва',
@@ -83,11 +83,16 @@ if ($isProduct) {
         'name' => $product['name'],
         'sku' => (string)$product['id'],
         'brand' => ['@type' => 'Brand', 'name' => 'AISI'],
-        'image' => !empty($product['image']) ? base_url(ltrim($product['image'], '/')) : null,
+        'material' => 'Нержавеющая сталь ' . ($product['category_name'] ?? ''),
+        'image' => !empty($product['image']) ? image_url($product['image']) : null,
         'offers' => $productOffer,
     ];
-    if (!empty($product['description'])) {
-        $productLd['description'] = $product['description'];
+    $productSchemaDesc = trim((string)($product['description'] ?? ''));
+    if ($productSchemaDesc === '') {
+        $productSchemaDesc = generate_product_description_auto($product);
+    }
+    if ($productSchemaDesc !== '') {
+        $productLd['description'] = $productSchemaDesc;
     }
     $additionalProps = [];
     if (isset($product['thickness']) && $product['thickness'] !== '' && $product['thickness'] !== null) {
@@ -136,6 +141,19 @@ if ($isCategory) {
     $pageTitle = seo_category_title($category, $minPrice, $config);
     $pageDescription = seo_category_description($category, $config);
     $pageH1 = seo_category_h1($category, $config);
+    // Pagination rel links data (used later in <head>)
+    $catPaginationLinks = [];
+    if (isset($pagination) && is_array($pagination) && ($pagination['total_pages'] ?? 1) > 1) {
+        $curr = (int)($pagination['current_page'] ?? 1);
+        $totalP = (int)($pagination['total_pages'] ?? 1);
+        $catBase = base_url($category['slug'] . '/');
+        if ($curr > 1) {
+            $catPaginationLinks['prev'] = $curr === 2 ? $catBase : $catBase . '?page=' . ($curr - 1);
+        }
+        if ($curr < $totalP) {
+            $catPaginationLinks['next'] = $catBase . '?page=' . ($curr + 1);
+        }
+    }
     
     // BreadcrumbList для категории
     $jsonLd[] = [
@@ -225,7 +243,7 @@ if ($isServicePage && isset($pageH1)) {
             'name' => $company['name'] ?? 'Компания',
             'url' => $company['url'] ?? base_url(),
             'telephone' => $company['phone'] ?? '',
-            'logo' => base_url('public/img/logo_aisi_lenta_full.png'),
+            'logo' => asset_url('img/logo_aisi_lenta_full.png'),
             'address' => [
                 '@type' => 'PostalAddress',
                 'addressLocality' => 'Москва',
@@ -244,7 +262,7 @@ if ($isServicePage && isset($pageH1)) {
     <meta name="yandex-verification" content="47319e102ce82280" />
     <meta name="msvalidate.01" content="CE786B4895642D0D8F4F389F90B18CC6" />
     <title><?= e($pageTitle ?: $config['site_name']) ?></title>
-    <link rel="icon" href="<?= base_url('public/img/favicon.svg') ?>" type="image/svg+xml">
+    <link rel="icon" href="<?= asset_url('img/favicon.svg') ?>" type="image/svg+xml">
     <?php if ($is404): ?>
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
@@ -258,11 +276,19 @@ if ($isServicePage && isset($pageH1)) {
     <link rel="canonical" href="<?= e(base_url($product['category_slug'] . '/' . $product['slug'] . '/')) ?>">
     <?php endif; ?>
     <?php if ($isCategory):
+        // Canonical: strip filter params, keep only ?page=N for paginated pages
+        $catPageNum = isset($_GET['page']) && (int)$_GET['page'] > 1 ? (int)$_GET['page'] : null;
         $catCanonical = base_url($category['slug'] . '/');
-        if (!empty($_GET)) $catCanonical .= '?' . http_build_query($_GET);
+        if ($catPageNum) $catCanonical .= '?page=' . $catPageNum;
     ?>
     <link rel="canonical" href="<?= e($catCanonical) ?>">
     <meta name="robots" content="index,follow">
+    <?php if (!empty($catPaginationLinks['prev'])): ?>
+    <link rel="prev" href="<?= e($catPaginationLinks['prev']) ?>">
+    <?php endif; ?>
+    <?php if (!empty($catPaginationLinks['next'])): ?>
+    <link rel="next" href="<?= e($catPaginationLinks['next']) ?>">
+    <?php endif; ?>
     <?php endif; ?>
     <?php if ($isProduct || $isCategory): ?>
     <meta property="og:type" content="<?= $isProduct ? 'product' : 'website' ?>">
@@ -272,11 +298,11 @@ if ($isServicePage && isset($pageH1)) {
     <meta property="og:url" content="<?= e($isProduct ? base_url($product['category_slug'] . '/' . $product['slug'] . '/') : base_url($category['slug'] . '/')) ?>">
     <meta property="og:locale" content="ru_RU">
     <?php if ($isProduct && !empty($product['image'])): ?>
-    <meta property="og:image" content="<?= e(base_url(ltrim($product['image'], '/'))) ?>">
+    <meta property="og:image" content="<?= e(image_url($product['image'])) ?>">
     <?php endif; ?>
     <?php endif; ?>
-    <link rel="preload" href="<?= base_url('public/assets/styles.css') ?>" as="style">
-    <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
+    <link rel="preload" href="<?= asset_url('assets/styles.css') ?>" as="style">
+    <link rel="stylesheet" href="<?= asset_url('assets/styles.css') ?>">
     <?php if (!empty($jsonLd)): ?>
     <script type="application/ld+json">
     <?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
@@ -293,7 +319,7 @@ if ($isServicePage && isset($pageH1)) {
                     $hasLogo = file_exists($logoPath);
                     ?>
                     <?php if ($hasLogo): ?>
-                        <img src="<?= base_url('public/img/logo_aisi_lenta_full.png') ?>" alt="<?= e($config['site_name']) ?>" class="logo__img">
+                        <img src="<?= asset_url('img/logo_aisi_lenta_full.png') ?>" alt="<?= e($config['site_name']) ?>" class="logo__img">
                     <?php else: ?>
                         <span class="logo__text"><?= e($config['site_name']) ?></span>
                     <?php endif; ?>

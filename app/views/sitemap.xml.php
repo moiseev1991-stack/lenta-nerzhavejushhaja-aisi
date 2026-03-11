@@ -26,13 +26,15 @@ function sitemapLastmod($updatedAt, $default) {
     return $ts ? date('Y-m-d', $ts) : $default;
 }
 
+$servicePages = ['about', 'delivery', 'payment', 'contacts', 'price', 'sitemap', 'privacy-policy'];
+
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc><?= htmlspecialchars($base . '/') ?></loc>
         <lastmod><?= $today ?></lastmod>
-        <changefreq>daily</changefreq>
+        <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
 <?php foreach ($categories as $cat): ?>
@@ -40,15 +42,23 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <loc><?= htmlspecialchars($base . '/' . $cat['slug'] . '/') ?></loc>
         <lastmod><?= sitemapLastmod($cat['updated_at'] ?? null, $today) ?></lastmod>
         <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
+        <priority>0.8</priority>
     </url>
 <?php endforeach; ?>
 <?php foreach ($products as $row): ?>
     <url>
         <loc><?= htmlspecialchars($base . '/' . $row['category_slug'] . '/' . $row['product_slug'] . '/') ?></loc>
         <lastmod><?= sitemapLastmod($row['updated_at'] ?? null, $today) ?></lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+<?php endforeach; ?>
+<?php foreach ($servicePages as $slug): ?>
+    <url>
+        <loc><?= htmlspecialchars($base . '/' . $slug . '/') ?></loc>
+        <lastmod><?= $today ?></lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.3</priority>
     </url>
 <?php endforeach; ?>
 </urlset>

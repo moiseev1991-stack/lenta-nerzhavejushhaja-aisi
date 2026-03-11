@@ -56,8 +56,9 @@ if (!function_exists('ensure_product_image')) {
         if (strpos($img, 'uploads/') !== 0) {
             return;
         }
-        $filename = basename($product['image']);
-        $path = rtrim($uploadsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
+        // Сохраняем полный относительный путь внутри uploads/ (включая подпапки вроде products/)
+        $subpath = substr($img, strlen('uploads/'));
+        $path = rtrim($uploadsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $subpath);
         if (!is_file($path)) {
             $product['image'] = '';
             resolve_product_image($product, $imagesDir);
@@ -89,6 +90,17 @@ if (!function_exists('redirect')) {
         
         header('Location: ' . $url);
         exit;
+    }
+}
+
+/** URL для изображений (uploads/, img/...) — всегда через asset_url с учётом base_path */
+if (!function_exists('image_url')) {
+    function image_url($path) {
+        $path = ltrim($path ?? '', '/');
+        if (strpos($path, 'public/') === 0) {
+            $path = substr($path, 7);
+        }
+        return $path !== '' ? asset_url($path) : '';
     }
 }
 
@@ -270,24 +282,142 @@ if (!function_exists('seo_product_title')) {
 }
 
 /**
- * SEO Description для карточки товара
- * Шаблон: {Название товара}. Подберём марку и размеры, ответим за 15 минут. Доставка по РФ. Цена по запросу.
- * Уникален для каждого товара.
+ * Автогенерация уникального описания для карточки товара из 7 блоков.
+ * Описание уникально для каждого SKU за счёт комбинации параметров.
+ */
+if (!function_exists('generate_product_description_auto')) {
+    function generate_product_description_auto(array $product): string {
+        $grade     = strtoupper(trim((string)($product['category_name'] ?? '')));
+        $thickness = isset($product['thickness']) && $product['thickness'] !== '' ? (float)$product['thickness'] : null;
+        $width     = isset($product['width'])     && $product['width']     !== '' ? (float)$product['width']     : null;
+        $surface   = trim((string)($product['surface']   ?? ''));
+        $condition = trim((string)($product['condition'] ?? ''));
+        $price     = isset($product['price_per_kg']) && (float)$product['price_per_kg'] > 0 ? (float)$product['price_per_kg'] : null;
+        $inStock   = !empty($product['in_stock']);
+
+        // Блок 1 — вводное предложение по марке
+        $intros = [
+            'AISI 201'   => 'Аустенитная нержавеющая лента с марганцем вместо никеля, бюджетный аналог серии 300; соответствует 12Х15Г9НД по ГОСТ 5632.',
+            'AISI 202'   => 'Аустенитная лента серии 200 с частичной заменой никеля марганцем и азотом; аналог 12Х17Г9АН4 по ГОСТ 5632.',
+            'AISI 301'   => 'Аустенитная лента с высокой степенью упрочнения наклёпом — идеальна для пружинных и упругих элементов; аналог 12Х17Н7.',
+            'AISI 304'   => 'Аустенитная нержавеющая лента с высокой коррозионной стойкостью — универсальная базовая марка; аналог 08Х18Н10 по ГОСТ 5632.',
+            'AISI 304L'  => 'Аустенитная лента с пониженным содержанием углерода (≤ 0,03 %), исключает межкристаллитную коррозию в сварных узлах; аналог 03Х18Н11.',
+            'AISI 310'   => 'Жаростойкая аустенитная лента для эксплуатации до 1100 °C, высокое содержание Cr и Ni; аналог 20Х23Н18 по ГОСТ 5632.',
+            'AISI 310S'  => 'Жаростойкая лента с пониженным углеродом — лучшая свариваемость при сохранении жаропрочности до 1100 °C; близкий аналог 08Х23Н18.',
+            'AISI 316'   => 'Аустенитная кислотостойкая лента с молибденом (2–3 %), стойкая к хлоридам и морской воде; аналог 08Х17Н13М2 по ГОСТ 5632.',
+            'AISI 316L'  => 'Кислотостойкая лента с молибденом и пониженным углеродом (≤ 0,03 %) для сварных конструкций в агрессивных средах; аналог 03Х17Н14М3.',
+            'AISI 316Ti' => 'Кислотостойкая лента с молибденом и титановой стабилизацией — выдерживает нагрев и агрессивные среды одновременно; аналог 08Х17Н13М2Т.',
+            'AISI 321'   => 'Жаростойкая Ti-стабилизированная лента для работы при 450–850 °C без риска МКК; аналог 12Х18Н10Т по ГОСТ 5632.',
+            'AISI 409'   => 'Ферритная лента с минимальным содержанием хрома (10,5–11,75 %), бюджетная марка для выхлопных систем; близкий аналог 08Х13.',
+            'AISI 420'   => 'Мартенситная лента, закаливается до высокой твёрдости — применяется для ножей, пружин и режущего инструмента; аналог 20Х13/30Х13.',
+            'AISI 430'   => 'Базовая ферритная магнитная лента с хорошей стойкостью к атмосферным воздействиям и умеренным средам; аналог 08Х17 по ГОСТ 5632.',
+            'AISI 431'   => 'Мартенситная лента с добавлением никеля — повышенная прочность и твёрдость после термообработки; аналог 14Х17Н2 по ГОСТ 5632.',
+            'AISI 439'   => 'Ферритная Ti-стабилизированная лента для выхлопных систем и теплообменников; близкий аналог 08Х17Т по ГОСТ 5632.',
+            'AISI 441'   => 'Ферритная лента с двойной стабилизацией Ti+Nb — повышенная термостойкость в автомобильных и теплообменных применениях; близкий аналог 08Х17Т.',
+            'AISI 904L'  => 'Супераустенитная лента с высоким содержанием Ni (23–28 %) и молибдена (4–5 %) — исключительная стойкость к серной кислоте и морской воде; аналог 06ХН28МДТ.',
+        ];
+        // Нормализуем название марки для поиска
+        $gradeKey = preg_replace('/^AISI\s+/i', 'AISI ', $grade);
+        $intro = $intros[$gradeKey] ?? ('Нержавеющая лента ' . $gradeKey . ' — коррозионностойкая сталь.');
+
+        // Блок 2 — параметры
+        $parts = [];
+        if ($thickness !== null) {
+            $parts[] = 'Толщина ' . rtrim(rtrim(number_format($thickness, 4, ',', ''), '0'), ',') . ' мм';
+        }
+        if ($width !== null) {
+            $parts[] = 'ширина ' . rtrim(rtrim(number_format($width, 2, ',', ''), '0'), ',') . ' мм';
+        }
+        if ($surface !== '') {
+            $parts[] = 'поверхность ' . $surface;
+        }
+        $conditionLabels = ['soft' => 'мягкая', 'hard' => 'нагартованная', 'semi_hard' => 'полугартованная'];
+        $condLabel = $conditionLabels[$condition] ?? $condition;
+        if ($condLabel !== '') {
+            $parts[] = 'состояние — ' . $condLabel;
+        }
+        $paramsBlock = count($parts) ? ucfirst(implode(', ', $parts)) . '.' : '';
+
+        // Блок 3 — расшифровка поверхности
+        $surfaceDescriptions = [
+            'BA'  => 'Поверхность BA (bright annealed) — зеркально-гладкая, высокая отражательная способность после светлого отжига в защитной атмосфере.',
+            '2B'  => 'Поверхность 2B — ровная матовая после холодной прокатки, рекристаллизационного отжига и лёгкого дрессировочного прохода.',
+            '2BA' => 'Поверхность 2BA — промежуточный вариант: признаки светлого отжига при сохранении матовости 2B.',
+            '4N'  => 'Поверхность 4N — шлифованная, равномерный матовый блеск без направленной структуры.',
+        ];
+        $surfaceBlock = isset($surfaceDescriptions[$surface]) ? $surfaceDescriptions[$surface] : '';
+
+        // Блок 4 — расшифровка состояния
+        $conditionDescriptions = [
+            'soft'      => 'Мягкое (отожжённое) состояние обеспечивает максимальную пластичность для глубокой вытяжки, гибки и штамповки.',
+            'hard'      => 'Нагартованное состояние — повышенная твёрдость и упругость за счёт пластической деформации при холодной прокатке.',
+            'semi_hard' => 'Полугартованное состояние — промежуточный баланс пластичности и упругости; подходит для формования с умеренными деформациями.',
+        ];
+        $conditionBlock = isset($conditionDescriptions[$condition]) ? $conditionDescriptions[$condition] : '';
+
+        // Блок 5 — применение по диапазону толщины
+        $applicationBlock = '';
+        if ($thickness !== null) {
+            if ($thickness <= 0.20) {
+                $applicationBlock = 'Тонкая лента — для экранирования, прокладок, обмотки, облицовки и точных пружинных элементов.';
+            } elseif ($thickness <= 0.50) {
+                $applicationBlock = 'Подходит для кожухов, коробов, бандажных лент и несложной штамповки.';
+            } elseif ($thickness <= 0.80) {
+                $applicationBlock = 'Монтажные перфоленты, элементы вентиляции, кабельные трассы и несущие кронштейны лёгкой серии.';
+            } elseif ($thickness <= 1.50) {
+                $applicationBlock = 'Кронштейны, хомуты, траверсы и силовые монтажные полосы повышенной жёсткости.';
+            } else {
+                $applicationBlock = 'Силовые детали и крепления повышенной жёсткости для нагруженных узлов.';
+            }
+        }
+
+        // Блок 6 — расчётная масса 1 п.м.
+        $weightBlock = '';
+        if ($thickness !== null && $width !== null) {
+            $densities = [
+                'AISI 201' => 7800, 'AISI 202' => 7800,
+                'AISI 301' => 7930, 'AISI 304' => 7930, 'AISI 304L' => 7930,
+                'AISI 310' => 7930, 'AISI 310S' => 7930,
+                'AISI 316' => 7930, 'AISI 316L' => 7930, 'AISI 316Ti' => 7930,
+                'AISI 321' => 7930,
+                'AISI 409' => 7700, 'AISI 420' => 7700, 'AISI 430' => 7700,
+                'AISI 431' => 7700, 'AISI 439' => 7700, 'AISI 441' => 7700,
+                'AISI 904L' => 7990,
+            ];
+            $density = $densities[$gradeKey] ?? 7900;
+            $massPerMeter = round($thickness / 1000 * $width / 1000 * $density, 4);
+            $massStr = rtrim(rtrim(number_format($massPerMeter, 4, ',', ' '), '0'), ',');
+            $weightBlock = 'Теоретическая масса 1 п.м.: ' . $massStr . ' кг (плотность ' . number_format($density, 0, ',', ' ') . ' кг/м³).';
+        }
+
+        // Блок 7 — сервис
+        $serviceBlock = 'Отматываем от 1 метра, режем в размер от 2,5 мм. Склад в Москве, доставка по РФ. Сертификаты качества EN 10204.';
+
+        $blocks = array_filter([
+            $intro,
+            $paramsBlock,
+            $surfaceBlock,
+            $conditionBlock,
+            $applicationBlock,
+            $weightBlock,
+            $serviceBlock,
+        ], fn($b) => $b !== '');
+
+        return implode(' ', $blocks);
+    }
+}
+
+/**
+ * SEO Description для карточки товара.
+ * Использует поле description из БД как override, затем автогенерацию.
  */
 if (!function_exists('seo_product_description')) {
     function seo_product_description(array $product, array $config) {
-        $overrideDesc = trim((string) ($product['meta_description'] ?? ''));
+        $overrideDesc = trim((string) ($product['description'] ?? ''));
         if ($overrideDesc !== '') {
             return $overrideDesc;
         }
-        $baseName = trim((string) ($product['name'] ?? ''));
-        if ($baseName === '') {
-            $baseName = str_replace('-', ' ', $product['slug'] ?? '');
-            $baseName = preg_replace('/\s+/', ' ', $baseName);
-            $baseName = str_ireplace([' aisi ', ' mm '], [' AISI ', ' мм '], ' ' . $baseName . ' ');
-            $baseName = trim($baseName);
-        }
-        return $baseName . '. Подберём марку и размеры, ответим за 15 минут. Доставка по РФ. Цена по запросу.';
+        return generate_product_description_auto($product);
     }
 }
 
@@ -304,10 +434,14 @@ if (!function_exists('seo_product_h1')) {
 }
 
 /**
- * SEO Title для категории
+ * SEO Title для категории. Использует поле title из БД как override.
  */
 if (!function_exists('seo_category_title')) {
     function seo_category_title(array $category, $minPrice, array $config) {
+        $override = trim((string)($category['title'] ?? ''));
+        if ($override !== '') {
+            return $override;
+        }
         $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($category['name'] ?? 'AISI');
         $city = $config['seo']['city_default'] ?? 'Москве и РФ';
@@ -318,10 +452,14 @@ if (!function_exists('seo_category_title')) {
 }
 
 /**
- * SEO Description для категории
+ * SEO Description для категории. Использует поле description из БД как override.
  */
 if (!function_exists('seo_category_description')) {
     function seo_category_description(array $category, array $config) {
+        $override = trim((string)($category['description'] ?? ''));
+        if ($override !== '') {
+            return $override;
+        }
         $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($category['name'] ?? 'AISI');
         $phone = $config['company']['phone'] ?? '+7 (800) 200-39-43';
@@ -334,6 +472,10 @@ if (!function_exists('seo_category_description')) {
  */
 if (!function_exists('seo_category_h1')) {
     function seo_category_h1(array $category, array $config) {
+        $override = trim((string)($category['h1'] ?? ''));
+        if ($override !== '') {
+            return $override;
+        }
         $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($category['name'] ?? 'AISI');
         return trim($type . ' ' . $grade);

@@ -2,8 +2,6 @@
 User-agent: *
 Allow: /$
 Allow: /aisi-
-Allow: /bonus
-Allow: /bonus/
 Allow: /about
 Allow: /about/
 Allow: /price
@@ -22,6 +20,7 @@ Allow: /privacy-policy/
 Disallow: /admin/
 Disallow: /assets/
 Disallow: /uploads/
+Disallow: /bonus/
 Disallow: /*?
 
 Sitemap: <?= $base ?>/sitemap.xml

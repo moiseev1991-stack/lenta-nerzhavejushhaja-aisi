@@ -1996,6 +1996,45 @@ a.toolbar__sort:hover {
     color: var(--text-muted);
 }
 
+/* Блок описания товара */
+.product-description {
+    margin-top: 40px;
+    padding: 28px 32px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-primary);
+}
+
+.product-description p {
+    margin: 0;
+}
+
+.product-description__link {
+    margin-top: 20px;
+}
+
+.product-description__link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.product-description__link a:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
 /* Блок похожих/популярных товаров на странице товара */
 .related-products {
     margin-top: 48px;
@@ -3245,7 +3284,7 @@ a.toolbar__sort:hover {
 .hero--home {
     position: relative;
     background-color: var(--bg-primary);
-    background-image: url('/public/assets/img/fon.jpg');
+    background-image: url('/img/fon-hero.png');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;

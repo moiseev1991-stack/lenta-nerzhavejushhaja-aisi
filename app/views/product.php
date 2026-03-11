@@ -27,7 +27,7 @@ $heroBreadcrumbs = ob_get_clean();
                     <?php
                     $placeholderUrl = asset_url('img/placeholder-product.svg');
                     if ($product['image']): ?>
-                        <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
+                        <img src="<?= image_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
                              onerror="this.onerror=null;this.src='<?= e($placeholderUrl) ?>';this.classList.add('product__placeholder-img');">
                     <?php else: ?>
                         <img src="<?= $placeholderUrl ?>" alt="" class="product__placeholder-img">
@@ -81,6 +81,18 @@ $heroBreadcrumbs = ob_get_clean();
                     <button type="button" class="btn btn--primary btn--large product__cta-btn js-open-request-modal">Оставить заявку</button>
                 </div>
             </div>
+        </div>
+
+        <?php
+        $autoDesc = generate_product_description_auto($product);
+        $grade = e($product['category_name'] ?? '');
+        $categoryHref = base_url(($product['category_slug'] ?? '') . '/');
+        ?>
+        <div class="product-description">
+            <p><?= e($autoDesc) ?></p>
+            <p class="product-description__link">
+                <a href="<?= $categoryHref ?>">Все размеры ленты <?= $grade ?> →</a>
+            </p>
         </div>
     </div>
     <?php include __DIR__ . '/partials/related_products.php'; ?>

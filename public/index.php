@@ -81,13 +81,13 @@ if (preg_match('#^files/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
     }
 }
 
-// Загруженные в админке картинки товаров (public/uploads/)
-if (preg_match('#^uploads/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
-    $filename = $m[1];
-    if (preg_match('/\.(jpg|jpeg|png|webp|gif)$/i', $filename)) {
-        $uploadFile = __DIR__ . '/uploads/' . $filename;
+// Загруженные в админке картинки товаров (public/uploads/ и public/uploads/products/)
+if (preg_match('#^uploads/(.+)$#', $requestPath, $m)) {
+    $subpath = $m[1];
+    if (preg_match('/\.(jpg|jpeg|png|webp|gif)$/i', $subpath) && strpos($subpath, '..') === false) {
+        $uploadFile = __DIR__ . '/uploads/' . str_replace('/', DIRECTORY_SEPARATOR, $subpath);
         if (file_exists($uploadFile) && is_file($uploadFile)) {
-            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $ext = strtolower(pathinfo($subpath, PATHINFO_EXTENSION));
             $types = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp', 'gif' => 'image/gif'];
             header('Content-Type: ' . ($types[$ext] ?? 'image/jpeg'));
             header('Cache-Control: public, max-age=604800');

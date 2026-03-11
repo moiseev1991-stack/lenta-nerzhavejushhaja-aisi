@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./storage:/var/www/storage
+      - ./public/uploads:/var/www/public/uploads
+    environment:
+      - BASE_PATH=

@@ -224,7 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $productId ? 'Редактировать' : 'Создать' ?> товар — Админка</title>
-    <link rel="stylesheet" href="<?= base_url('public/assets/styles.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('assets/styles.css') ?>">
 </head>
 <body>
     <div class="admin-layout">
@@ -394,7 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label>Изображение</label>
                             <?php if ($product && $product['image']): ?>
                                 <div class="image-preview">
-                                    <img src="<?= base_url($product['image']) ?>" alt="Превью">
+                                    <img src="<?= image_url($product['image']) ?>" alt="Превью">
                                     <p>Текущее: <?= e($product['image']) ?></p>
                                 </div>
                             <?php endif; ?>

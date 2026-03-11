@@ -14,7 +14,7 @@ $sectionTitle = $relatedData['is_popular_fallback'] ? 'Популярные то
                         <?php
                         $ph = asset_url('img/placeholder-product.svg');
                         if (!empty($rp['image'])): ?>
-                            <img src="<?= base_url($rp['image']) ?>" alt="<?= e($rp['name']) ?>" width="200" height="140" loading="lazy"
+                            <img src="<?= image_url($rp['image']) ?>" alt="<?= e($rp['name']) ?>" width="200" height="140" loading="lazy"
                                  onerror="this.onerror=null;this.src='<?= e($ph) ?>';this.classList.add('related-products__placeholder-img');">
                         <?php else: ?>
                             <img src="<?= $ph ?>" alt="" width="200" height="140" loading="lazy" class="related-products__placeholder-img">

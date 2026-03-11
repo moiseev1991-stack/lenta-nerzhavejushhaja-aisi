@@ -134,9 +134,9 @@
                         </div>
                         <div class="product-card__image">
                             <?php
-                            $ph = base_url('public/img/placeholder-product.svg');
+                            $ph = asset_url('img/placeholder-product.svg');
                             if ($product['image']): ?>
-                                <img src="<?= base_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
+                                <img src="<?= image_url($product['image']) ?>" alt="<?= e($product['name']) ?>"
                                      onerror="this.onerror=null;this.src='<?= e($ph) ?>';this.classList.add('product-card__placeholder-img');">
                             <?php else: ?>
                                 <img src="<?= $ph ?>" alt="" class="product-card__placeholder-img">
