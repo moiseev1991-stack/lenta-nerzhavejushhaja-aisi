@@ -390,8 +390,8 @@ if (!function_exists('generate_product_description_auto')) {
             $weightBlock = 'Теоретическая масса 1 п.м.: ' . $massStr . ' кг (плотность ' . number_format($density, 0, ',', ' ') . ' кг/м³).';
         }
 
-        // Блок 7 — сервис
-        $serviceBlock = 'Отматываем от 1 метра, режем в размер от 2,5 мм. Склад в Москве, доставка по РФ. Сертификаты качества EN 10204.';
+        // Блок 7 — сервис и как заказать
+        $serviceBlock = 'Отматываем от 1 метра, режем в размер от 2,5 мм. Склад в Москве, доставка по РФ. Сертификаты качества EN 10204. Отправьте заявку — ответим за 15 минут, подготовим счёт.';
 
         $blocks = array_filter([
             $intro,
@@ -404,6 +404,29 @@ if (!function_exists('generate_product_description_auto')) {
         ], function($b) { return $b !== ''; });
 
         return implode(' ', $blocks);
+    }
+}
+
+/**
+ * Компактное описание товара для карточки (600–900 знаков).
+ * 1–2 абзаца: что это, для чего, как заказать.
+ */
+if (!function_exists('generate_product_description_compact')) {
+    function generate_product_description_compact(array $product, int $maxLen = 850): string {
+        $full = generate_product_description_auto($product);
+        if (mb_strlen($full) <= $maxLen) {
+            return $full;
+        }
+        $sentences = preg_split('/(?<=[.!?])\s+/u', $full, -1, PREG_SPLIT_NO_EMPTY);
+        $result = '';
+        foreach ($sentences as $s) {
+            if (mb_strlen($result . $s) + 1 <= $maxLen) {
+                $result .= ($result ? ' ' : '') . $s;
+            } else {
+                break;
+            }
+        }
+        return $result ?: mb_substr($full, 0, $maxLen - 3) . '…';
     }
 }
 
@@ -750,6 +773,89 @@ if (!function_exists('get_related_products')) {
         return [
             'items' => array_slice($related, 0, $limit),
             'is_popular_fallback' => ($fromSimilar === 0 && count($related) > 0),
+        ];
+    }
+}
+
+/**
+ * Товары с той же толщиной в других марках (для перелинковки).
+ * Возвращает до $limit товаров из других категорий с той же толщиной.
+ */
+if (!function_exists('get_product_links_same_thickness')) {
+    function get_product_links_same_thickness(PDO $pdo, array $product, int $limit = 3): array {
+        $th = $product['thickness'] !== null && $product['thickness'] !== '' ? (float)$product['thickness'] : null;
+        if ($th === null) return [];
+        $cid = (int)$product['category_id'];
+        $pid = (int)$product['id'];
+        $stmt = $pdo->prepare('
+            SELECT p.*, c.slug AS category_slug, c.name AS category_name
+            FROM products p
+            JOIN categories c ON c.id = p.category_id
+            WHERE p.category_id != ? AND p.id != ? AND p.thickness = ? AND p.in_stock = 1
+            ORDER BY c.slug
+            LIMIT ?
+        ');
+        $stmt->execute([$cid, $pid, $th, $limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+
+/**
+ * Другие размеры той же марки (та же категория, другая толщина/ширина).
+ * Возвращает до $limit товаров, исключая текущий.
+ */
+if (!function_exists('get_product_links_other_sizes')) {
+    function get_product_links_other_sizes(PDO $pdo, array $product, int $limit = 3): array {
+        $cid = (int)$product['category_id'];
+        $pid = (int)$product['id'];
+        $stmt = $pdo->prepare('
+            SELECT p.*, c.slug AS category_slug, c.name AS category_name
+            FROM products p
+            JOIN categories c ON c.id = p.category_id
+            WHERE p.category_id = ? AND p.id != ? AND p.in_stock = 1
+            ORDER BY p.thickness, p.width
+            LIMIT ?
+        ');
+        $stmt->execute([$cid, $pid, $limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+
+/**
+ * FAQ для карточки товара. Вопросы с подстановкой марки и спеок.
+ * Возвращает [['question' => ..., 'answer' => ...], ...].
+ */
+if (!function_exists('get_product_faq')) {
+    function get_product_faq(array $product): array {
+        $grade = seo_grade_part($product['category_name'] ?? 'AISI');
+        $specs = seo_product_specs($product);
+        $gradeSpecs = trim($grade . ' ' . $specs);
+
+        return [
+            [
+                'question' => 'Есть ли лента ' . $gradeSpecs . ' в наличии?',
+                'answer' => 'Наличие уточняйте по телефону +7 (800) 200-39-43 или по email. Менеджер ответит в течение 15 минут. Отгрузка со склада в Москве и филиалов.',
+            ],
+            [
+                'question' => 'Можно ли заказать резку в размер?',
+                'answer' => 'Да, режем в размер от 2,5 мм. Отмотка от 1 метра. Упаковка под перевозку и сертификаты качества предоставляются с заказом.',
+            ],
+            [
+                'question' => 'Работаете ли с НДС?',
+                'answer' => 'Да, работаем с НДС и без НДС. Счёт выставляем в течение рабочего дня. Реквизиты и условия оплаты — на странице «Способы оплаты».',
+            ],
+            [
+                'question' => 'Есть ли доставка транспортной компанией?',
+                'answer' => 'Да, доставляем по всей России: самовывоз, курьер по Москве, ТК, Почта России. Стоимость и сроки зависят от региона. Подробнее — на странице «Доставка».',
+            ],
+            [
+                'question' => 'Как быстро выставляется счёт?',
+                'answer' => 'Счёт выставляем в течение рабочего дня после получения заявки. Обычно в течение 1–2 часов в рабочее время (пн–пт 9:00–18:00).',
+            ],
+            [
+                'question' => 'Можно ли купить небольшую партию?',
+                'answer' => 'Да, отматываем от 1 метра. Минимальная сумма заказа для доставки — 10 000 ₽. При самовывозе ограничений по минимальной партии нет.',
+            ],
         ];
     }
 }

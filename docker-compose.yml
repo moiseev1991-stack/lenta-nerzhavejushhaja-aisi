@@ -6,5 +6,7 @@ services:
     volumes:
       - ./storage:/var/www/storage
       - ./public/uploads:/var/www/public/uploads
+      - ./public/assets:/var/www/public/assets
+      - ./app:/var/www/app
     environment:
       - BASE_PATH=

@@ -98,11 +98,20 @@ if ($isProduct) {
     if (isset($product['thickness']) && $product['thickness'] !== '' && $product['thickness'] !== null) {
         $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Толщина', 'value' => (string)$product['thickness']];
     }
+    if (!empty($product['width'])) {
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Ширина', 'value' => (string)$product['width']];
+    }
     if (!empty($product['surface'])) {
         $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Поверхность', 'value' => (string)$product['surface']];
     }
     if (!empty($product['condition'])) {
         $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Состояние', 'value' => (string)$product['condition']];
+    }
+    if (isset($product['spring']) && $product['spring'] !== null && $product['spring'] !== '') {
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Пружинные свойства', 'value' => $product['spring'] ? 'Да' : 'Нет'];
+    }
+    if (!empty($product['lead_time'])) {
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Срок поставки', 'value' => (string)$product['lead_time']];
     }
     if (!empty($additionalProps)) {
         $productLd['additionalProperty'] = $additionalProps;
@@ -134,6 +143,27 @@ if ($isProduct) {
             ],
         ],
     ];
+
+    // FAQPage для товара
+    $productFaqItems = function_exists('get_product_faq') ? get_product_faq($product) : [];
+    if (!empty($productFaqItems)) {
+        $faqMainEntity = [];
+        foreach ($productFaqItems as $faq) {
+            $faqMainEntity[] = [
+                '@type' => 'Question',
+                'name' => $faq['question'],
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $faq['answer'],
+                ],
+            ];
+        }
+        $jsonLd[] = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $faqMainEntity,
+        ];
+    }
 }
 
 if ($isCategory) {

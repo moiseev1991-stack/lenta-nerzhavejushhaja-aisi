@@ -1,6 +1,7 @@
 # База данных SQLite
 storage/database.sqlite
 storage/*.sqlite
+storage/*.sqlite.*
 storage/*.db
 storage/admin_login_attempts.json
 
