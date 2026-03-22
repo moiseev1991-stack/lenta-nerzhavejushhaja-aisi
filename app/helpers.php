@@ -105,7 +105,7 @@ if (!function_exists('image_url')) {
 }
 
 if (!function_exists('asset_url')) {
-    function asset_url($path) {
+    function asset_url($path, $versioned = false) {
         static $basePath = null;
         if ($basePath === null) {
             $configPath = __DIR__ . '/config.php';
@@ -117,7 +117,15 @@ if (!function_exists('asset_url')) {
                 }
             }
         }
-        return base_url($basePath . ltrim($path ?? '', '/'));
+        $path = ltrim($path ?? '', '/');
+        $url = base_url($basePath . $path);
+        if ($versioned) {
+            $fullPath = realpath(__DIR__ . '/../public/' . $path);
+            if ($fullPath && is_file($fullPath)) {
+                $url .= '?v=' . filemtime($fullPath);
+            }
+        }
+        return $url;
     }
 }
 

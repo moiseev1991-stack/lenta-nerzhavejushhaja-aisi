@@ -5,7 +5,7 @@ $isProdDomain = ($host !== '' && strpos($host, 'lenta-nerzhavejushhaja-aisi.ru')
 $envBasePath = getenv('BASE_PATH');
 
 return [
-    /** Префикс для статики. '' когда document root = public/. 'public/' когда root = корень проекта (SpaceWeb). */
+    /** Префикс для статики. '' когда document root = public/ (см. DEPLOY.md). 'public/' если root = корень проекта. */
     'base_path' => ($envBasePath !== false) ? $envBasePath : ($isProdDomain ? 'public/' : ''),
 
     // Логин и хеш пароля. На сервере лучше задать через переменные окружения ADMIN_USER и ADMIN_PASS_HASH.

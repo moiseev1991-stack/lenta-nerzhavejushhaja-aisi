@@ -331,8 +331,8 @@ if ($isServicePage && isset($pageH1)) {
     <meta property="og:image" content="<?= e(image_url($product['image'])) ?>">
     <?php endif; ?>
     <?php endif; ?>
-    <link rel="preload" href="<?= asset_url('assets/styles.css') ?>" as="style">
-    <link rel="stylesheet" href="<?= asset_url('assets/styles.css') ?>">
+    <link rel="preload" href="<?= asset_url('assets/styles.css', true) ?>" as="style">
+    <link rel="stylesheet" href="<?= asset_url('assets/styles.css', true) ?>">
     <?php if (!empty($jsonLd)): ?>
     <script type="application/ld+json">
     <?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
