@@ -448,7 +448,9 @@ if ($isServicePage && isset($pageH1)) {
     }
     $_videos = array_values(array_filter(
         $videoFiles,
-        fn($f) => filesize($f) > 0
+        function ($f) {
+            return filesize($f) > 0;
+        }
     ));
     shuffle($_videos);
     ?>
