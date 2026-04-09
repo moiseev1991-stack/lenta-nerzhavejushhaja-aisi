@@ -4,6 +4,8 @@
 mb_internal_encoding('UTF-8');
 mb_http_output('UTF-8');
 
+require_once dirname(__DIR__) . '/app/helpers.php';
+
 // Router для встроенного PHP сервера
 // Отдает статику как есть, остальное прокидывает в index.php
 
@@ -12,7 +14,9 @@ $requestPath = parse_url($requestUri, PHP_URL_PATH);
 
 // Убираем начальный слэш для проверки файла
 $requestPath = ltrim($requestPath, '/');
-
+if (strpos($requestPath, 'public/') === 0) {
+    $requestPath = substr($requestPath, 7);
+}
 
 // Картинки товаров из img/product_images_named (в корне проекта, не в public/)
 if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
@@ -25,6 +29,35 @@ if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
             header('Cache-Control: public, max-age=604800');
             readfile($imgFile);
             exit;
+        }
+    }
+}
+
+// public/files/* — PDF с корректным MIME; файл может быть без суффикса .pdf на диске
+if (preg_match('#^files/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
+    $fname = basename($m[1]);
+    if ($fname !== '' && strpos($fname, '..') === false) {
+        $full = resolve_files_disk_path($fname);
+        if ($full !== null && is_file($full)) {
+            $ext = strtolower(pathinfo($full, PATHINFO_EXTENSION));
+            $mimeTypes = [
+                'pdf' => 'application/pdf',
+                'doc' => 'application/msword',
+                'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'xls' => 'application/vnd.ms-excel',
+                'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ];
+            $allowed = ($ext === '') || isset($mimeTypes[$ext]);
+            if ($allowed) {
+                header_remove('Content-Type');
+                $mime = ($ext === '') ? 'application/pdf' : $mimeTypes[$ext];
+                header('Content-Type: ' . $mime);
+                header('Content-Length: ' . filesize($full));
+                header('Cache-Control: public, max-age=86400');
+                header('X-Content-Type-Options: nosniff');
+                readfile($full);
+                exit;
+            }
         }
     }
 }

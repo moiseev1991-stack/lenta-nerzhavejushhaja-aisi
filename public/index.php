@@ -3,7 +3,7 @@
 // Устанавливаем кодировку UTF-8
 mb_internal_encoding('UTF-8');
 mb_http_output('UTF-8');
-header('Content-Type: text/html; charset=UTF-8');
+// Content-Type: text/html задаём ниже, после отдачи PDF/картинок (иначе iframe с PDF получает HTML)
 
 // Включаем отображение ошибок для отладки
 error_reporting(E_ALL);
@@ -39,6 +39,10 @@ $requestPath = parse_url($requestUri, PHP_URL_PATH);
 
 // Убираем начальный и конечный слэш
 $requestPath = trim($requestPath, '/');
+// Запросы вида /public/files/... при DocumentRoot = корень репозитория
+if (strpos($requestPath, 'public/') === 0) {
+    $requestPath = substr($requestPath, 7);
+}
 
 // Логотип из папки img/ в корне проекта (не из public/img/)
 if ($requestPath === 'img/logo_aisi_lenta_full.png') {
@@ -64,19 +68,25 @@ if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.(png|webp))$#', $requestPat
     }
 }
 
-// Скачиваемые файлы (public/files/) — PDF и другие документы
+// Скачиваемые файлы (public/files/) — PDF и др.; варианты с/без .pdf; КП может быть в корне репозитория
 if (preg_match('#^files/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
     $filename = basename($m[1]);
-    if ($filename !== '' && strpos($filename, '..') === false && preg_match('/\.(pdf|doc|docx|xls|xlsx)$/i', $filename)) {
-        $file = __DIR__ . '/files/' . $filename;
-        if (file_exists($file) && is_file($file)) {
-            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    if ($filename !== '' && strpos($filename, '..') === false) {
+        $file = resolve_files_disk_path($filename);
+        if ($file !== null && is_file($file)) {
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             $mimeTypes = ['pdf' => 'application/pdf', 'doc' => 'application/msword', 'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'xls' => 'application/vnd.ms-excel', 'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-            header('Content-Type: ' . ($mimeTypes[$ext] ?? 'application/octet-stream'));
-            header('Content-Length: ' . filesize($file));
-            header('Cache-Control: public, max-age=86400');
-            readfile($file);
-            exit;
+            $allowed = ($ext === '') || isset($mimeTypes[$ext]);
+            if ($allowed) {
+                header_remove('Content-Type');
+                $mime = ($ext === '') ? 'application/pdf' : $mimeTypes[$ext];
+                header('Content-Type: ' . $mime);
+                header('Content-Length: ' . filesize($file));
+                header('Cache-Control: public, max-age=86400');
+                header('X-Content-Type-Options: nosniff');
+                readfile($file);
+                exit;
+            }
         }
     }
 }
@@ -111,6 +121,8 @@ if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
         }
     }
 }
+
+header('Content-Type: text/html; charset=UTF-8');
 
 // Роутинг
 if ($requestPath === '' || $requestPath === '/') {
@@ -295,11 +307,11 @@ if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$se
     $pageH1 = $pageData['h1'];
     $pageContent = $pageData['content'] ?? '';
     if ($servicePageKey === 'about') {
-        $pdfUrl = base_url('files/metallinvest_lenta_shtrips.pdf');
+        $pdfUrl = catalog_pdf_url();
         $pdfBlock = '
-            <h3>Прайс / каталог (PDF)</h3>
+            <h3>КП по контрактным поставкам (PDF)</h3>
             <div class="pdf-viewer">
-                <iframe src="' . e($pdfUrl) . '#view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="lazy" title="Просмотр каталога PDF"></iframe>
+                <iframe src="' . e($pdfUrl) . '#view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="lazy" title="КП по контрактным поставкам (PDF)"></iframe>
             </div>
             <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="' . e($pdfUrl) . '" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
             <p><a class="btn btn--primary pdf-viewer__download" href="' . e($pdfUrl) . '" download>Скачать PDF</a></p>

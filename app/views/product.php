@@ -82,6 +82,8 @@ $heroBreadcrumbs = ob_get_clean();
             <p><a href="<?= $categoryHref ?>">Все размеры ленты <?= $grade ?> →</a></p>
         </div>
 
+        <?php include __DIR__ . '/partials/how_to_find.php'; ?>
+
         <div class="product-grid-2x2">
             <?php include __DIR__ . '/partials/product_blocks.php'; ?>
         </div>

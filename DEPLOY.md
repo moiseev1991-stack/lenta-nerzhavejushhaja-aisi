@@ -32,7 +32,7 @@
 
 В Cursor: правки → в терминале `git add .` → `git commit -m "..."` → `git push`. Статус смотреть во вкладке **Actions** на GitHub.
 
-**Чтобы сообщения коммитов отображались корректно (без кракозябр):** один раз выполни `git config --global i18n.commitEncoding utf-8` и `git config --global i18n.logOutputEncoding utf-8`.
+**Чтобы сообщения коммитов отображались корректно (без кракозябр):** один раз выполни `git config --global i18n.commitEncoding utf-8` и `git config --global i18n.logOutputEncoding utf-8`. Либо пиши сообщение в файл (UTF-8) и делай `git commit -F путь/к/файлу.txt`.
 
 ---
 

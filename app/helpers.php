@@ -144,6 +144,71 @@ if (!function_exists('base_url')) {
     }
 }
 
+if (!function_exists('resolve_files_disk_path')) {
+    /**
+     * Путь к файлу из URL files/<имя>: учитывает дубликаты с/без .pdf (Windows «без расширения»).
+     * Для КП из config также ищет в корне репозитория.
+     */
+    function resolve_files_disk_path(string $filename): ?string {
+        if ($filename === '' || strpos($filename, '..') !== false) {
+            return null;
+        }
+        $variants = [$filename];
+        if (preg_match('/\.pdf$/i', $filename)) {
+            $variants[] = preg_replace('/\.pdf$/i', '', $filename);
+        } else {
+            $variants[] = $filename . '.pdf';
+        }
+        $variants = array_values(array_unique($variants));
+
+        $publicDir = __DIR__ . '/../public/files/';
+        foreach ($variants as $v) {
+            $p = $publicDir . $v;
+            if (is_file($p)) {
+                return $p;
+            }
+        }
+
+        $config = require __DIR__ . '/config.php';
+        $cat = basename((string) ($config['catalog_pdf'] ?? ''));
+        $catStem = $cat !== '' ? preg_replace('/\.pdf$/i', '', $cat) : '';
+        $reqStem = preg_replace('/\.pdf$/i', '', $filename);
+        $isCatalog = ($cat !== '' && $reqStem === $catStem);
+
+        if ($isCatalog) {
+            $root = __DIR__ . '/../';
+            foreach ($variants as $v) {
+                $p = $root . $v;
+                if (is_file($p)) {
+                    return $p;
+                }
+            }
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('catalog_pdf_fs_path')) {
+    /** Файл КП на диске (см. resolve_files_disk_path). */
+    function catalog_pdf_fs_path(): ?string {
+        $config = require __DIR__ . '/config.php';
+        $name = basename((string) ($config['catalog_pdf'] ?? 'kp-po-kontraktnym-postavkam.pdf'));
+        return resolve_files_disk_path($name);
+    }
+}
+
+if (!function_exists('catalog_pdf_url')) {
+    /**
+     * URL к PDF каталога — с тем же base_path, что и у CSS/JS (asset_url), иначе iframe даёт 404/HTML.
+     */
+    function catalog_pdf_url(): string {
+        $config = require __DIR__ . '/config.php';
+        $name = basename((string) ($config['catalog_pdf'] ?? 'kp-po-kontraktnym-postavkam.pdf'));
+        return asset_url('files/' . $name);
+    }
+}
+
 if (!function_exists('slugify')) {
     function slugify($text) {
         if ($text === null || $text === '') {

@@ -277,6 +277,8 @@ $heroBreadcrumbs = ob_get_clean();
         </div>
     </section>
     <?php endif; ?>
+
+    <?php include __DIR__ . '/partials/how_to_find.php'; ?>
 </div>
 
 <script>

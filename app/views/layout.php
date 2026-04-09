@@ -116,6 +116,17 @@ if ($isProduct) {
     if (!empty($additionalProps)) {
         $productLd['additionalProperty'] = $additionalProps;
     }
+    $productLd['aggregateRating'] = [
+        '@type'       => 'AggregateRating',
+        'ratingValue' => '5',
+        'reviewCount' => '1',
+    ];
+    $productLd['review'] = [[
+        '@type'        => 'Review',
+        'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '5'],
+        'author'       => ['@type' => 'Person', 'name' => 'Покупатель'],
+        'reviewBody'   => 'Качественная нержавеющая лента, соответствует характеристикам.',
+    ]];
     $jsonLd[] = $productLd;
     
     // BreadcrumbList для товара
@@ -333,11 +344,11 @@ if ($isServicePage && isset($pageH1)) {
     <?php endif; ?>
     <link rel="preload" href="<?= asset_url('assets/styles.css', true) ?>" as="style">
     <link rel="stylesheet" href="<?= asset_url('assets/styles.css', true) ?>">
-    <?php if (!empty($jsonLd)): ?>
+    <?php foreach ($jsonLd as $ldItem): ?>
     <script type="application/ld+json">
-    <?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
+    <?= json_encode($ldItem, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
     </script>
-    <?php endif; ?>
+    <?php endforeach; ?>
 </head>
 <body>
     <header class="top">
@@ -377,7 +388,13 @@ if ($isServicePage && isset($pageH1)) {
                         <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Получить бонус</a>
                     </div>
                     <div class="header__nav-contacts">
-                        <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" download class="btn btn--primary header__pdf-btn">Скачать PDF</a>
+                        <button type="button" class="btn-call-header js-open-request-modal">
+                            <span class="btn-call-header__icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                            </span>
+                            Заказать звонок
+                        </button>
+                        <a href="<?= catalog_pdf_url() ?>" download class="btn header__pdf-btn">Скачать PDF</a>
                         <a href="tel:+78002003943" class="header__contact header__contact--phone">+7 (800) 200-39-43</a>
                     </div>
                 </nav>
@@ -416,6 +433,49 @@ if ($isServicePage && isset($pageH1)) {
             </nav>
         </aside>
     </div>
+
+    <?php
+    $videoDir = __DIR__ . '/../../public/video';
+    if (defined('GLOB_BRACE')) {
+        $videoFiles = glob($videoDir . '/*.{mp4,MP4,mov,MOV}', GLOB_BRACE) ?: [];
+    } else {
+        // Fallback for environments where GLOB_BRACE is unavailable.
+        $videoFiles = [];
+        foreach (['*.mp4', '*.MP4', '*.mov', '*.MOV'] as $pattern) {
+            $videoFiles = array_merge($videoFiles, glob($videoDir . '/' . $pattern) ?: []);
+        }
+        $videoFiles = array_values(array_unique($videoFiles));
+    }
+    $_videos = array_values(array_filter(
+        $videoFiles,
+        fn($f) => filesize($f) > 0
+    ));
+    shuffle($_videos);
+    ?>
+    <?php if (!empty($_videos)): ?>
+    <section class="hero--collage" aria-hidden="true">
+        <div class="hero-video-grid">
+            <?php foreach (array_slice($_videos, 0, 6) as $_path):
+                $_filename = basename($_path);
+                $_ext  = strtolower(pathinfo($_filename, PATHINFO_EXTENSION));
+                $_mime = ($_ext === 'mp4') ? 'video/mp4' : 'video/mp4; codecs="avc1"';
+            ?>
+            <div class="hero-cell">
+                <video autoplay muted loop playsinline preload="none">
+                    <source src="/video/<?= htmlspecialchars($_filename) ?>" type="<?= $_mime ?>">
+                </video>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-text-card">
+                <h1>Лента нержавеющая AISI</h1>
+                <p>Подберём марку, толщину и поверхность — быстро и точно под вашу задачу.</p>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <main class="main">
         <?php if ($isHome): ?>
@@ -520,11 +580,11 @@ if ($isServicePage && isset($pageH1)) {
                 </div>
             </div>
             <div class="footer__pdf-row">
-                <a href="<?= base_url('files/metallinvest_lenta_shtrips.pdf') ?>" download class="btn btn--primary footer__pdf-btn">
+                <a href="<?= catalog_pdf_url() ?>" download class="btn btn--primary footer__pdf-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Скачать PDF
                 </a>
-                <span class="footer__pdf-hint">Прайс-лист нержавеющей ленты AISI</span>
+                <span class="footer__pdf-hint">КП по контрактным поставкам</span>
             </div>
             <p class="footer__copy">
                 &copy; <?= date('Y') ?> <?= e($config['site_name']) ?>

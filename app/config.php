@@ -33,6 +33,9 @@ return [
     
     'db_path' => __DIR__ . '/../storage/database.sqlite',
 
+    /** Имя PDF «КП по контрактным поставкам»: сначала public/files/, иначе корень репозитория */
+    'catalog_pdf' => 'kp-po-kontraktnym-postavkam.pdf',
+
     /** Количество товаров на странице каталога (desktop + mobile) */
     'catalog_per_page' => 24,
 
