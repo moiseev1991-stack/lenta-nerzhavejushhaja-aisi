@@ -435,40 +435,39 @@ if ($isServicePage && isset($pageH1)) {
     </div>
 
     <?php
-    $videoDir = __DIR__ . '/../../public/video';
-    if (defined('GLOB_BRACE')) {
-        $videoFiles = glob($videoDir . '/*.{mp4,MP4,mov,MOV}', GLOB_BRACE) ?: [];
-    } else {
-        // Fallback for environments where GLOB_BRACE is unavailable.
-        $videoFiles = [];
-        foreach (['*.mp4', '*.MP4', '*.mov', '*.MOV'] as $pattern) {
-            $videoFiles = array_merge($videoFiles, glob($videoDir . '/' . $pattern) ?: []);
+    $asiDir = __DIR__ . '/../../img/asi';
+    $_heroPhotos = [];
+    if (is_dir($asiDir)) {
+        $_files = [];
+        foreach (['*.jpg', '*.jpeg', '*.JPG', '*.JPEG'] as $_pat) {
+            $_files = array_merge($_files, glob($asiDir . '/' . $_pat) ?: []);
         }
-        $videoFiles = array_values(array_unique($videoFiles));
+        $_files = array_values(array_unique($_files));
+        shuffle($_files);
+        foreach (array_slice($_files, 0, 12) as $_f) {
+            $_heroPhotos[] = [
+                'src'   => '/img/asi/' . rawurlencode(basename($_f)),
+                'class' => 'hero-cell',
+            ];
+        }
     }
-    $_videos = array_values(array_filter(
-        $videoFiles,
-        function ($f) {
-            return filesize($f) > 0;
-        }
-    ));
-    shuffle($_videos);
+    // Фоллбэк: одно фоновое изображение, если фото из img/asi/ недоступны
+    $heroBgFile = __DIR__ . '/../../public/img/hero-background.png';
+    $heroBgUrl  = is_file($heroBgFile) ? asset_url('img/hero-background.png') : '';
     ?>
-    <?php if (!empty($_videos)): ?>
+    <?php if ($isHome && (!empty($_heroPhotos) || $heroBgUrl !== '')): ?>
     <section class="hero--collage" aria-hidden="true">
-        <div class="hero-video-grid">
-            <?php foreach (array_slice($_videos, 0, 6) as $_path):
-                $_filename = basename($_path);
-                $_ext  = strtolower(pathinfo($_filename, PATHINFO_EXTENSION));
-                $_mime = ($_ext === 'mp4') ? 'video/mp4' : 'video/mp4; codecs="avc1"';
-            ?>
-            <div class="hero-cell">
-                <video autoplay muted loop playsinline preload="none">
-                    <source src="/video/<?= htmlspecialchars($_filename) ?>" type="<?= $_mime ?>">
-                </video>
+        <?php if (!empty($_heroPhotos)): ?>
+        <div class="hero-photo-grid">
+            <?php foreach ($_heroPhotos as $_p): ?>
+            <div class="<?= e($_p['class']) ?>">
+                <img src="<?= e($_p['src']) ?>" alt="" loading="eager" decoding="async">
             </div>
             <?php endforeach; ?>
         </div>
+        <?php else: ?>
+        <div class="hero-bg" style="background-image: url('<?= e($heroBgUrl) ?>');"></div>
+        <?php endif; ?>
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="hero-text-card">

@@ -55,6 +55,21 @@ if ($requestPath === 'img/logo_aisi_lenta_full.png') {
     }
 }
 
+// Фотографии продукции для hero-коллажа (img/asi/ в корне проекта)
+if (preg_match('#^img/asi/(.+)$#', $requestPath, $m)) {
+    $filename = basename(rawurldecode($m[1]));
+    if ($filename !== '' && strpos($filename, '..') === false && preg_match('/\.(jpg|jpeg|png)$/i', $filename)) {
+        $imgFile = __DIR__ . '/../img/asi/' . $filename;
+        if (file_exists($imgFile) && is_file($imgFile)) {
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            header('Content-Type: ' . ($ext === 'png' ? 'image/png' : 'image/jpeg'));
+            header('Cache-Control: public, max-age=604800');
+            readfile($imgFile);
+            exit;
+        }
+    }
+}
+
 // Картинки секции «Товарные группы» на /bonus/ (img/bonus_groups/ в корне проекта)
 if (preg_match('#^img/bonus_groups/([a-zA-Z0-9_\-]+\.(png|webp))$#', $requestPath, $m)) {
     $filename = basename($m[1]);

@@ -9,7 +9,6 @@ services:
       - ./public/img:/var/www/public/img
       - ./public/assets:/var/www/public/assets
       - ./public/files:/var/www/public/files
-      - ./public/video:/var/www/public/video
       - ./app:/var/www/app
     environment:
       - BASE_PATH=

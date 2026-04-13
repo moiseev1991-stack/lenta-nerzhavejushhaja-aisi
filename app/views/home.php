@@ -68,46 +68,6 @@
         </div>
     </section>
 
-    <?php if (!empty($homeTextHtml)): ?>
-    <section class="home-text">
-        <div class="container">
-            <div class="home-text__content">
-                <?= $homeTextHtml ?>
-            </div>
-        </div>
-    </section>
-    <?php endif; ?>
-
-    <!-- PDF: КП по контрактным поставкам -->
-    <section class="pdf-section">
-        <div class="container">
-            <div class="pdf-section__inner">
-                <div class="pdf-section__header">
-                    <h2 class="pdf-section__title">КП по контрактным поставкам</h2>
-                    <a href="<?= catalog_pdf_url() ?>" download class="btn btn--primary pdf-section__btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Скачать PDF
-                    </a>
-                </div>
-                <div class="pdf-viewer">
-                    <iframe
-                        src="<?= catalog_pdf_url() ?>#view=FitH"
-                        width="100%"
-                        height="700"
-                        class="pdf-viewer__iframe"
-                        loading="lazy"
-                        title="КП по контрактным поставкам (PDF)"
-                    ></iframe>
-                </div>
-                <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="<?= catalog_pdf_url() ?>" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
-                <a href="<?= catalog_pdf_url() ?>" download class="btn btn--primary pdf-viewer__download">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Скачать PDF
-                </a>
-            </div>
-        </div>
-    </section>
-
     <!-- Популярные товары -->
     <section class="products-section">
         <div class="container">
@@ -152,6 +112,46 @@
                         </div>
                     </a>
                 <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <?php if (!empty($homeTextHtml)): ?>
+    <section class="home-text">
+        <div class="container">
+            <div class="home-text__content">
+                <?= $homeTextHtml ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- PDF: КП по контрактным поставкам -->
+    <section class="pdf-section">
+        <div class="container">
+            <div class="pdf-section__inner">
+                <div class="pdf-section__header">
+                    <h2 class="pdf-section__title">КП по контрактным поставкам</h2>
+                    <a href="<?= catalog_pdf_url() ?>" download class="btn btn--primary pdf-section__btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Скачать PDF
+                    </a>
+                </div>
+                <div class="pdf-viewer">
+                    <iframe
+                        src="<?= catalog_pdf_url() ?>#view=FitH"
+                        width="100%"
+                        height="700"
+                        class="pdf-viewer__iframe"
+                        loading="lazy"
+                        title="КП по контрактным поставкам (PDF)"
+                    ></iframe>
+                </div>
+                <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="<?= catalog_pdf_url() ?>" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
+                <a href="<?= catalog_pdf_url() ?>" download class="btn btn--primary pdf-viewer__download">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Скачать PDF
+                </a>
             </div>
         </div>
     </section>

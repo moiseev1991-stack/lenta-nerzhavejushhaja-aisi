@@ -18,6 +18,21 @@ if (strpos($requestPath, 'public/') === 0) {
     $requestPath = substr($requestPath, 7);
 }
 
+// Фотографии продукции для hero-коллажа (img/asi/ в корне проекта)
+if (preg_match('#^img/asi/(.+)$#', $requestPath, $m)) {
+    $filename = basename(rawurldecode($m[1]));
+    if ($filename !== '' && strpos($filename, '..') === false && preg_match('/\.(jpg|jpeg|png)$/i', $filename)) {
+        $imgFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'asi' . DIRECTORY_SEPARATOR . $filename;
+        if (file_exists($imgFile) && is_file($imgFile)) {
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            header('Content-Type: ' . ($ext === 'png' ? 'image/png' : 'image/jpeg'));
+            header('Cache-Control: public, max-age=604800');
+            readfile($imgFile);
+            exit;
+        }
+    }
+}
+
 // Картинки товаров из img/product_images_named (в корне проекта, не в public/)
 if (preg_match('#^img/product_images_named/(.+)$#', $requestPath, $m)) {
     $filename = basename(rawurldecode($m[1]));
