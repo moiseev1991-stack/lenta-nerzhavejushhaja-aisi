@@ -14,8 +14,8 @@ $jsonLd = [];
 $config = require __DIR__ . '/../config.php';
 
 if ($isHome) {
-    $defaultHomeTitle = 'Лента нержавеющая AISI — каталог нержавеющей ленты по маркам';
-    $defaultHomeDescription = 'Каталог нержавеющей ленты AISI 200/300/400/900L. Подбор по толщине, ширине, состоянию и поверхности. Отмотка от 1 метра, резка от 2,5 мм.';
+    $defaultHomeTitle = 'Нержавеющая лента AISI купить оптом — нарезка от 1 метра, доставка по России';
+    $defaultHomeDescription = 'Холоднокатаная нержавеющая лента всех марок AISI: 304, 316, 321, 430 и др. Нарезка от 1 метра, толщины 0,05–4 мм, ширина от 2,5 мм. Прайс-лист, доставка по всей России. Тел: 8-800-200-39-43.';
     $pageTitle = isset($homeTitle) && (string)$homeTitle !== '' ? $homeTitle : $defaultHomeTitle;
     $pageDescription = isset($homeDescription) && (string)$homeDescription !== '' ? $homeDescription : $defaultHomeDescription;
     // WebSite + Organization (только на главной)
@@ -58,15 +58,18 @@ if ($isProduct) {
     $pageH1 = seo_product_h1($product, $config);
     
     $productUrl = base_url($product['category_slug'] . '/' . $product['slug'] . '/');
+    $hasPrice = isset($product['price_per_kg']) && (float)$product['price_per_kg'] > 0;
     $productOffer = [
         '@type' => 'Offer',
         'url' => $productUrl,
-        'priceCurrency' => 'RUB',
-        'price' => (string)(float)$product['price_per_kg'],
-        'priceValidUntil' => date('Y') . '-12-31',
         'availability' => $product['in_stock'] ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         'itemCondition' => 'https://schema.org/NewCondition',
-        'priceSpecification' => [
+    ];
+    if ($hasPrice) {
+        $productOffer['priceCurrency'] = 'RUB';
+        $productOffer['price'] = (string)(float)$product['price_per_kg'];
+        $productOffer['priceValidUntil'] = date('Y') . '-12-31';
+        $productOffer['priceSpecification'] = [
             '@type' => 'UnitPriceSpecification',
             'price' => (string)(float)$product['price_per_kg'],
             'priceCurrency' => 'RUB',
@@ -75,8 +78,8 @@ if ($isProduct) {
                 'value' => 1,
                 'unitCode' => 'KGM',
             ],
-        ],
-    ];
+        ];
+    }
     $productLd = [
         '@context' => 'https://schema.org',
         '@type' => 'Product',

@@ -4057,7 +4057,9 @@ a.toolbar__sort:hover {
 }
 
 .home-text__content {
-    width: 100%;
+    max-width: 860px;
+    margin-left: auto;
+    margin-right: auto;
     font-size: var(--font-size-base);
     line-height: 1.6;
     color: var(--text-primary);

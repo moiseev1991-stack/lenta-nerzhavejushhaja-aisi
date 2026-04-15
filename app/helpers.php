@@ -329,11 +329,11 @@ if (!function_exists('seo_product_specs')) {
     }
 }
 
-/** Нормализовать марку для SEO: если уже содержит "AISI", не дублировать */
+/** Нормализовать марку для SEO: всегда возвращает «AISI {МАРКА}» в верхнем регистре */
 if (!function_exists('seo_grade_part')) {
     function seo_grade_part($grade) {
         $g = trim($grade ?? 'AISI');
-        return (stripos($g, 'AISI') === 0) ? $g : 'AISI ' . $g;
+        return 'AISI ' . ltrim(preg_replace('/^aisi\s*/i', '', $g));
     }
 }
 
@@ -540,10 +540,8 @@ if (!function_exists('seo_category_title')) {
         }
         $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($category['name'] ?? 'AISI');
-        $city = $config['seo']['city_default'] ?? 'Москве и РФ';
-        $priceStr = $minPrice !== null && $minPrice > 0 ? seo_price_string($minPrice) : 'Цена по запросу';
-        $company = $config['company']['name'] ?? 'Каталог AISI';
-        return trim($type . ' ' . $grade) . ' купить в ' . $city . ' — ' . $priceStr . ' | ' . $company;
+        $siteDomain = preg_replace('#^https?://#', '', rtrim($config['site_url'] ?? 'lenta-nerzhavejushhaja-aisi.ru', '/'));
+        return trim($type . ' ' . $grade) . ' купить — цены, размеры, доставка по России | ' . $siteDomain;
     }
 }
 
@@ -556,10 +554,9 @@ if (!function_exists('seo_category_description')) {
         if ($override !== '') {
             return $override;
         }
-        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($category['name'] ?? 'AISI');
         $phone = $config['company']['phone'] ?? '+7 (800) 200-39-43';
-        return 'Продажа ' . $type . ' ' . $grade . ' оптом и в розницу. ✅ В наличии на складе. ✅ Доставка по России от 1 дня. ✅ Сертификаты качества. Звоните: ' . $phone . '!';
+        return 'Нержавеющая лента ' . $grade . ' — нарезка от 1 метра, толщины 0,05–4 мм, ширина от 2,5 мм. Поверхности 2B/BA. Прайс-лист, доставка по РФ. Тел: ' . $phone . '.';
     }
 }
 
@@ -630,8 +627,9 @@ if (!function_exists('sort_aisi_categories')) {
 }
 
 /**
- * Подставляет SEO из app/data/bundled_category_seo.php, если в БД нет текста статьи (деплой без обновления SQLite).
- * Если content_body непустой — данные из БД не трогаем.
+ * Подставляет SEO из app/data/bundled_category_seo.php.
+ * title/description применяются всегда (перезаписывают DB).
+ * content_body/content_format/content_is_active — только если в DB нет content_body.
  */
 if (!function_exists('merge_bundled_category_seo')) {
     function merge_bundled_category_seo(array &$category) {
@@ -644,11 +642,18 @@ if (!function_exists('merge_bundled_category_seo')) {
         if ($slug === '' || !isset($bundled[$slug])) {
             return;
         }
+        foreach (['title', 'description'] as $key) {
+            if (isset($bundled[$slug][$key])) {
+                $category[$key] = $bundled[$slug][$key];
+            }
+        }
         if (trim((string)($category['content_body'] ?? '')) !== '') {
             return;
         }
-        foreach ($bundled[$slug] as $key => $value) {
-            $category[$key] = $value;
+        foreach (['content_body', 'content_format', 'content_is_active'] as $key) {
+            if (isset($bundled[$slug][$key])) {
+                $category[$key] = $bundled[$slug][$key];
+            }
         }
     }
 }
