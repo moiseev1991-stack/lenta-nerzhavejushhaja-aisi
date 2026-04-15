@@ -630,6 +630,30 @@ if (!function_exists('sort_aisi_categories')) {
 }
 
 /**
+ * Подставляет SEO из app/data/bundled_category_seo.php, если в БД нет текста статьи (деплой без обновления SQLite).
+ * Если content_body непустой — данные из БД не трогаем.
+ */
+if (!function_exists('merge_bundled_category_seo')) {
+    function merge_bundled_category_seo(array &$category) {
+        static $bundled = null;
+        if ($bundled === null) {
+            $path = __DIR__ . '/data/bundled_category_seo.php';
+            $bundled = is_file($path) ? require $path : [];
+        }
+        $slug = (string)($category['slug'] ?? '');
+        if ($slug === '' || !isset($bundled[$slug])) {
+            return;
+        }
+        if (trim((string)($category['content_body'] ?? '')) !== '') {
+            return;
+        }
+        foreach ($bundled[$slug] as $key => $value) {
+            $category[$key] = $value;
+        }
+    }
+}
+
+/**
  * Нормализует отображаемое название марки: «Aisi 202» → «AISI 202», «AISI 304L» без изменений.
  */
 if (!function_exists('normalize_aisi_display_name')) {

@@ -381,6 +381,9 @@ if (preg_match('#^(aisi-[^/]+)/([^/]+)/?$#', $requestPath, $matches)) {
     $stmt = $pdo->prepare('SELECT * FROM categories WHERE slug = ? AND is_active = 1');
     $stmt->execute([$gradeSlug]);
     $category = $stmt->fetch();
+    if ($category) {
+        merge_bundled_category_seo($category);
+    }
     if (!$category) {
         http_response_code(404);
         $is404 = true;
@@ -453,6 +456,9 @@ if ($requestPath && strpos($requestPath, '/') === false) {
     $stmt = $pdo->prepare('SELECT * FROM categories WHERE slug = ? AND is_active = 1');
     $stmt->execute([$slug]);
     $category = $stmt->fetch();
+    if ($category) {
+        merge_bundled_category_seo($category);
+    }
     
     if (!$category) {
         http_response_code(404);
