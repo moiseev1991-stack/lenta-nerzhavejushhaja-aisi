@@ -139,11 +139,11 @@
                 </div>
                 <div class="pdf-viewer">
                     <iframe
-                        src="<?= catalog_pdf_url() ?>#view=FitH"
+                        src="<?= catalog_pdf_url() ?>#page=1&view=FitH"
                         width="100%"
                         height="700"
                         class="pdf-viewer__iframe"
-                        loading="lazy"
+                        loading="eager"
                         title="КП по контрактным поставкам (PDF)"
                     ></iframe>
                 </div>

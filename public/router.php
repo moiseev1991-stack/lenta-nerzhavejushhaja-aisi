@@ -67,6 +67,7 @@ if (preg_match('#^files/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
                 header_remove('Content-Type');
                 $mime = ($ext === '') ? 'application/pdf' : $mimeTypes[$ext];
                 header('Content-Type: ' . $mime);
+                header('Content-Disposition: inline; filename="' . basename($full) . '"');
                 header('Content-Length: ' . filesize($full));
                 header('Cache-Control: public, max-age=86400');
                 header('X-Content-Type-Options: nosniff');

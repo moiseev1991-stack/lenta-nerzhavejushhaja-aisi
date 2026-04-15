@@ -3,6 +3,13 @@
     <FilesMatch "\.(css|js|png|jpe?g|gif|webp|svg|ico|woff2?)(\?.*)?$">
         Header set Cache-Control "public, max-age=604800"
     </FilesMatch>
+    # PDF: показывать inline в браузере (не скачивать), с правильным MIME
+    <FilesMatch "\.pdf$">
+        Header set Content-Type "application/pdf"
+        Header set Content-Disposition "inline"
+        Header set X-Content-Type-Options "nosniff"
+        Header set Cache-Control "public, max-age=86400"
+    </FilesMatch>
 </IfModule>
 
 <IfModule mod_rewrite.c>

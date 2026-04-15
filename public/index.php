@@ -96,6 +96,7 @@ if (preg_match('#^files/([a-zA-Z0-9_\-\.]+)$#', $requestPath, $m)) {
                 header_remove('Content-Type');
                 $mime = ($ext === '') ? 'application/pdf' : $mimeTypes[$ext];
                 header('Content-Type: ' . $mime);
+                header('Content-Disposition: inline; filename="' . basename($file) . '"');
                 header('Content-Length: ' . filesize($file));
                 header('Cache-Control: public, max-age=86400');
                 header('X-Content-Type-Options: nosniff');
@@ -326,7 +327,7 @@ if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$se
         $pdfBlock = '
             <h3>КП по контрактным поставкам (PDF)</h3>
             <div class="pdf-viewer">
-                <iframe src="' . e($pdfUrl) . '#view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="lazy" title="КП по контрактным поставкам (PDF)"></iframe>
+                <iframe src="' . e($pdfUrl) . '#page=1&view=FitH" width="100%" height="900" class="pdf-viewer__iframe" loading="eager" title="КП по контрактным поставкам (PDF)"></iframe>
             </div>
             <p class="pdf-viewer__fallback">Если PDF не отображается, <a href="' . e($pdfUrl) . '" target="_blank" rel="noopener">откройте в новой вкладке</a>.</p>
             <p><a class="btn btn--primary pdf-viewer__download" href="' . e($pdfUrl) . '" download>Скачать PDF</a></p>
