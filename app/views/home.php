@@ -127,38 +127,6 @@
     <?php endif; ?>
 
     <!-- PDF: КП по контрактным поставкам -->
-    <?php // #region agent log
-    $__pdfDbgUrl = catalog_pdf_url();
-    ?>
-    <script>
-    // #region agent log
-    (function(){
-        var EP='http://127.0.0.1:7245/ingest/074aa3b5-5607-4788-bfbf-c3d70560c948';
-        function log(loc,msg,data){fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:Date.now(),location:loc,message:msg,data:data})}).catch(function(){});}
-        var iframe=document.querySelector('.pdf-viewer__iframe');
-        var pdfSrc=iframe?iframe.src:'NOT_FOUND';
-        var pdfUrl=pdfSrc.split('#')[0];
-        log('home.php:init','PDF iframe src',{src:pdfSrc,pdfUrl:pdfUrl,hypothesisId:'H1'});
-        if(pdfUrl){
-            fetch(pdfUrl,{method:'HEAD',cache:'no-store'})
-            .then(function(r){
-                var hdrs={};r.headers.forEach(function(v,k){hdrs[k]=v;});
-                log('home.php:head-ok','HEAD response',{status:r.status,headers:hdrs,url:pdfUrl,hypothesisId:'H2-H3'});
-            })
-            .catch(function(e){log('home.php:head-err','HEAD failed',{err:e.toString(),url:pdfUrl,hypothesisId:'H4'});});
-        }
-        if(iframe){
-            iframe.addEventListener('load',function(){log('home.php:iframe-load','iframe load fired',{src:iframe.src,hypothesisId:'H5'});});
-            iframe.addEventListener('error',function(e){log('home.php:iframe-error','iframe error',{src:iframe.src,hypothesisId:'H5'});});
-        }
-        setTimeout(function(){
-            var iframe2=document.querySelector('.pdf-viewer__iframe');
-            log('home.php:deferred','deferred check',{src:iframe2?iframe2.src:'none',hypothesisId:'H1'});
-        },3000);
-    })();
-    // #endregion agent log
-    </script>
-    <?php // #endregion agent log ?>
     <section class="pdf-section">
         <div class="container">
             <div class="pdf-section__inner">
