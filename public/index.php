@@ -439,6 +439,29 @@ if (preg_match('#^(aisi-[^/]+)/([^/]+)/?$#', $requestPath, $matches)) {
     exit;
 }
 
+// Страницы серий AISI: /aisi-200-seriya/, /aisi-300-seriya/, /aisi-400-seriya/, /aisi-900l-seriya/
+if ($requestPath && strpos($requestPath, '/') === false) {
+    $slug = $requestPath;
+    $allSeriesData = require __DIR__ . '/../app/data/series_data.php';
+    $matchedSeries = null;
+    foreach ($allSeriesData as $sData) {
+        if ($sData['slug'] === $slug) { $matchedSeries = $sData; break; }
+    }
+    if ($matchedSeries !== null) {
+        $config = require __DIR__ . '/../app/config.php';
+        $stmt = $pdo->query('SELECT slug, name FROM categories WHERE is_active = 1 ORDER BY name');
+        $allCategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        sort_aisi_categories($allCategories);
+        $seriesData  = $matchedSeries;
+        $pageTitle   = $seriesData['title'];
+        $pageDescription = $seriesData['description'];
+        $pageH1      = $seriesData['h1'];
+        $isSeriesPage = true;
+        require __DIR__ . '/../app/views/layout.php';
+        exit;
+    }
+}
+
 // Категория: /{category_slug}/
 // Проверяем только если путь не пустой и не содержит слэшей внутри
 if ($requestPath && strpos($requestPath, '/') === false) {
@@ -617,7 +640,14 @@ if ($requestPath && strpos($requestPath, '/') === false) {
     if (!empty($products)) {
         $minPrice = min(array_column($products, 'price_per_kg'));
     }
-    
+
+    // Мин/макс толщина по всей категории (для SEO description)
+    $stmtTh = $pdo->prepare('SELECT MIN(thickness), MAX(thickness) FROM products WHERE category_id = ? AND in_stock = 1 AND thickness IS NOT NULL AND thickness > 0');
+    $stmtTh->execute([$category['id']]);
+    $thRow = $stmtTh->fetch(PDO::FETCH_NUM);
+    $categoryMinThickness = $thRow[0] ?? null;
+    $categoryMaxThickness = $thRow[1] ?? null;
+
     // Доступные значения для фильтров (из всех товаров категории)
     $stmt = $pdo->prepare('SELECT DISTINCT thickness, condition, spring, surface FROM products WHERE category_id = ?');
     $stmt->execute([$category['id']]);

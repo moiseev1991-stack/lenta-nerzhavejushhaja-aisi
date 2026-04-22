@@ -530,33 +530,64 @@ if (!function_exists('seo_product_h1')) {
 }
 
 /**
+ * Возвращает данные марки AISI из grades_data.php по slug категории.
+ * Кешируется статически. Возвращает null если марка не найдена.
+ */
+if (!function_exists('get_grade_data')) {
+    function get_grade_data(string $slug): ?array {
+        static $allGrades = null;
+        if ($allGrades === null) {
+            $path = __DIR__ . '/data/grades_data.php';
+            $allGrades = is_file($path) ? (require $path) : [];
+        }
+        return $allGrades[$slug] ?? null;
+    }
+}
+
+/**
  * SEO Title для категории. Использует поле title из БД как override.
+ * Если передан $productCount и grade data с ГОСТ-аналогом — использует расширенный шаблон.
  */
 if (!function_exists('seo_category_title')) {
-    function seo_category_title(array $category, $minPrice, array $config) {
+    function seo_category_title(array $category, $minPrice, array $config, ?int $productCount = null) {
         $override = trim((string)($category['title'] ?? ''));
         if ($override !== '') {
             return $override;
         }
-        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($category['name'] ?? 'AISI');
+        $gradeData = get_grade_data($category['slug'] ?? '');
+        if ($gradeData && isset($gradeData['gost']) && $gradeData['gost'] !== '') {
+            $gost = $gradeData['gost'];
+            $countPart = $productCount !== null && $productCount > 0 ? ' | ' . $productCount . ' типоразмеров' : '';
+            return $grade . ' — купить, цена, аналог ' . $gost . $countPart;
+        }
         $siteDomain = preg_replace('#^https?://#', '', rtrim($config['site_url'] ?? 'lenta-nerzhavejushhaja-aisi.ru', '/'));
-        return trim($type . ' ' . $grade) . ' купить — цены, размеры, доставка по России | ' . $siteDomain;
+        return trim('Лента нержавеющая ' . $grade) . ' купить — цены, размеры, доставка по России | ' . $siteDomain;
     }
 }
 
 /**
  * SEO Description для категории. Использует поле description из БД как override.
+ * $minThickness/$maxThickness — опциональные мин/макс толщины из БД для динамической мета.
  */
 if (!function_exists('seo_category_description')) {
-    function seo_category_description(array $category, array $config) {
+    function seo_category_description(array $category, array $config, $minThickness = null, $maxThickness = null) {
         $override = trim((string)($category['description'] ?? ''));
         if ($override !== '') {
             return $override;
         }
         $grade = seo_grade_part($category['name'] ?? 'AISI');
-        $phone = $config['company']['phone'] ?? '+7 (800) 200-39-43';
-        return 'Нержавеющая лента ' . $grade . ' — нарезка от 1 метра, толщины 0,05–4 мм, ширина от 2,5 мм. Поверхности 2B/BA. Прайс-лист, доставка по РФ. Тел: ' . $phone . '.';
+        $phone = $config['company']['phone'] ?? '8-800-200-39-43';
+        $gradeNum = preg_replace('/^AISI\s*/i', '', $grade);
+        $thRange = '';
+        if ($minThickness !== null && $maxThickness !== null && $minThickness != $maxThickness) {
+            $thRange = 'Толщины от ' . $minThickness . ' до ' . $maxThickness . ' мм, ';
+        } elseif ($minThickness !== null) {
+            $thRange = 'Толщины от ' . $minThickness . ' мм, ';
+        } else {
+            $thRange = 'Толщины 0,05–4 мм, ';
+        }
+        return 'Нержавеющая лента AISI ' . $gradeNum . ' в наличии. ' . $thRange . 'ширины от 2,5 мм. Нарезка от 1 метра, доставка по России. Цена по запросу. ' . $phone . '.';
     }
 }
 

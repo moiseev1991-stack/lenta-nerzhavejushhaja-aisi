@@ -26,6 +26,7 @@ function sitemapLastmod($updatedAt, $default) {
     return $ts ? date('Y-m-d', $ts) : $default;
 }
 
+$seriesPages  = ['aisi-200-seriya', 'aisi-300-seriya', 'aisi-400-seriya', 'aisi-900l-seriya'];
 $servicePages = ['about', 'delivery', 'payment', 'contacts', 'price', 'sitemap', 'privacy-policy'];
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -51,6 +52,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <lastmod><?= sitemapLastmod($row['updated_at'] ?? null, $today) ?></lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
+    </url>
+<?php endforeach; ?>
+<?php foreach ($seriesPages as $slug): ?>
+    <url>
+        <loc><?= htmlspecialchars($base . '/' . $slug . '/') ?></loc>
+        <lastmod><?= $today ?></lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
     </url>
 <?php endforeach; ?>
 <?php foreach ($servicePages as $slug): ?>

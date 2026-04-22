@@ -6,7 +6,8 @@ $isHome = !$is404 && !$isSitemapPage && isset($allCategories) && isset($featured
 $isProduct = !$is404 && isset($product) && is_array($product);
 $isCategory = !$is404 && isset($category) && is_array($category) && !$isProduct;
 $isServicePage = isset($isServicePage);
-$isBonusPage = isset($isBonusPage);
+$isBonusPage   = isset($isBonusPage);
+$isSeriesPage  = isset($isSeriesPage) && $isSeriesPage;
 $pageTitle = $pageTitle ?? '';
 $pageDescription = $pageDescription ?? '';
 $pageH1 = $pageH1 ?? '';
@@ -34,16 +35,40 @@ if ($isHome) {
     ];
     $jsonLd[] = [
         '@context' => 'https://schema.org',
-        '@type' => 'Organization',
-        'name' => $company['name'] ?? 'Компания',
-        'url' => $company['url'] ?? base_url(),
-        'telephone' => $company['phone'] ?? '',
+        '@type' => ['Organization', 'LocalBusiness'],
+        '@id'   => base_url('#organization'),
+        'name'  => $company['name'] ?? 'Компания',
+        'url'   => $company['url'] ?? base_url(),
+        'telephone' => $company['phone'] ?? '+7 (800) 200-39-43',
+        'email'     => $company['email'] ?? 'ev18011@yandex.ru',
         'logo' => asset_url('img/logo_aisi_lenta_full.png'),
+        'image' => asset_url('img/logo_aisi_lenta_full.png'),
+        'description' => 'Поставка нержавеющей ленты AISI всех марок. Нарезка от 1 метра, доставка по России.',
+        'priceRange' => '₽₽',
         'address' => [
-            '@type' => 'PostalAddress',
-            'addressLocality' => 'Москва',
-            'addressCountry' => 'RU',
+            '@type'           => 'PostalAddress',
+            'streetAddress'   => 'д. Малое Брянцево',
+            'addressLocality' => 'г.о. Подольск',
+            'addressRegion'   => 'Московская область',
+            'postalCode'      => '142143',
+            'addressCountry'  => 'RU',
         ],
+        'geo' => [
+            '@type'     => 'GeoCoordinates',
+            'latitude'  => 55.4166,
+            'longitude' => 37.5433,
+        ],
+        'areaServed' => [
+            '@type' => 'Country',
+            'name'  => 'Россия',
+        ],
+        'openingHoursSpecification' => [[
+            '@type'     => 'OpeningHoursSpecification',
+            'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+            'opens'     => '09:00',
+            'closes'    => '18:00',
+        ]],
+        'sameAs' => [],
     ];
 }
 
@@ -182,8 +207,12 @@ if ($isProduct) {
 
 if ($isCategory) {
     $minPrice = $minPrice ?? null;
-    $pageTitle = seo_category_title($category, $minPrice, $config);
-    $pageDescription = seo_category_description($category, $config);
+    $catProductCount = isset($pagination) ? (int)$pagination['total'] : null;
+    $gradeData = function_exists('get_grade_data') ? get_grade_data($category['slug'] ?? '') : null;
+    $pageTitle = seo_category_title($category, $minPrice, $config, $catProductCount);
+    $catMinTh = isset($categoryMinThickness) ? $categoryMinThickness : null;
+    $catMaxTh = isset($categoryMaxThickness) ? $categoryMaxThickness : null;
+    $pageDescription = seo_category_description($category, $config, $catMinTh, $catMaxTh);
     $pageH1 = seo_category_h1($category, $config);
     // Pagination rel links data (used later in <head>)
     $catPaginationLinks = [];
@@ -199,25 +228,29 @@ if ($isCategory) {
         }
     }
     
-    // BreadcrumbList для категории
-    $jsonLd[] = [
-        '@context' => 'https://schema.org',
-        '@type' => 'BreadcrumbList',
-        'itemListElement' => [
-            [
-                '@type' => 'ListItem',
-                'position' => 1,
-                'name' => 'Главная',
-                'item' => base_url(),
+    // BreadcrumbList для категории (с уровнем серии если есть данные)
+    if ($gradeData) {
+        $seriesSlug  = 'aisi-' . strtolower(str_replace('L', 'l', $gradeData['series'])) . '-seriya';
+        $seriesTitle = 'Серия ' . $gradeData['series'];
+        $jsonLd[] = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная',      'item' => base_url()],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => $seriesTitle,   'item' => base_url($seriesSlug . '/')],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => 'AISI ' . $gradeData['number'], 'item' => base_url($category['slug'] . '/')],
             ],
-            [
-                '@type' => 'ListItem',
-                'position' => 2,
-                'name' => $category['name'],
-                'item' => base_url($category['slug'] . '/'),
+        ];
+    } else {
+        $jsonLd[] = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная',      'item' => base_url()],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => $category['name'], 'item' => base_url($category['slug'] . '/')],
             ],
-        ],
-    ];
+        ];
+    }
     // ItemList — список товаров на странице категории
     $categoryProducts = $products ?? [];
     $itemListElements = [];
@@ -266,6 +299,30 @@ $aisiTabs = array_values($aisiTabs);
 $currentCategorySlug = isset($category) && isset($category['slug']) ? $category['slug'] : null;
 $currentSeries = $currentCategorySlug ? aisi_series_from_slug($currentCategorySlug) : null;
 
+// Страница серии AISI
+if ($isSeriesPage && isset($seriesData)) {
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => $seriesData['h1'],
+        'description' => $seriesData['description'],
+        'url' => base_url($seriesData['slug'] . '/'),
+    ];
+    $breadcrumbItems = [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная',    'item' => base_url()],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Серии AISI', 'item' => base_url()],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => 'Серия ' . $seriesData['series'], 'item' => base_url($seriesData['slug'] . '/')],
+    ];
+    $jsonLd[] = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $breadcrumbItems];
+    if (!empty($seriesData['faq'])) {
+        $faqEntity = [];
+        foreach ($seriesData['faq'] as $f) {
+            $faqEntity[] = ['@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']]];
+        }
+        $jsonLd[] = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $faqEntity];
+    }
+}
+
 // Сервисные страницы: WebPage + Article; на контактах — дублируем Organization
 if ($isServicePage && isset($pageH1)) {
     $jsonLd[] = [
@@ -283,16 +340,33 @@ if ($isServicePage && isset($pageH1)) {
         $company = $config['company'] ?? [];
         $jsonLd[] = [
             '@context' => 'https://schema.org',
-            '@type' => 'Organization',
-            'name' => $company['name'] ?? 'Компания',
-            'url' => $company['url'] ?? base_url(),
-            'telephone' => $company['phone'] ?? '',
+            '@type' => ['Organization', 'LocalBusiness'],
+            '@id'   => base_url('#organization'),
+            'name'  => $company['name'] ?? 'Компания',
+            'url'   => $company['url'] ?? base_url(),
+            'telephone' => $company['phone'] ?? '+7 (800) 200-39-43',
+            'email'     => $company['email'] ?? 'ev18011@yandex.ru',
             'logo' => asset_url('img/logo_aisi_lenta_full.png'),
+            'priceRange' => '₽₽',
             'address' => [
-                '@type' => 'PostalAddress',
-                'addressLocality' => 'Москва',
-                'addressCountry' => 'RU',
+                '@type'           => 'PostalAddress',
+                'streetAddress'   => 'д. Малое Брянцево',
+                'addressLocality' => 'г.о. Подольск',
+                'addressRegion'   => 'Московская область',
+                'postalCode'      => '142143',
+                'addressCountry'  => 'RU',
             ],
+            'geo' => [
+                '@type'     => 'GeoCoordinates',
+                'latitude'  => 55.4166,
+                'longitude' => 37.5433,
+            ],
+            'openingHoursSpecification' => [[
+                '@type'     => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+                'opens'     => '09:00',
+                'closes'    => '18:00',
+            ]],
         ];
     }
 }
@@ -315,6 +389,18 @@ if ($isServicePage && isset($pageH1)) {
     if ($metaDescription !== ''):
     ?>
     <meta name="description" content="<?= e($metaDescription) ?>">
+    <?php endif; ?>
+    <?php if ($isHome): ?>
+    <link rel="canonical" href="<?= e(base_url()) ?>">
+    <?php endif; ?>
+    <?php if ($isServicePage && isset($servicePageKey)): ?>
+    <link rel="canonical" href="<?= e(base_url($servicePageKey . '/')) ?>">
+    <?php endif; ?>
+    <?php if (isset($isBonusPage) && $isBonusPage): ?>
+    <link rel="canonical" href="<?= e(base_url('bonus/')) ?>">
+    <?php endif; ?>
+    <?php if (isset($isSeriesPage) && $isSeriesPage && isset($seriesData)): ?>
+    <link rel="canonical" href="<?= e(base_url($seriesData['slug'] . '/')) ?>">
     <?php endif; ?>
     <?php if ($isProduct && !empty($product['category_slug']) && !empty($product['slug'])): ?>
     <link rel="canonical" href="<?= e(base_url($product['category_slug'] . '/' . $product['slug'] . '/')) ?>">
@@ -490,6 +576,8 @@ if ($isServicePage && isset($pageH1)) {
             <?php require __DIR__ . '/category.php'; ?>
         <?php elseif ($isServicePage): ?>
             <?php require __DIR__ . '/page.php'; ?>
+        <?php elseif ($isSeriesPage): ?>
+            <?php require __DIR__ . '/series.php'; ?>
         <?php elseif ($isBonusPage): ?>
             <?php require __DIR__ . '/bonus.php'; ?>
         <?php elseif ($isSitemapPage): ?>
@@ -549,6 +637,54 @@ if ($isServicePage && isset($pageH1)) {
     <footer class="footer">
         <div class="container">
             <div class="footer__inner">
+                <?php
+                // Группировка марок по сериям для футера
+                $footerSeriesGroups = [
+                    '200'  => [
+                        'title' => 'Серия 200',
+                        'slug'  => 'aisi-200-seriya',
+                        'grades'=> [['name'=>'AISI 201','slug'=>'aisi-201'],['name'=>'AISI 202','slug'=>'aisi-202']],
+                    ],
+                    '300'  => [
+                        'title' => 'Серия 300',
+                        'slug'  => 'aisi-300-seriya',
+                        'grades'=> [
+                            ['name'=>'AISI 301','slug'=>'aisi-301'],['name'=>'AISI 304','slug'=>'aisi-304'],
+                            ['name'=>'AISI 304L','slug'=>'aisi-304l'],['name'=>'AISI 310','slug'=>'aisi-310'],
+                            ['name'=>'AISI 310S','slug'=>'aisi-310s'],['name'=>'AISI 316','slug'=>'aisi-316'],
+                            ['name'=>'AISI 316L','slug'=>'aisi-316l'],['name'=>'AISI 316Ti','slug'=>'aisi-316ti'],
+                            ['name'=>'AISI 321','slug'=>'aisi-321'],
+                        ],
+                    ],
+                    '400'  => [
+                        'title' => 'Серия 400',
+                        'slug'  => 'aisi-400-seriya',
+                        'grades'=> [
+                            ['name'=>'AISI 409','slug'=>'aisi-409'],['name'=>'AISI 420','slug'=>'aisi-420'],
+                            ['name'=>'AISI 430','slug'=>'aisi-430'],['name'=>'AISI 431','slug'=>'aisi-431'],
+                            ['name'=>'AISI 439','slug'=>'aisi-439'],['name'=>'AISI 441','slug'=>'aisi-441'],
+                        ],
+                    ],
+                    '900L' => [
+                        'title' => 'Серия 900L',
+                        'slug'  => 'aisi-900l-seriya',
+                        'grades'=> [['name'=>'AISI 904L','slug'=>'aisi-904l']],
+                    ],
+                ];
+                ?>
+                <div class="footer__col footer__col--series">
+                    <h3 class="footer__title">Марки по сериям</h3>
+                    <?php foreach ($footerSeriesGroups as $sg): ?>
+                    <div class="footer__series-group">
+                        <a href="<?= base_url($sg['slug'] . '/') ?>" class="footer__series-heading"><?= e($sg['title']) ?></a>
+                        <ul class="footer__series-list">
+                            <?php foreach ($sg['grades'] as $grd): ?>
+                            <li><a href="<?= base_url($grd['slug'] . '/') ?>" class="footer__link"><?= e($grd['name']) ?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
                 <div class="footer__col footer__col--catalog">
                     <h3 class="footer__title">Каталог</h3>
                     <ul class="footer__list footer__list--grid">
