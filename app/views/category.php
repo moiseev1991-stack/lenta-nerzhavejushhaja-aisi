@@ -31,51 +31,6 @@ $heroBreadcrumbs = ob_get_clean();
 <div class="category-page">
     <?php include __DIR__ . '/partials/catalog_header.php'; ?>
 
-    <?php if ($gradeData): ?>
-    <!-- Ключевые характеристики + интро -->
-    <section class="grade-key-facts">
-        <div class="container">
-            <div class="grade-key-facts__inner">
-                <div class="grade-key-facts__table-wrap">
-                    <table class="data-table data-table--compact">
-                        <tbody>
-                            <tr><th>Марка</th><td>AISI <?= e($gradeNum) ?></td></tr>
-                            <tr><th>Серия</th><td><?= e($gradeSeries) ?></td></tr>
-                            <tr><th>Тип стали</th><td><?= e($gradeData['type']) ?></td></tr>
-                            <tr><th>ГОСТ-аналог</th><td><?= e($gradeData['gost']) ?></td></tr>
-                            <tr><th>EN-аналог</th><td><?= e($gradeData['en_name'] ?? '') ?> / <?= e($gradeData['en_number'] ?? '') ?></td></tr>
-                            <tr><th>JIS-аналог</th><td><?= e($gradeData['jis'] ?? '') ?></td></tr>
-                            <?php
-                            $cr = '';
-                            $ni = '';
-                            $mo = '';
-                            foreach ($gradeData['chemical'] ?? [] as $chem) {
-                                if ($chem['element'] === 'Cr') $cr = $chem['range'];
-                                if ($chem['element'] === 'Ni') $ni = $chem['range'];
-                                if ($chem['element'] === 'Mo') $mo = $chem['range'];
-                            }
-                            ?>
-                            <?php if ($cr): ?><tr><th>Cr, %</th><td><?= e($cr) ?></td></tr><?php endif; ?>
-                            <?php if ($ni): ?><tr><th>Ni, %</th><td><?= e($ni) ?></td></tr><?php endif; ?>
-                            <?php if ($mo): ?><tr><th>Mo, %</th><td><?= e($mo) ?></td></tr><?php endif; ?>
-                            <tr><th>Плотность</th><td><?= e($gradeData['density'] ?? '') ?> г/см³</td></tr>
-                            <tr><th>Магнитность</th><td><?= ($gradeData['magnetic'] ?? false) ? 'Да' : 'Нет' ?></td></tr>
-                            <tr><th>Коррозионная стойкость</th><td><?= e($gradeData['corrosion_rating'] ?? '') ?></td></tr>
-                            <tr><th>Свариваемость</th><td><?= ($gradeData['weldable'] ?? true) ? 'Да' : 'Ограниченная' ?></td></tr>
-                            <tr><th>Макс. температура</th><td><?= e($gradeData['max_temp'] ?? '') ?> °C</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <?php if (!empty($gradeData['intro'])): ?>
-                <div class="grade-key-facts__intro">
-                    <p><?= e($gradeData['intro']) ?></p>
-                </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
-    <?php endif; ?>
-
     <!-- Каталог с фильтрами -->
     <section class="catalog">
         <div class="container">
@@ -303,6 +258,49 @@ $heroBreadcrumbs = ob_get_clean();
     <?php endif; ?>
 
     <?php if ($gradeData): ?>
+
+    <!-- Ключевые характеристики + интро -->
+    <section class="grade-key-facts">
+        <div class="container">
+            <div class="grade-key-facts__inner">
+                <div class="grade-key-facts__table-wrap">
+                    <table class="data-table data-table--compact">
+                        <tbody>
+                            <tr><th>Марка</th><td>AISI <?= e($gradeNum) ?></td></tr>
+                            <tr><th>Серия</th><td><?= e($gradeSeries) ?></td></tr>
+                            <tr><th>Тип стали</th><td><?= e($gradeData['type']) ?></td></tr>
+                            <tr><th>ГОСТ-аналог</th><td><?= e($gradeData['gost']) ?></td></tr>
+                            <tr><th>EN-аналог</th><td><?= e($gradeData['en_name'] ?? '') ?> / <?= e($gradeData['en_number'] ?? '') ?></td></tr>
+                            <tr><th>JIS-аналог</th><td><?= e($gradeData['jis'] ?? '') ?></td></tr>
+                            <?php
+                            $cr = '';
+                            $ni = '';
+                            $mo = '';
+                            foreach ($gradeData['chemical'] ?? [] as $chem) {
+                                if ($chem['element'] === 'Cr') $cr = $chem['range'];
+                                if ($chem['element'] === 'Ni') $ni = $chem['range'];
+                                if ($chem['element'] === 'Mo') $mo = $chem['range'];
+                            }
+                            ?>
+                            <?php if ($cr): ?><tr><th>Cr, %</th><td><?= e($cr) ?></td></tr><?php endif; ?>
+                            <?php if ($ni): ?><tr><th>Ni, %</th><td><?= e($ni) ?></td></tr><?php endif; ?>
+                            <?php if ($mo): ?><tr><th>Mo, %</th><td><?= e($mo) ?></td></tr><?php endif; ?>
+                            <tr><th>Плотность</th><td><?= e($gradeData['density'] ?? '') ?> г/см³</td></tr>
+                            <tr><th>Магнитность</th><td><?= ($gradeData['magnetic'] ?? false) ? 'Да' : 'Нет' ?></td></tr>
+                            <tr><th>Коррозионная стойкость</th><td><?= e($gradeData['corrosion_rating'] ?? '') ?></td></tr>
+                            <tr><th>Свариваемость</th><td><?= ($gradeData['weldable'] ?? true) ? 'Да' : 'Ограниченная' ?></td></tr>
+                            <tr><th>Макс. температура</th><td><?= e($gradeData['max_temp'] ?? '') ?> °C</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <?php if (!empty($gradeData['intro'])): ?>
+                <div class="grade-key-facts__intro">
+                    <p><?= e($gradeData['intro']) ?></p>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
 
     <!-- Характеристики -->
     <?php if (!empty($gradeData['characteristics'])): ?>
