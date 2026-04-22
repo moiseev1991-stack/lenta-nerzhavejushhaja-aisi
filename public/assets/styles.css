@@ -5565,3 +5565,10 @@ body > .sidebar_bottom,
     .office-card__map iframe { min-height: 260px; }
     .office-card__label { min-width: 90px; }
 }
+
+.footer__region-address {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+    margin-top: 2px;
+}

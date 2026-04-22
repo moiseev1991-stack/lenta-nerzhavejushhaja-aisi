@@ -755,6 +755,12 @@ if ($isServicePage && isset($pageH1)) {
                                data-default-tel="<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
                                data-default-phone="<?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?>"
                             ><?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?></a></li>
+                        <?php foreach ($_regions as $_rKey => $_r): ?>
+                        <li class="footer__region-address"
+                            data-region="<?= e($_rKey) ?>"
+                            <?= $_rKey !== $_regionDefault ? 'hidden' : '' ?>
+                        ><?= e($_r['label']) ?>, <?= e($_r['address']) ?></li>
+                        <?php endforeach; ?>
                         <li><a href="mailto:ev18011@yandex.ru" class="footer__link">ev18011@yandex.ru</a></li>
                     </ul>
                 </div>
@@ -1180,6 +1186,10 @@ if ($isServicePage && isset($pageH1)) {
             // Подсвечиваем активную кнопку региона
             document.querySelectorAll('.region-switcher__btn').forEach(function(btn) {
                 btn.classList.toggle('region-switcher__btn--active', btn.dataset.region === key);
+            });
+            // Адрес в футере
+            document.querySelectorAll('.footer__region-address').forEach(function(el) {
+                el.hidden = el.dataset.region !== key;
             });
             // На странице контактов — показываем нужный office-card
             document.querySelectorAll('.office-card').forEach(function(card) {
