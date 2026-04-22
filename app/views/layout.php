@@ -1,6 +1,10 @@
 <?php
 // Определяем тип страницы и данные
 $is404 = isset($is404) && $is404;
+$config = $config ?? require __DIR__ . '/../config.php';
+$_regions = $config['regions'] ?? [];
+$_regionDefault = $config['region_default'] ?? (empty($_regions) ? '' : array_key_first($_regions));
+$_defaultRegion = $_regions[$_regionDefault] ?? reset($_regions);
 $isSitemapPage = isset($isSitemapPage);
 $isHome = !$is404 && !$isSitemapPage && isset($allCategories) && isset($featuredProducts) && !isset($category) && !isset($product) && !isset($isServicePage) && !isset($isBonusPage);
 $isProduct = !$is404 && isset($product) && is_array($product);
@@ -477,6 +481,19 @@ if ($isServicePage && isset($pageH1)) {
                         <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Получить бонус</a>
                     </div>
                     <div class="header__nav-contacts">
+                        <?php if (!empty($_regions)): ?>
+                        <div class="region-switcher" id="regionSwitcher">
+                            <?php foreach ($_regions as $_rKey => $_r): ?>
+                            <button type="button"
+                                class="region-switcher__btn<?= $_rKey === $_regionDefault ? ' region-switcher__btn--active' : '' ?>"
+                                data-region="<?= e($_rKey) ?>"
+                                data-phone="<?= e($_r['phone']) ?>"
+                                data-tel="<?= e($_r['tel']) ?>"
+                                aria-label="Выбрать регион <?= e($_r['label']) ?>"
+                            ><?= e($_r['label']) ?></button>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                         <button type="button" class="btn-call-header js-open-request-modal">
                             <span class="btn-call-header__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
@@ -484,10 +501,19 @@ if ($isServicePage && isset($pageH1)) {
                             Заказать звонок
                         </button>
                         <a href="<?= catalog_pdf_url() ?>" download class="btn header__pdf-btn">Скачать PDF</a>
-                        <a href="tel:+78002003943" class="header__contact header__contact--phone">+7 (800) 200-39-43</a>
+                        <a href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                           class="header__contact header__contact--phone js-region-phone"
+                           data-default-tel="<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                           data-default-phone="<?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?>"
+                        ><?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?></a>
                     </div>
                 </nav>
-                <a href="tel:+78002003943" class="header__phone-link" aria-label="Позвонить">+7 (800) 200-39-43</a>
+                <a href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                   class="header__phone-link js-region-phone"
+                   aria-label="Позвонить"
+                   data-default-tel="<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                   data-default-phone="<?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?>"
+                ><?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?></a>
                 <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu" data-mobile-menu-open>
                     <span></span><span></span><span></span>
                 </button>
@@ -517,7 +543,11 @@ if ($isServicePage && isset($pageH1)) {
                     </li>
                     <li><a class="mobile-menu__link" href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
                     <li><a class="mobile-menu__link" href="<?= base_url('contacts/') ?>">Контакты</a></li>
-                    <li><a class="mobile-menu__link" href="tel:+78002003943">+7 (800) 200-39-43</a></li>
+                    <li><a class="mobile-menu__link js-region-phone"
+                           href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                           data-default-tel="<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                           data-default-phone="<?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?>"
+                        ><?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?></a></li>
                 </ul>
             </nav>
         </aside>
@@ -714,7 +744,11 @@ if ($isServicePage && isset($pageH1)) {
                 <div class="footer__col footer__col--contacts">
                     <h3 class="footer__title">Контакты</h3>
                     <ul class="footer__list">
-                        <li><a href="tel:+78002003943" class="footer__link">+7 (800) 200-39-43</a></li>
+                        <li><a href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                               class="footer__link js-region-phone"
+                               data-default-tel="<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                               data-default-phone="<?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?>"
+                            ><?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?></a></li>
                         <li><a href="mailto:ev18011@yandex.ru" class="footer__link">ev18011@yandex.ru</a></li>
                     </ul>
                 </div>
@@ -1126,5 +1160,48 @@ if ($isServicePage && isset($pageH1)) {
     </script>
     <!-- Форма amoCRM: конфиг для отложенной загрузки (скрипт подгружается при первом открытии модалки) -->
     <script>!function(a,m,o,c,r,m){a[o+c]=a[o+c]||{setMeta:function(p){this.params=(this.params||[]).concat([p])}},a[o+r]=a[o+r]||function(f){a[o+r].f=(a[o+r].f||[]).concat([f])},a[o+r]({id:"<?= e($amocrm['form_id'] ?? '1663854') ?>",hash:"<?= e($amocrm['form_hash'] ?? '') ?>",locale:"<?= e($amocrm['locale'] ?? 'ru') ?>"}),a[o+m]=a[o+m]||function(f,k){a[o+m].f=(a[o+m].f||[]).concat([[f,k]])}}(window,0,"amo_forms_","params","load","loaded");</script>
+    <script>
+    (function() {
+        var LS_KEY = 'aisi_region';
+        var DEFAULT = '<?= e($_regionDefault) ?>';
+
+        function applyRegion(key, phone, tel) {
+            // Обновляем все телефонные ссылки
+            document.querySelectorAll('.js-region-phone').forEach(function(el) {
+                el.textContent = phone;
+                el.href = 'tel:' + tel;
+            });
+            // Подсвечиваем активную кнопку региона
+            document.querySelectorAll('.region-switcher__btn').forEach(function(btn) {
+                btn.classList.toggle('region-switcher__btn--active', btn.dataset.region === key);
+            });
+            // На странице контактов — показываем нужный office-card
+            document.querySelectorAll('.office-card').forEach(function(card) {
+                card.hidden = card.dataset.region !== key;
+            });
+        }
+
+        function init() {
+            var saved = localStorage.getItem(LS_KEY) || DEFAULT;
+            var btn = document.querySelector('.region-switcher__btn[data-region="' + saved + '"]');
+            if (btn) {
+                applyRegion(saved, btn.dataset.phone, btn.dataset.tel);
+            }
+            document.querySelectorAll('.region-switcher__btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var key = this.dataset.region;
+                    localStorage.setItem(LS_KEY, key);
+                    applyRegion(key, this.dataset.phone, this.dataset.tel);
+                });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+    </script>
 </body>
 </html>

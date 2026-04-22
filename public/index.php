@@ -334,24 +334,7 @@ if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$se
         ';
         $pageContent = str_replace('{{PDF_CATALOG}}', $pdfBlock, $pageContent);
     }
-    if ($servicePageKey === 'contacts') {
-        $branchesHtml = '';
-        if (!empty($pageData['branches'])) {
-            $branchesHtml = '<div class="branches__title">Филиалы и адреса отгрузки</div><div class="branches"><div class="branches__grid">';
-            foreach ($pageData['branches'] as $b) {
-                $fullAddress = $b['index'] . ', Россия, ' . $b['city'] . ', ' . $b['address'];
-                $mapsUrl = 'https://yandex.ru/maps/?text=' . rawurlencode($fullAddress);
-                $branchesHtml .= '<div class="branch branch-item">'
-                    . '<p class="branch__city branch-city">' . htmlspecialchars($b['city']) . '</p>'
-                    . '<p class="branch__row"><span>Адрес:</span> ' . htmlspecialchars($b['address']) . '</p>'
-                    . '<p class="branch__row"><span>Индекс:</span> ' . htmlspecialchars($b['index']) . '</p>'
-                    . '<p><a href="' . htmlspecialchars($mapsUrl) . '" target="_blank" rel="noopener noreferrer" class="branch__map branch-map">На карте</a></p>'
-                    . '</div>';
-            }
-            $branchesHtml .= '</div></div>';
-        }
-        $pageContent = str_replace('{{BRANCHES}}', $branchesHtml, $pageContent);
-    }
+    // contacts page now uses office-card blocks with region switcher; no {{BRANCHES}} placeholder
     $isServicePage = true;
     require __DIR__ . '/../app/views/layout.php';
     exit;

@@ -2,55 +2,129 @@
 return [
     'contacts' => [
         'h1' => 'Контакты',
-        'title' => 'Контакты | Каталог AISI',
-        'description' => 'Контактная информация для связи с нами. Адрес, телефон, email.',
+        'title' => 'Контакты — офисы в Нижнем Новгороде, Москве и Санкт-Петербурге | Каталог AISI',
+        'description' => 'Офисы и склады нержавеющей ленты AISI в Нижнем Новгороде, Москве и Санкт-Петербурге. Телефоны, адреса, карты.',
         'content' => '
-            <div style="max-width: 800px; margin: 0 auto;">
-                <h2>Наши контакты</h2>
-                <div style="margin: 2rem 0;">
-                    <h3>Адрес</h3>
-                    <p>г. Москва, ул. Промышленная, д. 15, офис 201</p>
-                    <p>Почтовый индекс: 115280</p>
-                    {{BRANCHES}}
-                </div>
-                
-                <div style="margin: 2rem 0;">
-                    <h3>Телефоны</h3>
-                    <p><strong>Телефон:</strong> <a href="tel:+78002003943">+7 (800) 200-39-43</a></p>
-                </div>
-                
-                <div style="margin: 2rem 0;">
-                    <h3>Email</h3>
-                    <p><strong>Email:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></p>
-                </div>
-                
-                <div style="margin: 2rem 0;">
-                    <h3>Режим работы</h3>
-                    <p><strong>Понедельник - Пятница:</strong> 9:00 - 18:00</p>
-                    <p><strong>Суббота:</strong> 10:00 - 15:00</p>
-                    <p><strong>Воскресенье:</strong> Выходной</p>
-                </div>
+<div class="contacts-page">
 
-                <div style="margin: 2rem 0;">
-                    <h3>Реквизиты</h3>
-                    <p><strong>ИНН:</strong> 526016545409</p>
-                    <p><strong>Расчётный счёт:</strong> 40802810920000907140</p>
-                    <p><strong>Название банка:</strong> ООО "Банк Точка"</p>
-                    <p><strong>БИК:</strong> 044525104</p>
-                    <p><strong>Корр. счёт:</strong> 30101810745374525104</p>
-                    <p><em>Работаем с НДС</em></p>
-                </div>
-            </div>
+    <p class="contacts-page__intro">Выберите ваш город — отобразятся адрес, телефон и карта ближайшего офиса.</p>
+
+    <!-- Нижний Новгород -->
+    <div class="office-card" data-region="nn">
+        <div class="office-card__info">
+            <h2 class="office-card__city">Нижний Новгород</h2>
+            <ul class="office-card__details">
+                <li class="office-card__row">
+                    <span class="office-card__label">Адрес</span>
+                    <span class="office-card__value">Московское ш., 320Б, корп. 1</span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Телефон</span>
+                    <span class="office-card__value"><a href="tel:+78312119756" class="office-card__phone">+7 (831) 211-97-56</a></span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Email</span>
+                    <span class="office-card__value"><a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Режим работы</span>
+                    <span class="office-card__value">Пн–Пт 9:00–18:00, Сб 10:00–15:00</span>
+                </li>
+            </ul>
+            <a href="https://yandex.ru/maps/?text=%D0%9D%D0%B8%D0%B6%D0%BD%D0%B8%D0%B9+%D0%9D%D0%BE%D0%B2%D0%B3%D0%BE%D1%80%D0%BE%D0%B4+%D0%9C%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B5+320%D0%91"
+               target="_blank" rel="noopener" class="btn btn--ghost office-card__map-link">Построить маршрут →</a>
+        </div>
+        <div class="office-card__map">
+            <iframe
+                src="https://yandex.ru/map-widget/v1/?ll=43.9557%2C56.2379&z=16&pt=43.9557,56.2379,pm2grl&l=map"
+                width="100%" height="100%" frameborder="0" allowfullscreen loading="lazy"
+                style="border:none;display:block;min-height:320px;"
+                title="Офис в Нижнем Новгороде"></iframe>
+        </div>
+    </div>
+
+    <!-- Москва -->
+    <div class="office-card" data-region="msk" hidden>
+        <div class="office-card__info">
+            <h2 class="office-card__city">Москва</h2>
+            <ul class="office-card__details">
+                <li class="office-card__row">
+                    <span class="office-card__label">Адрес</span>
+                    <span class="office-card__value">Южнопортовая ул., 7А стр. 2</span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Телефон</span>
+                    <span class="office-card__value"><a href="tel:+74950237764" class="office-card__phone">+7 (495) 023-77-64</a></span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Email</span>
+                    <span class="office-card__value"><a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Режим работы</span>
+                    <span class="office-card__value">Пн–Пт 9:00–18:00, Сб 10:00–15:00</span>
+                </li>
+            </ul>
+            <a href="https://yandex.ru/maps/?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0+%D0%AE%D0%B6%D0%BD%D0%BE%D0%BF%D0%BE%D1%80%D1%82%D0%BE%D0%B2%D0%B0%D1%8F+7%D0%90"
+               target="_blank" rel="noopener" class="btn btn--ghost office-card__map-link">Построить маршрут →</a>
+        </div>
+        <div class="office-card__map">
+            <iframe
+                src="https://yandex.ru/map-widget/v1/?ll=37.6728%2C55.7058&z=16&pt=37.6728,55.7058,pm2grl&l=map"
+                width="100%" height="100%" frameborder="0" allowfullscreen loading="lazy"
+                style="border:none;display:block;min-height:320px;"
+                title="Офис в Москве"></iframe>
+        </div>
+    </div>
+
+    <!-- Санкт-Петербург -->
+    <div class="office-card" data-region="spb" hidden>
+        <div class="office-card__info">
+            <h2 class="office-card__city">Санкт-Петербург</h2>
+            <ul class="office-card__details">
+                <li class="office-card__row">
+                    <span class="office-card__label">Адрес</span>
+                    <span class="office-card__value">Московское ш., 161, лит. А</span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Телефон</span>
+                    <span class="office-card__value"><a href="tel:+78124265638" class="office-card__phone">+7 (812) 426-56-38</a></span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Email</span>
+                    <span class="office-card__value"><a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></span>
+                </li>
+                <li class="office-card__row">
+                    <span class="office-card__label">Режим работы</span>
+                    <span class="office-card__value">Пн–Пт 9:00–18:00, Сб 10:00–15:00</span>
+                </li>
+            </ul>
+            <a href="https://yandex.ru/maps/?text=%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3+%D0%9C%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B5+161"
+               target="_blank" rel="noopener" class="btn btn--ghost office-card__map-link">Построить маршрут →</a>
+        </div>
+        <div class="office-card__map">
+            <iframe
+                src="https://yandex.ru/map-widget/v1/?ll=30.3897%2C59.8516&z=16&pt=30.3897,59.8516,pm2grl&l=map"
+                width="100%" height="100%" frameborder="0" allowfullscreen loading="lazy"
+                style="border:none;display:block;min-height:320px;"
+                title="Офис в Санкт-Петербурге"></iframe>
+        </div>
+    </div>
+
+    <div class="contacts-page__requisites">
+        <h2>Реквизиты</h2>
+        <ul>
+            <li><strong>ИНН:</strong> 526016545409</li>
+            <li><strong>Расчётный счёт:</strong> 40802810920000907140</li>
+            <li><strong>Банк:</strong> ООО «Банк Точка»</li>
+            <li><strong>БИК:</strong> 044525104</li>
+            <li><strong>Корр. счёт:</strong> 30101810745374525104</li>
+            <li><em>Работаем с НДС</em></li>
+        </ul>
+    </div>
+
+</div>
         ',
-        'branches' => [
-            ['city' => 'Новосибирск', 'address' => '2-я Станционная улица, 40Е', 'index' => '630041'],
-            ['city' => 'Екатеринбург', 'address' => 'улица Бахчиванджи, 2А/21', 'index' => '620025'],
-            ['city' => 'Санкт-Петербург', 'address' => 'Глухоозёрское шоссе, дом 4', 'index' => '192019'],
-            ['city' => 'Пушкино (Московская область)', 'address' => 'мкр Междуречье, ул. Славянская, 2', 'index' => '141201'],
-            ['city' => 'Нижний Новгород', 'address' => 'ул. Варварская, дом 32, помещение П7, офис 518', 'index' => '603006'],
-            ['city' => 'Ростов-на-Дону', 'address' => 'микрорайон Заречная, 1-я Луговая улица, 12', 'index' => '344002'],
-            ['city' => 'Краснодар', 'address' => 'Уральская улица, 83А', 'index' => '350059'],
-        ],
     ],
     
     'delivery' => [
