@@ -1,3 +1,5 @@
+html { scroll-behavior: smooth; }
+
 /* Design System Variables */
 :root {
     /* Colors */
@@ -5564,6 +5566,28 @@ body > .sidebar_bottom,
     color: rgba(255,255,255,0.5);
     line-height: 1.4;
     margin-top: 2px;
+}
+
+/* Адрес в топбаре */
+.topbar__right {
+    display: flex;
+    align-items: center;
+}
+.topbar__address {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.8rem;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255,255,255,0.35);
+    transition: color 0.18s, border-color 0.18s;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.topbar__address:hover {
+    color: #fff;
+    border-bottom-color: rgba(255,255,255,0.8);
+}
+@media (max-width: 800px) {
+    .topbar__address { display: none; }
 }
 
 /* Переключатель регионов в блоке "Самовывоз и отгрузка" */

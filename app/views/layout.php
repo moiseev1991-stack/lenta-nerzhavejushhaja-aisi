@@ -456,10 +456,17 @@ if ($isServicePage && isset($pageH1)) {
                         data-region="<?= e($_rKey) ?>"
                         data-phone="<?= e($_r['phone']) ?>"
                         data-tel="<?= e($_r['tel']) ?>"
+                        data-address="<?= e($_r['address']) ?>"
                         aria-label="Выбрать регион <?= e($_r['label']) ?>"
                     ><?= e($_r['label']) ?></button>
                     <?php endforeach; ?>
                 </div>
+            </div>
+            <div class="topbar__right">
+                <a href="#how-to-find-title"
+                   class="topbar__address js-region-address"
+                   title="Перейти к адресу на карте"
+                ><?= e($_defaultRegion['address'] ?? '') ?></a>
             </div>
         </div>
     </div>
@@ -1183,11 +1190,15 @@ if ($isServicePage && isset($pageH1)) {
         var LS_KEY = 'aisi_region';
         var DEFAULT = '<?= e($_regionDefault) ?>';
 
-        function applyRegion(key, phone, tel) {
+        function applyRegion(key, phone, tel, address) {
             // Обновляем все телефонные ссылки
             document.querySelectorAll('.js-region-phone').forEach(function(el) {
                 el.textContent = phone;
                 el.href = 'tel:' + tel;
+            });
+            // Обновляем адрес в топбаре
+            document.querySelectorAll('.js-region-address').forEach(function(el) {
+                if (address) el.textContent = address;
             });
             // Подсвечиваем активную кнопку региона
             document.querySelectorAll('.region-switcher__btn').forEach(function(btn) {
@@ -1211,13 +1222,13 @@ if ($isServicePage && isset($pageH1)) {
             var saved = localStorage.getItem(LS_KEY) || DEFAULT;
             var btn = document.querySelector('.region-switcher__btn[data-region="' + saved + '"]');
             if (btn) {
-                applyRegion(saved, btn.dataset.phone, btn.dataset.tel);
+                applyRegion(saved, btn.dataset.phone, btn.dataset.tel, btn.dataset.address);
             }
             document.querySelectorAll('.region-switcher__btn').forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     var key = this.dataset.region;
                     localStorage.setItem(LS_KEY, key);
-                    applyRegion(key, this.dataset.phone, this.dataset.tel);
+                    applyRegion(key, this.dataset.phone, this.dataset.tel, this.dataset.address);
                 });
             });
         }
