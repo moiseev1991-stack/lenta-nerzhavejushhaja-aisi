@@ -50,7 +50,7 @@ return [
             <ul class="office-card__details">
                 <li class="office-card__row">
                     <span class="office-card__label">Адрес</span>
-                    <span class="office-card__value">Южнопортовая ул., 7А стр. 2</span>
+                            <span class="office-card__value">ул. Южнопортовая, 7А, стр. 2</span>
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Телефон</span>
@@ -84,7 +84,7 @@ return [
             <ul class="office-card__details">
                 <li class="office-card__row">
                     <span class="office-card__label">Адрес</span>
-                    <span class="office-card__value">Московское ш., 161, лит. А</span>
+                            <span class="office-card__value">Московское ш., 161, лит. А (Шушары)</span>
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Телефон</span>

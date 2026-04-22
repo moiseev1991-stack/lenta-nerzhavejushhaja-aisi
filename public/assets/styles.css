@@ -5253,6 +5253,7 @@ body > .sidebar_bottom,
 .how-to-find { padding: 3rem 0; border-top: 1px solid #e5e5e5; }
 .how-to-find h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
 .how-to-find__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: stretch; }
+.how-to-find__region-block[hidden] { display: none !important; }
 .how-to-find__map { min-height: 100%; }
 .how-to-find__iframe {
     width: 100%;
