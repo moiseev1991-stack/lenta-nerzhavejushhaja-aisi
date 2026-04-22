@@ -31,12 +31,12 @@ return [
                     <span class="office-card__value">Пн–Пт 9:00–18:00, Сб 10:00–15:00</span>
                 </li>
             </ul>
-            <a href="https://yandex.ru/maps/?text=%D0%9D%D0%B8%D0%B6%D0%BD%D0%B8%D0%B9+%D0%9D%D0%BE%D0%B2%D0%B3%D0%BE%D1%80%D0%BE%D0%B4+%D0%9C%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B5+320%D0%91"
+            <a href="https://yandex.com/maps/-/CPClyM7a"
                target="_blank" rel="noopener" class="btn btn--ghost office-card__map-link">Построить маршрут →</a>
         </div>
         <div class="office-card__map">
             <iframe
-                src="https://yandex.ru/map-widget/v1/?ll=43.9557%2C56.2379&z=16&pt=43.9557,56.2379,pm2grl&l=map"
+                        src="https://yandex.ru/map-widget/v1/?ll=43.833424%2C56.303605&z=17&pt=43.833424,56.303605,pm2rdl&l=map"
                 width="100%" height="100%" frameborder="0" allowfullscreen loading="lazy"
                 style="border:none;display:block;min-height:320px;"
                 title="Офис в Нижнем Новгороде"></iframe>
@@ -65,12 +65,12 @@ return [
                     <span class="office-card__value">Пн–Пт 9:00–18:00, Сб 10:00–15:00</span>
                 </li>
             </ul>
-            <a href="https://yandex.ru/maps/?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0+%D0%AE%D0%B6%D0%BD%D0%BE%D0%BF%D0%BE%D1%80%D1%82%D0%BE%D0%B2%D0%B0%D1%8F+7%D0%90"
+            <a href="https://yandex.com/maps/-/CPClu84z"
                target="_blank" rel="noopener" class="btn btn--ghost office-card__map-link">Построить маршрут →</a>
         </div>
         <div class="office-card__map">
             <iframe
-                src="https://yandex.ru/map-widget/v1/?ll=37.6728%2C55.7058&z=16&pt=37.6728,55.7058,pm2grl&l=map"
+                        src="https://yandex.ru/map-widget/v1/?ll=37.693417%2C55.708440&z=17&pt=37.693417,55.708440,pm2rdl&l=map"
                 width="100%" height="100%" frameborder="0" allowfullscreen loading="lazy"
                 style="border:none;display:block;min-height:320px;"
                 title="Офис в Москве"></iframe>
@@ -99,12 +99,12 @@ return [
                     <span class="office-card__value">Пн–Пт 9:00–18:00, Сб 10:00–15:00</span>
                 </li>
             </ul>
-            <a href="https://yandex.ru/maps/?text=%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3+%D0%9C%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B5+161"
+            <a href="https://yandex.com/maps/-/CPCluLp8"
                target="_blank" rel="noopener" class="btn btn--ghost office-card__map-link">Построить маршрут →</a>
         </div>
         <div class="office-card__map">
             <iframe
-                src="https://yandex.ru/map-widget/v1/?ll=30.3897%2C59.8516&z=16&pt=30.3897,59.8516,pm2grl&l=map"
+                        src="https://yandex.ru/map-widget/v1/?ll=30.425016%2C59.772968&z=17&pt=30.425016,59.772968,pm2rdl&l=map"
                 width="100%" height="100%" frameborder="0" allowfullscreen loading="lazy"
                 style="border:none;display:block;min-height:320px;"
                 title="Офис в Санкт-Петербурге"></iframe>

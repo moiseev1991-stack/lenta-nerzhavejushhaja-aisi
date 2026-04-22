@@ -18,8 +18,8 @@ $_htfData = [
         'address'    => 'Московское ш., 320Б, корп. 1',
         'phone'      => '+7 (831) 211-97-56',
         'tel'        => '+78312119756',
-        'map_src'    => 'https://yandex.ru/map-widget/v1/?ll=43.9557%2C56.2379&z=16&pt=43.9557,56.2379,pm2grl&l=map',
-        'route_url'  => 'https://yandex.ru/maps/?rtext=~56.2379,43.9557&rtt=auto',
+        'map_src'    => 'https://yandex.ru/map-widget/v1/?ll=43.833424%2C56.303605&z=17&pt=43.833424,56.303605,pm2rdl&l=map',
+        'route_url'  => 'https://yandex.com/maps/-/CPClyM7a',
         'route_steps'=> [
             'Двигайтесь по Московскому шоссе',
             'Поворот на дом 320Б, корп. 1',
@@ -31,8 +31,8 @@ $_htfData = [
         'address'    => 'ул. Южнопортовая, 7А, стр. 2',
         'phone'      => '+7 (495) 023-77-64',
         'tel'        => '+74950237764',
-        'map_src'    => 'https://yandex.ru/map-widget/v1/?ll=37.6728%2C55.7058&z=16&pt=37.6728,55.7058,pm2grl&l=map',
-        'route_url'  => 'https://yandex.ru/maps/?rtext=~55.7058,37.6728&rtt=auto',
+        'map_src'    => 'https://yandex.ru/map-widget/v1/?ll=37.693417%2C55.708440&z=17&pt=37.693417,55.708440,pm2rdl&l=map',
+        'route_url'  => 'https://yandex.com/maps/-/CPClu84z',
         'route_steps'=> [
             'Двигайтесь по ул. Южнопортовой',
             'Поворот на дом 7А (строение 2)',
@@ -44,8 +44,8 @@ $_htfData = [
         'address'    => 'Московское ш., 161, лит. А (Шушары)',
         'phone'      => '+7 (812) 426-56-38',
         'tel'        => '+78124265638',
-        'map_src'    => 'https://yandex.ru/map-widget/v1/?ll=30.3897%2C59.8516&z=16&pt=30.3897,59.8516,pm2grl&l=map',
-        'route_url'  => 'https://yandex.ru/maps/?rtext=~59.8516,30.3897&rtt=auto',
+        'map_src'    => 'https://yandex.ru/map-widget/v1/?ll=30.425016%2C59.772968&z=17&pt=30.425016,59.772968,pm2rdl&l=map',
+        'route_url'  => 'https://yandex.com/maps/-/CPCluLp8',
         'route_steps'=> [
             'Двигайтесь по Московскому шоссе на юг (п. Шушары)',
             'Поворот на дом 161 (литер А)',
