@@ -5374,13 +5374,21 @@ body > .sidebar_bottom,
 .other-series-card span { font-size: 0.83rem; color: #666; }
 
 /* Footer вЂ” Р±Р»РѕРє "РњР°СЂРєРё РїРѕ СЃРµСЂРёСЏРј" */
-.footer__col--series { min-width: 240px; }
-.footer__series-group { margin-bottom: 1.1rem; }
-.footer__series-heading { display: block; font-size: 0.85rem; font-weight: 700; color: #c8e6c9; text-decoration: none; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.04em; }
-.footer__series-heading:hover { color: #fff; }
-.footer__series-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.2rem 0.6rem; }
-.footer__series-list li { line-height: 1.4; }
-.footer__col--catalog .footer__list--grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.15rem 0.5rem; }
+.footer__col--series { min-width: 260px; }
+.footer__series-group { margin-bottom: 1rem; }
+.footer__series-heading {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.footer__series-heading:hover { color: rgba(255,255,255,0.7); }
+.footer__series-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; }
+.footer__series-list li { line-height: 1.5; }
 @media (max-width: 600px) {
     .series-page__h1 { font-size: 1.5rem; }
     .series-page__section-title, .grade-section__title { font-size: 1.2rem; }
@@ -5393,37 +5401,70 @@ body > .sidebar_bottom,
    REGION SWITCHER вЂ” РїРµСЂРµРєР»СЋС‡Р°С‚РµР»СЊ РіРѕСЂРѕРґР° РІ С€Р°РїРєРµ
    в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ */
 
+/* Топбар с переключателем регионов */
+.topbar {
+    background: #1b2e1b;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.82rem;
+    line-height: 1;
+}
+.topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+.topbar__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.topbar__label {
+    color: rgba(255,255,255,0.45);
+    white-space: nowrap;
+}
+.topbar__right {}
+.topbar__phone {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+.topbar__phone:hover { color: #fff; }
+
+/* Переключатель регионов */
 .region-switcher {
     display: flex;
     gap: 2px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 5px;
     padding: 2px;
-    margin-right: 8px;
 }
 .region-switcher__btn {
-    padding: 4px 10px;
-    font-size: 0.78rem;
+    padding: 4px 12px;
+    font-size: 0.8rem;
     font-weight: 500;
     background: transparent;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.6);
     border: none;
-    border-radius: 4px;
+    border-radius: 3px;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.18s, color 0.18s;
+    transition: background 0.15s, color 0.15s;
     line-height: 1.4;
 }
 .region-switcher__btn:hover {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.12);
     color: #fff;
 }
 .region-switcher__btn--active {
     background: #2e7d32;
     color: #fff;
 }
-@media (max-width: 900px) {
-    .region-switcher { display: none; }
+@media (max-width: 640px) {
+    .topbar { display: none; }
 }
 
 /* в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ

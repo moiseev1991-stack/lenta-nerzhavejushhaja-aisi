@@ -444,6 +444,33 @@ if ($isServicePage && isset($pageH1)) {
     <?php endforeach; ?>
 </head>
 <body>
+    <?php if (!empty($_regions)): ?>
+    <div class="topbar">
+        <div class="container topbar__inner">
+            <div class="topbar__left">
+                <span class="topbar__label">Ваш регион:</span>
+                <div class="region-switcher" id="regionSwitcher">
+                    <?php foreach ($_regions as $_rKey => $_r): ?>
+                    <button type="button"
+                        class="region-switcher__btn<?= $_rKey === $_regionDefault ? ' region-switcher__btn--active' : '' ?>"
+                        data-region="<?= e($_rKey) ?>"
+                        data-phone="<?= e($_r['phone']) ?>"
+                        data-tel="<?= e($_r['tel']) ?>"
+                        aria-label="Выбрать регион <?= e($_r['label']) ?>"
+                    ><?= e($_r['label']) ?></button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <div class="topbar__right">
+                <a href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                   class="topbar__phone js-region-phone"
+                   data-default-tel="<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
+                   data-default-phone="<?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?>"
+                ><?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?></a>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
     <header class="top">
         <div class="container container--header">
             <div class="header__inner">
@@ -481,19 +508,6 @@ if ($isServicePage && isset($pageH1)) {
                         <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Получить бонус</a>
                     </div>
                     <div class="header__nav-contacts">
-                        <?php if (!empty($_regions)): ?>
-                        <div class="region-switcher" id="regionSwitcher">
-                            <?php foreach ($_regions as $_rKey => $_r): ?>
-                            <button type="button"
-                                class="region-switcher__btn<?= $_rKey === $_regionDefault ? ' region-switcher__btn--active' : '' ?>"
-                                data-region="<?= e($_rKey) ?>"
-                                data-phone="<?= e($_r['phone']) ?>"
-                                data-tel="<?= e($_r['tel']) ?>"
-                                aria-label="Выбрать регион <?= e($_r['label']) ?>"
-                            ><?= e($_r['label']) ?></button>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php endif; ?>
                         <button type="button" class="btn-call-header js-open-request-modal">
                             <span class="btn-call-header__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
@@ -714,14 +728,6 @@ if ($isServicePage && isset($pageH1)) {
                         </ul>
                     </div>
                     <?php endforeach; ?>
-                </div>
-                <div class="footer__col footer__col--catalog">
-                    <h3 class="footer__title">Каталог</h3>
-                    <ul class="footer__list footer__list--grid">
-                        <?php foreach ($allCategories as $cat): ?>
-                            <li><a href="<?= base_url($cat['slug'] . '/') ?>" class="footer__link"><?= e($cat['name']) ?></a></li>
-                        <?php endforeach; ?>
-                    </ul>
                 </div>
                 <div class="footer__col">
                     <h3 class="footer__title">Информация</h3>
