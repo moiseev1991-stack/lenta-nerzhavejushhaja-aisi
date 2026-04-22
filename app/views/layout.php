@@ -1191,6 +1191,10 @@ if ($isServicePage && isset($pageH1)) {
             document.querySelectorAll('.footer__region-address').forEach(function(el) {
                 el.hidden = el.dataset.region !== key;
             });
+            // Блок "Самовывоз и отгрузка"
+            document.querySelectorAll('.how-to-find__region-block').forEach(function(el) {
+                el.hidden = el.dataset.region !== key;
+            });
             // На странице контактов — показываем нужный office-card
             document.querySelectorAll('.office-card').forEach(function(card) {
                 card.hidden = card.dataset.region !== key;
