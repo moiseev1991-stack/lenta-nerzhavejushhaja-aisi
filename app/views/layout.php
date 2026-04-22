@@ -461,13 +461,6 @@ if ($isServicePage && isset($pageH1)) {
                     <?php endforeach; ?>
                 </div>
             </div>
-            <div class="topbar__right">
-                <a href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
-                   class="topbar__phone js-region-phone"
-                   data-default-tel="<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
-                   data-default-phone="<?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?>"
-                ><?= e($_defaultRegion['phone'] ?? '+7 (800) 200-39-43') ?></a>
-            </div>
         </div>
     </div>
     <?php endif; ?>
@@ -749,6 +742,19 @@ if ($isServicePage && isset($pageH1)) {
                 </div>
                 <div class="footer__col footer__col--contacts">
                     <h3 class="footer__title">Контакты</h3>
+                    <?php if (!empty($_regions)): ?>
+                    <div class="footer__region-switcher">
+                        <?php foreach ($_regions as $_rKey => $_r): ?>
+                        <button type="button"
+                            class="region-switcher__btn region-switcher__btn--footer<?= $_rKey === $_regionDefault ? ' region-switcher__btn--active' : '' ?>"
+                            data-region="<?= e($_rKey) ?>"
+                            data-phone="<?= e($_r['phone']) ?>"
+                            data-tel="<?= e($_r['tel']) ?>"
+                            aria-label="<?= e($_r['label']) ?>"
+                        ><?= e($_r['label']) ?></button>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
                     <ul class="footer__list">
                         <li><a href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
                                class="footer__link js-region-phone"
@@ -759,7 +765,7 @@ if ($isServicePage && isset($pageH1)) {
                         <li class="footer__region-address"
                             data-region="<?= e($_rKey) ?>"
                             <?= $_rKey !== $_regionDefault ? 'hidden' : '' ?>
-                        ><?= e($_r['label']) ?>, <?= e($_r['address']) ?></li>
+                        ><?= e($_r['address']) ?></li>
                         <?php endforeach; ?>
                         <li><a href="mailto:ev18011@yandex.ru" class="footer__link">ev18011@yandex.ru</a></li>
                     </ul>

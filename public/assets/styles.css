@@ -5426,14 +5426,6 @@ body > .sidebar_bottom,
     color: rgba(255,255,255,0.45);
     white-space: nowrap;
 }
-.topbar__right {}
-.topbar__phone {
-    color: rgba(255,255,255,0.85);
-    text-decoration: none;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-}
-.topbar__phone:hover { color: #fff; }
 
 /* Переключатель регионов */
 .region-switcher {
@@ -5572,4 +5564,34 @@ body > .sidebar_bottom,
     color: rgba(255,255,255,0.5);
     line-height: 1.4;
     margin-top: 2px;
+}
+
+/* Переключатель регионов в футере */
+.footer__region-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+.region-switcher__btn--footer {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.65);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+    line-height: 1.5;
+}
+.region-switcher__btn--footer:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.5);
+}
+.region-switcher__btn--footer.region-switcher__btn--active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border-color: rgba(255,255,255,0.6);
+    font-weight: 600;
 }
