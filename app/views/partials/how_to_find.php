@@ -58,6 +58,19 @@ $_htfData = [
     <div class="container">
         <h2 id="how-to-find-title">Самовывоз и отгрузка</h2>
 
+        <?php if (!empty($_htfRegions)): ?>
+        <div class="how-to-find__region-tabs">
+            <?php foreach ($_htfRegions as $_rKey => $_r): ?>
+            <button type="button"
+                class="region-switcher__btn how-to-find__tab<?= $_rKey === $_htfDefault ? ' region-switcher__btn--active' : '' ?>"
+                data-region="<?= htmlspecialchars($_rKey, ENT_QUOTES) ?>"
+                data-phone="<?= htmlspecialchars($_r['phone'], ENT_QUOTES) ?>"
+                data-tel="<?= htmlspecialchars($_r['tel'], ENT_QUOTES) ?>"
+            ><?= htmlspecialchars($_r['label'], ENT_QUOTES, 'UTF-8') ?></button>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
         <?php foreach ($_htfRegions as $_rKey => $_r):
             $d = $_htfData[$_rKey] ?? null;
             if (!$d) continue;
