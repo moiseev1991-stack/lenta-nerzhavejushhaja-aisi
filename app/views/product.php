@@ -7,10 +7,16 @@ $conditionLabels = [
 ?>
 
 <?php
+$_pgd = function_exists('get_grade_data') ? get_grade_data($product['category_slug'] ?? '') : null;
+$_pSeriesSlug = ($_pgd && !empty($_pgd['series'])) ? 'aisi-' . strtolower(str_replace('L', 'l', $_pgd['series'])) . '-seriya' : null;
 ob_start();
 ?><nav class="breadcrumbs" aria-label="Хлебные крошки">
     <a href="<?= base_url() ?>">Главная</a>
     <span>/</span>
+    <?php if ($_pSeriesSlug && !empty($_pgd['series'])): ?>
+    <a href="<?= base_url($_pSeriesSlug . '/') ?>">Серия <?= e($_pgd['series']) ?></a>
+    <span>/</span>
+    <?php endif; ?>
     <a href="<?= base_url($product['category_slug'] . '/') ?>"><?= e($product['category_name']) ?></a>
     <span>/</span>
     <span><?= e($product['name']) ?></span>

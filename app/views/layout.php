@@ -108,13 +108,29 @@ if ($isProduct) {
                 'unitCode' => 'KGM',
             ],
         ];
+    } else {
+        // Без точной цены даём Google хотя бы вилку — иначе Offer считается неполным.
+        $productOffer['priceCurrency'] = 'RUB';
+        $productOffer['priceSpecification'] = [
+            '@type' => 'PriceSpecification',
+            'priceCurrency' => 'RUB',
+            'priceRange' => '₽₽',
+            'valueAddedTaxIncluded' => true,
+        ];
     }
     $productLd = [
         '@context' => 'https://schema.org',
         '@type' => 'Product',
         'name' => $product['name'],
         'sku' => (string)$product['id'],
-        'brand' => ['@type' => 'Brand', 'name' => 'AISI'],
+        // Brand продавца — это наш каталог, AISI выносим в category/isRelatedTo как стандарт института.
+        'brand' => ['@type' => 'Brand', 'name' => $config['company']['name'] ?? 'Каталог AISI'],
+        'category' => 'Нержавеющая лента ' . ($product['category_name'] ?? ''),
+        'isRelatedTo' => [
+            '@type' => 'DefinedTerm',
+            'name' => $product['category_name'] ?? 'AISI',
+            'inDefinedTermSet' => 'AISI / SAE',
+        ],
         'material' => 'Нержавеющая сталь ' . ($product['category_name'] ?? ''),
         'image' => !empty($product['image']) ? image_url($product['image']) : null,
         'offers' => $productOffer,
@@ -153,30 +169,49 @@ if ($isProduct) {
     // Когда соберём настоящие отзывы через Яндекс.Бизнес/amoCRM — вернём с реальным reviewCount.
     $jsonLd[] = $productLd;
     
-    // BreadcrumbList для товара
+    // BreadcrumbList для товара — с уровнем серии для иерархии Sitelinks.
+    $productGradeData = function_exists('get_grade_data') ? get_grade_data($product['category_slug'] ?? '') : null;
+    $productBreadcrumbs = [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная', 'item' => base_url()],
+    ];
+    if ($productGradeData && !empty($productGradeData['series'])) {
+        $pSeriesSlug  = 'aisi-' . strtolower(str_replace('L', 'l', $productGradeData['series'])) . '-seriya';
+        $productBreadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => 2,
+            'name'  => 'Серия ' . $productGradeData['series'],
+            'item'  => base_url($pSeriesSlug . '/'),
+        ];
+        $productBreadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => 3,
+            'name'  => 'AISI ' . $productGradeData['number'],
+            'item'  => base_url($product['category_slug'] . '/'),
+        ];
+        $productBreadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => 4,
+            'name'  => $product['name'],
+            'item'  => $productUrl,
+        ];
+    } else {
+        $productBreadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => 2,
+            'name'  => $product['category_name'],
+            'item'  => base_url($product['category_slug'] . '/'),
+        ];
+        $productBreadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => 3,
+            'name'  => $product['name'],
+            'item'  => $productUrl,
+        ];
+    }
     $jsonLd[] = [
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
-        'itemListElement' => [
-            [
-                '@type' => 'ListItem',
-                'position' => 1,
-                'name' => 'Главная',
-                'item' => base_url(),
-            ],
-            [
-                '@type' => 'ListItem',
-                'position' => 2,
-                'name' => $product['category_name'],
-                'item' => base_url($product['category_slug'] . '/'),
-            ],
-            [
-                '@type' => 'ListItem',
-                'position' => 3,
-                'name' => $product['name'],
-                'item' => $productUrl,
-            ],
-        ],
+        'itemListElement' => $productBreadcrumbs,
     ];
 
     // FAQPage для товара
@@ -374,8 +409,10 @@ if ($isServicePage && isset($pageH1)) {
     <meta name="google-site-verification" content="lJje2oYts7avFx49DQ9UI7FABZxaWvGc_agsddRglJ8" />
     <meta name="yandex-verification" content="47319e102ce82280" />
     <meta name="msvalidate.01" content="CE786B4895642D0D8F4F389F90B18CC6" />
+    <meta name="theme-color" content="#1a3a5c">
     <title><?= e($pageTitle ?: $config['site_name']) ?></title>
     <link rel="icon" href="<?= asset_url('img/favicon.svg') ?>" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="<?= asset_url('img/favicon.svg') ?>">
     <?php if ($is404): ?>
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>

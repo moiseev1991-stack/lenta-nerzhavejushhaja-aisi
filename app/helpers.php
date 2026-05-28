@@ -338,19 +338,34 @@ if (!function_exists('seo_grade_part')) {
 }
 
 /**
- * SEO Title для карточки товара
- * Шаблон: [Тип] AISI [Марка] [Спеки] купить в [Город] — [Цена] | [Компания]
+ * SEO Title для карточки товара.
+ * При наличии цены: [Тип] AISI [Марка] ([ГОСТ]) [Спеки] [состояние] [поверхность] — от [Цена] ₽/кг | [Компания]
+ * Без цены:        [Тип] AISI [Марка] ([ГОСТ]) [Спеки] [состояние] [поверхность] — нарезка от 1 м | [Компания]
+ * ГОСТ-аналог подставляется из grades_data.php (например AISI 304 → 08Х18Н10).
  */
 if (!function_exists('seo_product_title')) {
     function seo_product_title(array $product, array $config) {
-        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $type  = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($product['category_name'] ?? 'AISI');
-        $city = $product['city'] ?? ($config['seo']['city_default'] ?? 'Москве и РФ');
+        $gradeData = get_grade_data($product['category_slug'] ?? '');
+        $gostPart = ($gradeData && !empty($gradeData['gost'])) ? ' (' . $gradeData['gost'] . ')' : '';
         $specs = seo_product_specs($product);
-        $priceStr = seo_price_string($product['price_per_kg'] ?? null);
+        $condition = trim((string)($product['condition'] ?? ''));
+        $condLabel = $condition !== '' && function_exists('seo_condition_label') ? seo_condition_label($condition) : '';
+        $surface = trim((string)($product['surface'] ?? ''));
+        $hasPrice = isset($product['price_per_kg']) && (float)$product['price_per_kg'] > 0;
         $company = $config['company']['name'] ?? 'Каталог AISI';
-        $middle = $specs !== '' ? trim($type . ' ' . $grade . ' ' . $specs) : trim($type . ' ' . $grade);
-        return $middle . ' купить в ' . $city . ' — ' . $priceStr . ' | ' . $company;
+
+        $head = trim($type . ' ' . $grade . $gostPart);
+        $parts = array_filter([$head, $specs, $condLabel, $surface], fn($p) => $p !== '');
+        $middle = implode(' ', $parts);
+
+        if ($hasPrice) {
+            $tail = '— от ' . number_format((float)$product['price_per_kg'], 0, '.', ' ') . ' ₽/кг';
+        } else {
+            $tail = '— нарезка от 1 м, доставка по РФ';
+        }
+        return $middle . ' ' . $tail . ' | ' . $company;
     }
 }
 
@@ -518,14 +533,23 @@ if (!function_exists('seo_product_description')) {
 }
 
 /**
- * SEO H1 для товара: строго [Тип] AISI [Марка] [Размер]
+ * SEO H1 для товара: [Тип] AISI [Марка] ([ГОСТ]) [Спеки] [состояние] [поверхность]
+ * ГОСТ-аналог берётся из grades_data.php — необходим для ранжирования по русским марочным запросам.
  */
 if (!function_exists('seo_product_h1')) {
     function seo_product_h1(array $product, array $config) {
-        $type = $config['seo']['product_type'] ?? 'Лента нержавеющая';
+        $type  = $config['seo']['product_type'] ?? 'Лента нержавеющая';
         $grade = seo_grade_part($product['category_name'] ?? 'AISI');
+        $gradeData = get_grade_data($product['category_slug'] ?? '');
+        $gostPart = ($gradeData && !empty($gradeData['gost'])) ? ' (' . $gradeData['gost'] . ')' : '';
         $specs = seo_product_specs($product);
-        return $specs !== '' ? trim($type . ' ' . $grade . ' ' . $specs) : trim($type . ' ' . $grade);
+        $condition = trim((string)($product['condition'] ?? ''));
+        $condLabel = $condition !== '' && function_exists('seo_condition_label') ? seo_condition_label($condition) : '';
+        $surface = trim((string)($product['surface'] ?? ''));
+
+        $head = trim($type . ' ' . $grade . $gostPart);
+        $parts = array_filter([$head, $specs, $condLabel, $surface], fn($p) => $p !== '');
+        return implode(' ', $parts);
     }
 }
 

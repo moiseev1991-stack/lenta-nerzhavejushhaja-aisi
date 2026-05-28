@@ -3,7 +3,28 @@ $relatedData = $relatedProducts ?? ['items' => [], 'is_popular_fallback' => fals
 $items = $relatedData['items'];
 if (empty($items)) return;
 $sectionTitle = $relatedData['is_popular_fallback'] ? 'Популярные товары' : 'Похожие товары';
+
+// JSON-LD ItemList для блока похожих товаров — даёт Google дополнительный сигнал кросс-линковки.
+$relatedItemListElements = [];
+foreach ($items as $idx => $rp) {
+    $relatedItemListElements[] = [
+        '@type'    => 'ListItem',
+        'position' => $idx + 1,
+        'url'      => base_url(($rp['category_slug'] ?? '') . '/' . ($rp['slug'] ?? '') . '/'),
+        'name'     => $rp['name'] ?? '',
+    ];
+}
+$relatedItemListLd = [
+    '@context'        => 'https://schema.org',
+    '@type'           => 'ItemList',
+    'name'            => $sectionTitle,
+    'numberOfItems'   => count($items),
+    'itemListElement' => $relatedItemListElements,
+];
 ?>
+<script type="application/ld+json">
+<?= json_encode($relatedItemListLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
+</script>
 <section class="related-products" aria-labelledby="related-products-title">
     <div class="container">
         <h2 class="related-products__title" id="related-products-title"><?= e($sectionTitle) ?></h2>

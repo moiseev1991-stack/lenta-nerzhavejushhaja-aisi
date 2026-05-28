@@ -227,7 +227,12 @@ if ($requestPath === 'admin' || strpos($requestPath, 'admin/') === 0) {
         require __DIR__ . '/../app/admin/restore_db.php';
         exit;
     }
-    
+
+    if ($adminPath === 'seo_cleanup') {
+        require __DIR__ . '/../app/admin/seo_cleanup.php';
+        exit;
+    }
+
     // 404 для админки
     http_response_code(404);
     $is404 = true;
