@@ -357,7 +357,7 @@ if (!function_exists('seo_product_title')) {
         $company = $config['company']['name'] ?? 'Каталог AISI';
 
         $head = trim($type . ' ' . $grade . $gostPart);
-        $parts = array_filter([$head, $specs, $condLabel, $surface], fn($p) => $p !== '');
+        $parts = array_filter([$head, $specs, $condLabel, $surface], function ($p) { return $p !== ''; });
         $middle = implode(' ', $parts);
 
         if ($hasPrice) {
@@ -548,7 +548,7 @@ if (!function_exists('seo_product_h1')) {
         $surface = trim((string)($product['surface'] ?? ''));
 
         $head = trim($type . ' ' . $grade . $gostPart);
-        $parts = array_filter([$head, $specs, $condLabel, $surface], fn($p) => $p !== '');
+        $parts = array_filter([$head, $specs, $condLabel, $surface], function ($p) { return $p !== ''; });
         return implode(' ', $parts);
     }
 }
