@@ -128,16 +128,17 @@ if ($isProduct) {
     }
     $additionalProps = [];
     if (isset($product['thickness']) && $product['thickness'] !== '' && $product['thickness'] !== null) {
-        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Толщина', 'value' => (string)$product['thickness']];
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Толщина', 'value' => (string)$product['thickness'], 'unitText' => 'мм'];
     }
     if (!empty($product['width'])) {
-        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Ширина', 'value' => (string)$product['width']];
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Ширина', 'value' => (string)$product['width'], 'unitText' => 'мм'];
     }
     if (!empty($product['surface'])) {
         $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Поверхность', 'value' => (string)$product['surface']];
     }
     if (!empty($product['condition'])) {
-        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Состояние', 'value' => (string)$product['condition']];
+        $condValue = function_exists('seo_condition_label') ? seo_condition_label($product['condition']) : (string)$product['condition'];
+        $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Состояние', 'value' => $condValue];
     }
     if (isset($product['spring']) && $product['spring'] !== null && $product['spring'] !== '') {
         $additionalProps[] = ['@type' => 'PropertyValue', 'name' => 'Пружинные свойства', 'value' => $product['spring'] ? 'Да' : 'Нет'];
@@ -148,17 +149,8 @@ if ($isProduct) {
     if (!empty($additionalProps)) {
         $productLd['additionalProperty'] = $additionalProps;
     }
-    $productLd['aggregateRating'] = [
-        '@type'       => 'AggregateRating',
-        'ratingValue' => '5',
-        'reviewCount' => '1',
-    ];
-    $productLd['review'] = [[
-        '@type'        => 'Review',
-        'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '5'],
-        'author'       => ['@type' => 'Person', 'name' => 'Покупатель'],
-        'reviewBody'   => 'Качественная нержавеющая лента, соответствует характеристикам.',
-    ]];
+    // aggregateRating/review удалены до сбора реальных отзывов (Google Reviews Spam Update 2023+).
+    // Когда соберём настоящие отзывы через Яндекс.Бизнес/amoCRM — вернём с реальным reviewCount.
     $jsonLd[] = $productLd;
     
     // BreadcrumbList для товара
@@ -313,9 +305,8 @@ if ($isSeriesPage && isset($seriesData)) {
         'url' => base_url($seriesData['slug'] . '/'),
     ];
     $breadcrumbItems = [
-        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная',    'item' => base_url()],
-        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Серии AISI', 'item' => base_url()],
-        ['@type' => 'ListItem', 'position' => 3, 'name' => 'Серия ' . $seriesData['series'], 'item' => base_url($seriesData['slug'] . '/')],
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная', 'item' => base_url()],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Серия ' . $seriesData['series'], 'item' => base_url($seriesData['slug'] . '/')],
     ];
     $jsonLd[] = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $breadcrumbItems];
     if (!empty($seriesData['faq'])) {
@@ -424,16 +415,46 @@ if ($isServicePage && isset($pageH1)) {
     <link rel="next" href="<?= e($catPaginationLinks['next']) ?>">
     <?php endif; ?>
     <?php endif; ?>
-    <?php if ($isProduct || $isCategory): ?>
-    <meta property="og:type" content="<?= $isProduct ? 'product' : 'website' ?>">
+    <?php
+    // Универсальный OG/Twitter блок: главная, категории, товары, серии, сервисные, бонус.
+    if ($isHome || $isCategory || $isProduct || $isSeriesPage || $isServicePage || $isBonusPage):
+        if ($isProduct) {
+            $ogType = 'product';
+            $ogUrl  = base_url($product['category_slug'] . '/' . $product['slug'] . '/');
+            $ogImg  = !empty($product['image']) ? image_url($product['image']) : asset_url('img/logo_aisi_lenta_full.png');
+        } elseif ($isCategory) {
+            $ogType = 'website';
+            $ogUrl  = base_url($category['slug'] . '/');
+            $ogImg  = asset_url('img/logo_aisi_lenta_full.png');
+        } elseif ($isSeriesPage && isset($seriesData)) {
+            $ogType = 'website';
+            $ogUrl  = base_url($seriesData['slug'] . '/');
+            $ogImg  = asset_url('img/logo_aisi_lenta_full.png');
+        } elseif ($isServicePage && isset($servicePageKey)) {
+            $ogType = 'website';
+            $ogUrl  = base_url($servicePageKey . '/');
+            $ogImg  = asset_url('img/logo_aisi_lenta_full.png');
+        } elseif ($isBonusPage) {
+            $ogType = 'website';
+            $ogUrl  = base_url('bonus/');
+            $ogImg  = asset_url('img/logo_aisi_lenta_full.png');
+        } else {
+            $ogType = 'website';
+            $ogUrl  = base_url();
+            $ogImg  = asset_url('img/logo_aisi_lenta_full.png');
+        }
+    ?>
+    <meta property="og:type" content="<?= $ogType ?>">
+    <meta property="og:site_name" content="<?= e($config['site_name'] ?? 'Каталог AISI') ?>">
     <meta property="og:title" content="<?= e($pageTitle) ?>">
     <meta property="og:description" content="<?= e($metaDescription ?? '') ?>">
-    <meta name="twitter:description" content="<?= e($metaDescription ?? '') ?>">
-    <meta property="og:url" content="<?= e($isProduct ? base_url($product['category_slug'] . '/' . $product['slug'] . '/') : base_url($category['slug'] . '/')) ?>">
+    <meta property="og:url" content="<?= e($ogUrl) ?>">
     <meta property="og:locale" content="ru_RU">
-    <?php if ($isProduct && !empty($product['image'])): ?>
-    <meta property="og:image" content="<?= e(image_url($product['image'])) ?>">
-    <?php endif; ?>
+    <meta property="og:image" content="<?= e($ogImg) ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($pageTitle) ?>">
+    <meta name="twitter:description" content="<?= e($metaDescription ?? '') ?>">
+    <meta name="twitter:image" content="<?= e($ogImg) ?>">
     <?php endif; ?>
     <link rel="preload" href="<?= asset_url('assets/styles.css', true) ?>" as="style">
     <link rel="stylesheet" href="<?= asset_url('assets/styles.css', true) ?>">

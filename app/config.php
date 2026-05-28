@@ -16,9 +16,10 @@ return [
     /** Канонический URL сайта (для robots.txt Sitemap и URL в sitemap.xml). Задайте SITE_URL в env при необходимости. */
     'site_url' => getenv('SITE_URL') ?: 'https://lenta-nerzhavejushhaja-aisi.ru',
     'company' => [
-        'name' => 'Компания',
-        'url' => 'https://example.com',
+        'name'  => 'Каталог AISI',
+        'url'   => getenv('SITE_URL') ?: 'https://lenta-nerzhavejushhaja-aisi.ru',
         'phone' => '+7 (800) 200-39-43',
+        'email' => 'ev18011@yandex.ru',
     ],
     'regions' => [
         'nn'  => [
