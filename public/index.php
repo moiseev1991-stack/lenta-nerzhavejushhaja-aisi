@@ -319,7 +319,7 @@ $servicePagesData = require __DIR__ . '/../app/data/pages.php';
 $servicePageKey = rtrim($requestPath, '/');
 
 // Список известных сервисных страниц
-$knownServicePages = ['contacts', 'delivery', 'payment', 'about', 'price', 'privacy-policy'];
+$knownServicePages = ['contacts', 'delivery', 'payment', 'about', 'price', 'privacy-policy', 'cookies', 'consent', 'terms'];
 
 if (in_array($servicePageKey, $knownServicePages) && isset($servicePagesData[$servicePageKey])) {
     $pageData = $servicePagesData[$servicePageKey];

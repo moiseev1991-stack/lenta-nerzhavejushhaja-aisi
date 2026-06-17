@@ -27,7 +27,7 @@ function sitemapLastmod($updatedAt, $default) {
 }
 
 $seriesPages  = ['aisi-200-seriya', 'aisi-300-seriya', 'aisi-400-seriya', 'aisi-900l-seriya'];
-$servicePages = ['about', 'delivery', 'payment', 'contacts', 'price', 'sitemap', 'privacy-policy'];
+$servicePages = ['about', 'delivery', 'payment', 'contacts', 'price', 'sitemap', 'privacy-policy', 'cookies', 'consent', 'terms'];
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>

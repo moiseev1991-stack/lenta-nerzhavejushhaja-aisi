@@ -6,6 +6,9 @@ $servicePages = [
     'about' => 'О компании',
     'price' => 'Прайс-лист',
     'privacy-policy' => 'Политика конфиденциальности',
+    'cookies' => 'Политика в отношении cookies',
+    'consent' => 'Согласие на обработку персональных данных',
+    'terms' => 'Пользовательское соглашение',
 ];
 $sitemapCategories = $sitemapCategories ?? [];
 $sitemapProducts = $sitemapProducts ?? [];

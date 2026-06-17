@@ -802,6 +802,9 @@ if ($isServicePage && isset($pageH1)) {
                     <h3 class="footer__title">Документы</h3>
                     <ul class="footer__list">
                         <li><a href="<?= base_url('privacy-policy/') ?>" class="footer__link">Политика конфиденциальности</a></li>
+                        <li><a href="<?= base_url('cookies/') ?>" class="footer__link">Политика в отношении cookies</a></li>
+                        <li><a href="<?= base_url('consent/') ?>" class="footer__link">Согласие на обработку ПДн</a></li>
+                        <li><a href="<?= base_url('terms/') ?>" class="footer__link">Пользовательское соглашение</a></li>
                         <li><a href="<?= base_url('sitemap/') ?>" class="footer__link">Карта сайта</a></li>
                     </ul>
                 </div>
@@ -844,10 +847,50 @@ if ($isServicePage && isset($pageH1)) {
                 <span class="footer__pdf-hint">КП по контрактным поставкам</span>
             </div>
             <p class="footer__copy">
-                &copy; <?= date('Y') ?> <?= e($config['site_name']) ?>
+                &copy; <?= date('Y') ?> <?= e($config['site_name']) ?>. ИП Галанов А.&nbsp;О., ИНН 526016545328. Все права защищены.
+            </p>
+            <p class="footer__copy footer__copy--legal" style="opacity:.75;font-size:.85em;margin-top:.25em;">
+                Информация на сайте носит справочный характер и не является публичной офертой. Используя сайт, вы соглашаетесь с
+                <a href="<?= base_url('terms/') ?>" class="footer__link">Пользовательским соглашением</a>,
+                <a href="<?= base_url('privacy-policy/') ?>" class="footer__link">Политикой конфиденциальности</a> и
+                <a href="<?= base_url('cookies/') ?>" class="footer__link">Политикой в отношении cookies</a>.
             </p>
         </div>
     </footer>
+
+    <div id="cookieConsent" class="cookie-consent" role="dialog" aria-live="polite" aria-label="Сообщение о файлах cookie" hidden>
+        <div class="cookie-consent__inner">
+            <p class="cookie-consent__text">
+                Мы используем файлы <strong>cookie</strong> и сервис Яндекс.Метрика для корректной работы сайта и аналитики.
+                Продолжая просмотр, вы соглашаетесь с
+                <a href="<?= base_url('cookies/') ?>">Политикой в отношении cookies</a> и
+                <a href="<?= base_url('privacy-policy/') ?>">Политикой конфиденциальности</a>.
+            </p>
+            <button type="button" class="btn btn--primary cookie-consent__btn" id="cookieConsentAccept">Принимаю</button>
+        </div>
+    </div>
+    <style>
+        .cookie-consent{position:fixed;left:12px;right:12px;bottom:12px;z-index:10000;background:#fff;color:#222;border:1px solid #d8dde3;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:14px 16px;}
+        .cookie-consent__inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;max-width:1200px;margin:0 auto;}
+        .cookie-consent__text{margin:0;font-size:.92em;line-height:1.45;flex:1 1 280px;}
+        .cookie-consent__text a{color:#0c5cb0;text-decoration:underline;}
+        .cookie-consent__btn{flex:0 0 auto;}
+        @media (max-width:560px){.cookie-consent{left:8px;right:8px;bottom:8px;padding:12px;}.cookie-consent__btn{width:100%;}}
+    </style>
+    <script>
+    (function(){
+        try{
+            var KEY='cookie_consent_v1';
+            if(localStorage.getItem(KEY)==='accepted')return;
+            var el=document.getElementById('cookieConsent');
+            if(!el)return;
+            el.hidden=false;
+            var btn=document.getElementById('cookieConsentAccept');
+            if(btn){btn.addEventListener('click',function(){try{localStorage.setItem(KEY,'accepted');}catch(_){}el.hidden=true;});}
+        }catch(_){/* localStorage may be unavailable in private mode */}
+    })();
+    </script>
+
     <script>
     (function() {
         var menu = document.getElementById('mobileMenu');
