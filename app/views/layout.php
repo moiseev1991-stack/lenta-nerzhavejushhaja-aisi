@@ -42,37 +42,128 @@ if ($isHome) {
         '@type' => ['Organization', 'LocalBusiness'],
         '@id'   => base_url('#organization'),
         'name'  => $company['name'] ?? 'Компания',
+        'legalName' => 'Индивидуальный предприниматель Галанов Андрей Олегович',
+        'alternateName' => ['ИП Галанов А. О.', 'Каталог AISI', 'lenta-nerzhavejushhaja-aisi.ru'],
+        'taxID' => '526016545328',
+        'vatID' => '526016545328',
         'url'   => $company['url'] ?? base_url(),
         'telephone' => $company['phone'] ?? '+7 (800) 200-39-43',
         'email'     => $company['email'] ?? 'ev18011@yandex.ru',
         'logo' => asset_url('img/logo_aisi_lenta_full.png'),
         'image' => asset_url('img/logo_aisi_lenta_full.png'),
-        'description' => 'Поставка нержавеющей ленты AISI всех марок. Нарезка от 1 метра, доставка по России.',
+        'description' => 'Поставка холоднокатаной нержавеющей ленты всех марок AISI (304, 316, 321, 430 и др.). Нарезка от 1 метра, ширина от 2,5 мм, толщина 0,05–4 мм. Доставка по России.',
+        'slogan' => 'Нержавеющая лента AISI: нарезка от 1 метра, доставка по России',
         'priceRange' => '₽₽',
+        'currenciesAccepted' => 'RUB',
+        'paymentAccepted' => ['Банковский перевод', 'Наличные', 'Банковская карта'],
+        'foundingDate' => '2013',
         'address' => [
             '@type'           => 'PostalAddress',
-            'streetAddress'   => 'д. Малое Брянцево',
-            'addressLocality' => 'г.о. Подольск',
-            'addressRegion'   => 'Московская область',
-            'postalCode'      => '142143',
+            'streetAddress'   => 'ул. Академическая, д. 2, кв./оф. 3',
+            'addressLocality' => 'д. Афонино, Кстовский р-н',
+            'addressRegion'   => 'Нижегородская область',
+            'postalCode'      => '607665',
             'addressCountry'  => 'RU',
         ],
         'geo' => [
             '@type'     => 'GeoCoordinates',
-            'latitude'  => 55.4166,
-            'longitude' => 37.5433,
+            'latitude'  => 56.249,
+            'longitude' => 44.111,
         ],
         'areaServed' => [
             '@type' => 'Country',
             'name'  => 'Россия',
+        ],
+        'knowsAbout' => [
+            'Нержавеющая лента',
+            'Холоднокатаная лента',
+            'AISI 201', 'AISI 301', 'AISI 304', 'AISI 304L',
+            'AISI 310', 'AISI 310S', 'AISI 316', 'AISI 316L', 'AISI 316Ti',
+            'AISI 321', 'AISI 409', 'AISI 420', 'AISI 430', 'AISI 431', 'AISI 439', 'AISI 441', 'AISI 904L',
+            'ГОСТ 4986-79', 'ГОСТ 5582-75', 'EN 10088-2',
+            'Аустенитная сталь', 'Ферритная сталь', 'Мартенситная сталь',
+            'Пружинная нержавеющая лента', 'Прецизионная резка', 'Шлифовка металла',
+        ],
+        'makesOffer' => [
+            '@type' => 'Offer',
+            'itemOffered' => [
+                '@type' => 'Product',
+                'name'  => 'Нержавеющая лента AISI',
+                'category' => 'Металлопрокат / Нержавеющий прокат',
+            ],
+            'areaServed' => ['@type' => 'Country', 'name' => 'Россия'],
         ],
         'openingHoursSpecification' => [[
             '@type'     => 'OpeningHoursSpecification',
             'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday'],
             'opens'     => '09:00',
             'closes'    => '18:00',
+        ], [
+            '@type'     => 'OpeningHoursSpecification',
+            'dayOfWeek' => ['Saturday'],
+            'opens'     => '10:00',
+            'closes'    => '15:00',
         ]],
         'sameAs' => [],
+    ];
+
+    // FAQPage на главной — quotable answers для AI-поиска и Я.Нейро/Google AI Overviews
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => [
+            [
+                '@type' => 'Question',
+                'name'  => 'Что такое нержавеющая лента AISI и из каких марок она бывает?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text'  => 'Нержавеющая лента AISI — это холоднокатаный плоский прокат из коррозионно-стойкой стали толщиной от 0,05 до 4 мм. Наиболее востребованные марки: AISI 304 (универсальная аустенитная сталь, аналог 08Х18Н10), AISI 304L (с пониженным углеродом), AISI 316 и 316L (с молибденом, для агрессивных сред), AISI 321 (стабилизированная титаном, аналог 08Х18Н10Т), AISI 430 (ферритная, аналог 12Х17), AISI 201 (марганцевая, экономичная замена 304), AISI 904L (супераустенитная для сильных кислот).',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name'  => 'Какие толщины и ширины нержавеющей ленты у вас в наличии?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text'  => 'Толщины нержавеющей ленты: от 0,05 мм до 4 мм. Ширина продольной нарезки — от 2,5 мм. Длину отматываем от 1 метра, поэтому не нужно покупать целый рулон. Стандартные поверхности — 2B (матовая, после холодной прокатки) и BA (зеркальная). По состоянию — мягкая (М) и нагартованная (Н, в т. ч. пружинная).',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name'  => 'Какие российские аналоги у марок AISI 304, 321, 430, 316L?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text'  => 'AISI 304 = 08Х18Н10 / 12Х18Н9 (ГОСТ 5632). AISI 304L = 03Х18Н11. AISI 316 = 10Х17Н13М2. AISI 316L = 03Х17Н14М2 / 03Х17Н14М3. AISI 316Ti = 10Х17Н13М2Т. AISI 321 = 08Х18Н10Т / 12Х18Н10Т. AISI 430 = 12Х17. AISI 201 — марганцевый аналог 304 без точного соответствия по ГОСТ. AISI 904L — высоконикелевая сталь 03ХН28МДТ.',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name'  => 'Сколько стоит нержавеющая лента AISI и от чего зависит цена?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text'  => 'Цена нержавеющей ленты считается за килограмм с НДС. Ориентир: AISI 201 — от 210 ₽/кг, AISI 304 — от 300 ₽/кг, AISI 316L — от 430 ₽/кг, AISI 321 — от 340 ₽/кг, AISI 430 — от 150 ₽/кг, AISI 904L — от 1 300 ₽/кг. На стоимость влияют марка стали, толщина, ширина нарезки, состояние поставки и объём заказа.',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name'  => 'Где можно купить нержавеющую ленту AISI с доставкой по России?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text'  => 'Поставщик — ИП Галанов А. О. (ИНН 526016545328). Офисы в Нижнем Новгороде, Москве и Санкт-Петербурге, доставка по всей России транспортными компаниями. Самовывоз — бесплатно. Заказ от 10 000 ₽. Контакты: +7 (800) 200-39-43, ev18011@yandex.ru, сайт lenta-nerzhavejushhaja-aisi.ru.',
+                ],
+            ],
+        ],
+    ];
+
+    // Speakable — какие блоки контента можно зачитывать голосовым ассистентам
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'url'   => base_url(),
+        'speakable' => [
+            '@type' => 'SpeakableSpecification',
+            'cssSelector' => ['h1', '.usp__h', '.usp__p', '.home-quick-facts'],
+        ],
     ];
 }
 
@@ -360,10 +451,27 @@ if ($isServicePage && isset($pageH1)) {
         '@type' => 'WebPage',
         'name' => $pageH1,
         'description' => $pageDescription ?? '',
+        'url'  => isset($servicePageKey) ? base_url($servicePageKey . '/') : base_url(),
+        'inLanguage' => 'ru-RU',
+        'isPartOf' => ['@type' => 'WebSite', 'name' => $config['site_name'] ?? 'Каталог AISI', 'url' => base_url()],
+        'dateModified' => date('Y-m-d'),
         'mainEntity' => [
             '@type' => 'Article',
             'headline' => $pageH1,
+            'inLanguage' => 'ru-RU',
+            'datePublished' => '2024-01-01',
+            'dateModified'  => date('Y-m-d'),
+            'author' => ['@type' => 'Organization', 'name' => 'ИП Галанов А. О.', 'url' => base_url()],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => $config['site_name'] ?? 'Каталог AISI',
+                'logo' => ['@type' => 'ImageObject', 'url' => asset_url('img/logo_aisi_lenta_full.png')],
+            ],
             'articleBody' => isset($pageContent) ? strip_tags($pageContent) : '',
+        ],
+        'speakable' => [
+            '@type' => 'SpeakableSpecification',
+            'cssSelector' => ['h1', '.legal-page h2', '.contacts-page__requisites', '.page-content h2'],
         ],
     ];
     if (isset($servicePageKey) && $servicePageKey === 'contacts') {
@@ -373,29 +481,38 @@ if ($isServicePage && isset($pageH1)) {
             '@type' => ['Organization', 'LocalBusiness'],
             '@id'   => base_url('#organization'),
             'name'  => $company['name'] ?? 'Компания',
+            'legalName' => 'Индивидуальный предприниматель Галанов Андрей Олегович',
+            'taxID' => '526016545328',
+            'vatID' => '526016545328',
             'url'   => $company['url'] ?? base_url(),
             'telephone' => $company['phone'] ?? '+7 (800) 200-39-43',
             'email'     => $company['email'] ?? 'ev18011@yandex.ru',
             'logo' => asset_url('img/logo_aisi_lenta_full.png'),
             'priceRange' => '₽₽',
+            'currenciesAccepted' => 'RUB',
             'address' => [
                 '@type'           => 'PostalAddress',
-                'streetAddress'   => 'д. Малое Брянцево',
-                'addressLocality' => 'г.о. Подольск',
-                'addressRegion'   => 'Московская область',
-                'postalCode'      => '142143',
+                'streetAddress'   => 'ул. Академическая, д. 2, кв./оф. 3',
+                'addressLocality' => 'д. Афонино, Кстовский р-н',
+                'addressRegion'   => 'Нижегородская область',
+                'postalCode'      => '607665',
                 'addressCountry'  => 'RU',
             ],
             'geo' => [
                 '@type'     => 'GeoCoordinates',
-                'latitude'  => 55.4166,
-                'longitude' => 37.5433,
+                'latitude'  => 56.249,
+                'longitude' => 44.111,
             ],
             'openingHoursSpecification' => [[
                 '@type'     => 'OpeningHoursSpecification',
                 'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday'],
                 'opens'     => '09:00',
                 'closes'    => '18:00',
+            ], [
+                '@type'     => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['Saturday'],
+                'opens'     => '10:00',
+                'closes'    => '15:00',
             ]],
         ];
     }

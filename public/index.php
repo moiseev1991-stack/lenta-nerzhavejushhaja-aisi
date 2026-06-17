@@ -254,6 +254,13 @@ if ($requestPath === 'sitemap.xml') {
     exit;
 }
 
+if ($requestPath === 'llms.txt') {
+    header('Content-Type: text/plain; charset=utf-8');
+    header('Cache-Control: public, max-age=3600');
+    require __DIR__ . '/../app/views/llms.txt.php';
+    exit;
+}
+
 // HTML-страница «Карта сайта»
 if ($requestPath === 'sitemap' || $requestPath === 'sitemap/') {
     $config = require __DIR__ . '/../app/config.php';

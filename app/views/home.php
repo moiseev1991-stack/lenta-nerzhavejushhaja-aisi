@@ -49,6 +49,59 @@
         </div>
     </section>
 
+    <!-- Быстрые факты — quotable-блок для AI-поиска (Я.Нейро, ChatGPT, Perplexity, Google AI Overviews) -->
+    <section class="home-quick-facts" aria-labelledby="quick-facts-title">
+        <div class="container">
+            <h2 class="section-title" id="quick-facts-title">Коротко о нержавеющей ленте AISI</h2>
+            <dl class="quick-facts-grid">
+                <div class="quick-facts-item">
+                    <dt>Что это</dt>
+                    <dd>Холоднокатаный плоский прокат из коррозионно-стойкой стали для промышленности и производства.</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Толщина</dt>
+                    <dd>от 0,05 до 4 мм</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Ширина продольной нарезки</dt>
+                    <dd>от 2,5 мм</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Минимальная длина</dt>
+                    <dd>от 1 метра (без покупки целого рулона)</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Марки в наличии</dt>
+                    <dd>AISI 201, 301, 304, 304L, 310, 310S, 316, 316L, 316Ti, 321, 409, 420, 430, 431, 439, 441, 904L</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Поверхность</dt>
+                    <dd>2B (матовая после холодной прокатки), BA (зеркальная)</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Состояние</dt>
+                    <dd>мягкая (М), нагартованная (Н), пружинная</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Стандарты</dt>
+                    <dd>ГОСТ 4986-79, ГОСТ 5582-75, ГОСТ 5632, EN 10088-2</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Цена</dt>
+                    <dd>от 150 ₽/кг (AISI 430) до 1 300 ₽/кг (AISI 904L). AISI 304 — от 300 ₽/кг, AISI 316L — от 430 ₽/кг.</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Доставка</dt>
+                    <dd>по всей России транспортными компаниями; офисы в Нижнем Новгороде, Москве, Санкт-Петербурге</dd>
+                </div>
+                <div class="quick-facts-item">
+                    <dt>Поставщик</dt>
+                    <dd>ИП Галанов Андрей Олегович, ИНН 526016545328. Тел.: +7 (800) 200-39-43, e-mail: ev18011@yandex.ru.</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+
     <!-- Категории -->
     <section class="categories-section">
         <div class="container">

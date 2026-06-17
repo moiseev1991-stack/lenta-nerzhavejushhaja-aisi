@@ -20,3 +20,6 @@ Clean-param: th&cond&surf&spring&sort
 
 Sitemap: <?= $base ?>/sitemap.xml
 Host: <?= $host ?>
+
+# LLM-friendly index (llmstxt.org)
+# <?= $base ?>/llms.txt

@@ -5649,3 +5649,57 @@ body > .sidebar_bottom,
     border-color: rgba(255,255,255,0.6);
     font-weight: 600;
 }
+
+/* Quick facts block on home — quotable content for AI / Я.Нейро / Google AI Overviews */
+.home-quick-facts {
+    padding: 2.5rem 0;
+    background: #f7f9fb;
+}
+.home-quick-facts .section-title {
+    margin-bottom: 1.5rem;
+}
+.quick-facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+}
+.quick-facts-item {
+    background: #fff;
+    border: 1px solid #e2e7ed;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(20,40,70,.04);
+}
+.quick-facts-item dt {
+    font-size: .8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #5e6b7a;
+    margin-bottom: 4px;
+}
+.quick-facts-item dd {
+    margin: 0;
+    font-size: 1em;
+    line-height: 1.45;
+    color: #1a2433;
+}
+@media (max-width: 560px) {
+    .home-quick-facts { padding: 1.75rem 0; }
+    .quick-facts-grid { gap: 10px; }
+    .quick-facts-item { padding: 12px 14px; }
+}
+
+/* Legal pages typography */
+.legal-page h2 {
+    margin-top: 1.75em;
+    margin-bottom: .5em;
+    font-size: 1.25em;
+    color: #1a2433;
+}
+.legal-page h2:first-child { margin-top: 0; }
+.legal-page p, .legal-page li { line-height: 1.55; }
+.legal-page ul { padding-left: 1.25em; }
+.legal-page a { color: #0c5cb0; text-decoration: underline; }
