@@ -96,7 +96,7 @@
                 </div>
                 <div class="quick-facts-item">
                     <dt>Поставщик</dt>
-                    <dd>ИП Галанов Андрей Олегович, ИНН 526016545328. Тел.: +7 (800) 200-39-43, e-mail: ev18011@yandex.ru.</dd>
+                    <dd>ИП Галанов Андрей Олегович, ИНН 526016545328. Тел.: +7 (800) 200-39-43, e-mail: info@lenta-nerzhavejushhaja-aisi.ru.</dd>
                 </div>
             </dl>
         </div>

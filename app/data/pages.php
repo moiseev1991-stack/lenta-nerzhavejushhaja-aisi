@@ -24,7 +24,7 @@ return [
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Email</span>
-                    <span class="office-card__value"><a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></span>
+                    <span class="office-card__value"><a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a></span>
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Режим работы</span>
@@ -58,7 +58,7 @@ return [
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Email</span>
-                    <span class="office-card__value"><a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></span>
+                    <span class="office-card__value"><a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a></span>
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Режим работы</span>
@@ -92,7 +92,7 @@ return [
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Email</span>
-                    <span class="office-card__value"><a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></span>
+                    <span class="office-card__value"><a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a></span>
                 </li>
                 <li class="office-card__row">
                     <span class="office-card__label">Режим работы</span>
@@ -345,7 +345,7 @@ return [
                 
                 <h3>Контакты</h3>
                 <p><strong>Телефон:</strong> <a href="tel:+78002003943">+7 (800) 200-39-43</a></p>
-                <p><strong>Email:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></p>
+                <p><strong>Email:</strong> <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a></p>
 
                 {{PDF_CATALOG}}
             </div>
@@ -434,7 +434,7 @@ return [
                 <p>Для получения точной цены на интересующую вас марку и размеры:</p>
                 <ul>
                     <li>Позвоните нам: <a href="tel:+78002003943">+7 (800) 200-39-43</a></li>
-                    <li>Напишите на email: <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></li>
+                    <li>Напишите на email: <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a></li>
                     <li>Используйте форму обратной связи на сайте</li>
                 </ul>
             </div>
@@ -456,7 +456,7 @@ return [
                     <li><strong>Наименование:</strong> Индивидуальный предприниматель Галанов Андрей Олегович (ИП Галанов А. О.)</li>
                     <li><strong>ИНН:</strong> 526016545328</li>
                     <li><strong>Адрес:</strong> 607665, Нижегородская область, Кстовский р-н, д. Афонино, ул. Академическая, д. 2, кв./оф. 3</li>
-                    <li><strong>E-mail:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></li>
+                    <li><strong>E-mail:</strong> <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a></li>
                     <li><strong>Сайт:</strong> <a href="https://lenta-nerzhavejushhaja-aisi.ru/">lenta-nerzhavejushhaja-aisi.ru</a></li>
                 </ul>
                 <p>Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав на неприкосновенность частной жизни, личную и семейную тайну.</p>
@@ -516,7 +516,7 @@ return [
                 <ul>
                     <li>получать сведения, касающиеся обработки его персональных данных;</li>
                     <li>требовать уточнения, блокирования или уничтожения персональных данных в случае, если они являются неполными, устаревшими, неточными или незаконно полученными;</li>
-                    <li>отозвать своё согласие на обработку персональных данных, направив запрос на e-mail <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a>;</li>
+                    <li>отозвать своё согласие на обработку персональных данных, направив запрос на e-mail <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a>;</li>
                     <li>обжаловать действия или бездействие Оператора в Роскомнадзоре или в судебном порядке.</li>
                 </ul>
 
@@ -533,7 +533,7 @@ return [
 
                 <h2>12. Контакты</h2>
                 <p>По всем вопросам, связанным с обработкой персональных данных, обращайтесь:</p>
-                <p><strong>E-mail:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a><br>
+                <p><strong>E-mail:</strong> <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a><br>
                 <strong>Телефон:</strong> <a href="tel:+78002003943">+7 (800) 200-39-43</a><br>
                 <strong>Почтовый адрес:</strong> 607665, Нижегородская область, Кстовский р-н, д. Афонино, ул. Академическая, д. 2, кв./оф. 3.</p>
             </div>
@@ -589,7 +589,7 @@ return [
 
                 <h2>7. Контакты</h2>
                 <p>Оператор: ИП Галанов Андрей Олегович, ИНН 526016545328.<br>
-                По вопросам, связанным с обработкой cookie: <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a>.</p>
+                По вопросам, связанным с обработкой cookie: <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a>.</p>
             </div>
         ',
     ],
@@ -608,7 +608,7 @@ return [
                     <li><strong>Оператор:</strong> Индивидуальный предприниматель Галанов Андрей Олегович (ИП Галанов А. О.);</li>
                     <li><strong>ИНН:</strong> 526016545328;</li>
                     <li><strong>Адрес:</strong> 607665, Нижегородская область, Кстовский р-н, д. Афонино, ул. Академическая, д. 2, кв./оф. 3;</li>
-                    <li><strong>E-mail:</strong> <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a>.</li>
+                    <li><strong>E-mail:</strong> <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a>.</li>
                 </ul>
 
                 <h2>1. Состав персональных данных</h2>
@@ -634,7 +634,7 @@ return [
                 </ul>
 
                 <h2>4. Срок действия согласия</h2>
-                <p>Настоящее согласие действует с момента его предоставления и до момента его отзыва Субъектом. Согласие может быть отозвано в любой момент путём направления письменного заявления на e-mail Оператора <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a> или по почтовому адресу Оператора.</p>
+                <p>Настоящее согласие действует с момента его предоставления и до момента его отзыва Субъектом. Согласие может быть отозвано в любой момент путём направления письменного заявления на e-mail Оператора <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a> или по почтовому адресу Оператора.</p>
 
                 <h2>5. Передача третьим лицам</h2>
                 <p>Субъект уведомлён, что персональные данные могут быть переданы транспортным компаниям, кредитным организациям и иным контрагентам Оператора в объёме, необходимом для исполнения договора поставки.</p>
@@ -678,7 +678,7 @@ return [
                 <h2>8. Контакты</h2>
                 <p>ИП Галанов Андрей Олегович, ИНН 526016545328.<br>
                 607665, Нижегородская область, Кстовский р-н, д. Афонино, ул. Академическая, д. 2, кв./оф. 3.<br>
-                E-mail: <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a>; тел.: <a href="tel:+78002003943">+7 (800) 200-39-43</a>.</p>
+                E-mail: <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a>; тел.: <a href="tel:+78002003943">+7 (800) 200-39-43</a>.</p>
             </div>
         ',
     ],

@@ -19,7 +19,7 @@
                 <li><a href="<?= base_url('delivery/') ?>">Доставка</a></li>
                 <li><a href="<?= base_url('payment/') ?>">Оплата</a></li>
                 <li><a href="<?= base_url('contacts/') ?>">Контакты</a></li>
-                <li><a href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
+                <li><a href="<?= base_url('bonus/') ?>">Программа лояльности</a></li>
             </ul>
         </div>
     </div>

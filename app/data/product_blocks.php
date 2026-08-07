@@ -16,7 +16,7 @@ return [
             'key' => 'email',
             'icon' => 'mail',
             'text' => null,
-            'href' => 'mailto:ev18011@yandex.ru',
+            'href' => 'mailto:info@lenta-nerzhavejushhaja-aisi.ru',
             'is_button' => false,
         ],
         [

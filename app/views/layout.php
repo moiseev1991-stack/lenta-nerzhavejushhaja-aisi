@@ -48,7 +48,7 @@ if ($isHome) {
         'vatID' => '526016545328',
         'url'   => $company['url'] ?? base_url(),
         'telephone' => $company['phone'] ?? '+7 (800) 200-39-43',
-        'email'     => $company['email'] ?? 'ev18011@yandex.ru',
+        'email'     => $company['email'] ?? 'info@lenta-nerzhavejushhaja-aisi.ru',
         'logo' => asset_url('img/logo_aisi_lenta_full.png'),
         'image' => asset_url('img/logo_aisi_lenta_full.png'),
         'description' => 'Поставка холоднокатаной нержавеющей ленты всех марок AISI (304, 316, 321, 430 и др.). Нарезка от 1 метра, ширина от 2,5 мм, толщина 0,05–4 мм. Доставка по России.',
@@ -149,7 +149,7 @@ if ($isHome) {
                 'name'  => 'Где можно купить нержавеющую ленту AISI с доставкой по России?',
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text'  => 'Поставщик — ИП Галанов А. О. (ИНН 526016545328). Офисы в Нижнем Новгороде, Москве и Санкт-Петербурге, доставка по всей России транспортными компаниями. Самовывоз — бесплатно. Заказ от 10 000 ₽. Контакты: +7 (800) 200-39-43, ev18011@yandex.ru, сайт lenta-nerzhavejushhaja-aisi.ru.',
+                    'text'  => 'Поставщик — ИП Галанов А. О. (ИНН 526016545328). Офисы в Нижнем Новгороде, Москве и Санкт-Петербурге, доставка по всей России транспортными компаниями. Самовывоз — бесплатно. Заказ от 10 000 ₽. Контакты: +7 (800) 200-39-43, info@lenta-nerzhavejushhaja-aisi.ru, сайт lenta-nerzhavejushhaja-aisi.ru.',
                 ],
             ],
         ],
@@ -486,7 +486,7 @@ if ($isServicePage && isset($pageH1)) {
             'vatID' => '526016545328',
             'url'   => $company['url'] ?? base_url(),
             'telephone' => $company['phone'] ?? '+7 (800) 200-39-43',
-            'email'     => $company['email'] ?? 'ev18011@yandex.ru',
+            'email'     => $company['email'] ?? 'info@lenta-nerzhavejushhaja-aisi.ru',
             'logo' => asset_url('img/logo_aisi_lenta_full.png'),
             'priceRange' => '₽₽',
             'currenciesAccepted' => 'RUB',
@@ -680,7 +680,7 @@ if ($isServicePage && isset($pageH1)) {
                                 </div>
                             </div>
                         <?php endforeach; ?>
-                        <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Получить бонус</a>
+                        <a href="<?= base_url('bonus/') ?>" class="header__nav-link <?= $isBonusPage ? 'header__nav-link--active' : '' ?>">Программа лояльности</a>
                     </div>
                     <div class="header__nav-contacts">
                         <button type="button" class="btn-call-header js-open-request-modal">
@@ -730,7 +730,7 @@ if ($isServicePage && isset($pageH1)) {
                             <?php endforeach; ?>
                         </ul>
                     </li>
-                    <li><a class="mobile-menu__link" href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
+                    <li><a class="mobile-menu__link" href="<?= base_url('bonus/') ?>">Программа лояльности</a></li>
                     <li><a class="mobile-menu__link" href="<?= base_url('contacts/') ?>">Контакты</a></li>
                     <li><a class="mobile-menu__link js-region-phone"
                            href="tel:<?= e($_defaultRegion['tel'] ?? '+78002003943') ?>"
@@ -831,14 +831,14 @@ if ($isServicePage && isset($pageH1)) {
                         <div class="request-modal__error-actions">
                             <button type="button" class="request-modal__error-btn request-modal__error-btn--primary" id="requestModalRetry">Повторить</button>
                             <a href="tel:+78002003943" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
-                            <a href="mailto:ev18011@yandex.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
+                            <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
                         </div>
                     </div>
                     <div class="request-modal__no-embed request-modal__no-embed--hidden" id="requestModalNoEmbed" aria-hidden="true">
                         <p class="request-modal__no-embed-text">Не настроен amoCRM embed. Укажите <code>AMO_FORM_IFRAME_SRC</code> в env или конфигурацию в <code>config.php</code> (amocrm.iframe_src / form_id + script_url).</p>
                         <div class="request-modal__error-actions">
                             <a href="tel:+78002003943" class="request-modal__error-btn request-modal__error-btn--secondary">Позвонить</a>
-                            <a href="mailto:ev18011@yandex.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
+                            <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru" class="request-modal__error-btn request-modal__error-btn--secondary">Написать</a>
                         </div>
                     </div>
                     <div class="amo-modal-embed request-modal__form-frame">
@@ -907,7 +907,7 @@ if ($isServicePage && isset($pageH1)) {
                 <div class="footer__col">
                     <h3 class="footer__title">Информация</h3>
                     <ul class="footer__list">
-                        <li><a href="<?= base_url('bonus/') ?>" class="footer__link">Получить бонус</a></li>
+                        <li><a href="<?= base_url('bonus/') ?>" class="footer__link">Программа лояльности</a></li>
                         <li><a href="<?= base_url('about/') ?>" class="footer__link">О компании</a></li>
                         <li><a href="<?= base_url('price/') ?>" class="footer__link">Прайс-лист</a></li>
                         <li><a href="<?= base_url('delivery/') ?>" class="footer__link">Доставка</a></li>
@@ -952,7 +952,7 @@ if ($isServicePage && isset($pageH1)) {
                             <?= $_rKey !== $_regionDefault ? 'hidden' : '' ?>
                         ><?= e($_r['address']) ?></li>
                         <?php endforeach; ?>
-                        <li><a href="mailto:ev18011@yandex.ru" class="footer__link">ev18011@yandex.ru</a></li>
+                        <li><a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru" class="footer__link">info@lenta-nerzhavejushhaja-aisi.ru</a></li>
                     </ul>
                 </div>
             </div>

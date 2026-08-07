@@ -19,7 +19,7 @@ return [
         'name'  => 'Каталог AISI',
         'url'   => getenv('SITE_URL') ?: 'https://lenta-nerzhavejushhaja-aisi.ru',
         'phone' => '+7 (800) 200-39-43',
-        'email' => 'ev18011@yandex.ru',
+        'email' => 'info@lenta-nerzhavejushhaja-aisi.ru',
     ],
     'regions' => [
         'nn'  => [

@@ -17,7 +17,7 @@ $gradeSpecs = trim($grade . ' ' . $specs);
 <section class="product-block-compact">
     <h3 class="product-block-compact__title">Контакты и заказ</h3>
     <p class="product-block-compact__text"><?= e($productBlocksData['contacts_short'] ?? '') ?></p>
-    <p><a href="tel:+78002003943">+7 (800) 200-39-43</a> · <a href="mailto:ev18011@yandex.ru">ev18011@yandex.ru</a></p>
+    <p><a href="tel:+78002003943">+7 (800) 200-39-43</a> · <a href="mailto:info@lenta-nerzhavejushhaja-aisi.ru">info@lenta-nerzhavejushhaja-aisi.ru</a></p>
 </section>
 <section class="product-block-compact">
     <h3 class="product-block-compact__title">Резка, упаковка, отмотка</h3>

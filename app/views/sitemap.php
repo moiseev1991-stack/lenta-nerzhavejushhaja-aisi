@@ -31,7 +31,7 @@ foreach ($sitemapProducts as $row) {
             <h2 id="sitemap-main" class="sitemap-section__title">Основные разделы</h2>
             <ul class="sitemap-section__list">
                 <li><a href="<?= base_url() ?>">Главная</a></li>
-                <li><a href="<?= base_url('bonus/') ?>">Получить бонус</a></li>
+                <li><a href="<?= base_url('bonus/') ?>">Программа лояльности</a></li>
             </ul>
         </section>
 
