@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'primenenie-nerzhaveyushchey-lenty',
-    'order'       => 18,
+    'order'       => 8,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Применение нержавеющей ленты: 10 областей, марки и состояния',

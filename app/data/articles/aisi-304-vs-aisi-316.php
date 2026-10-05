@@ -4,7 +4,8 @@
  */
 return [
     'slug'        => 'aisi-304-vs-aisi-316',
-    'order'       => 1,
+    'order'       => 104,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-05',
     'updated'     => '2026-10-05',
     'h1'          => 'AISI 304 и 316: в чём разница и что выбрать',

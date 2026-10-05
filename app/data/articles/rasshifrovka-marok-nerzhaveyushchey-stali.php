@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'rasshifrovka-marok-nerzhaveyushchey-stali',
-    'order'       => 11,
+    'order'       => 110,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Расшифровка марок нержавеющей стали: AISI, EN и JIS',

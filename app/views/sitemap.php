@@ -57,7 +57,7 @@ foreach ($sitemapProducts as $row) {
             <h2 id="sitemap-articles" class="sitemap-section__title">Справочник</h2>
             <ul class="sitemap-section__list">
                 <li><a href="<?= base_url('spravochnik/') ?>">Все статьи справочника</a></li>
-                <?php foreach (get_articles() as $art): ?>
+                <?php foreach (get_indexable_articles() as $art): ?>
                 <li><a href="<?= base_url('spravochnik/' . $art['slug'] . '/') ?>"><?= e($art['h1']) ?></a></li>
                 <?php endforeach; ?>
             </ul>

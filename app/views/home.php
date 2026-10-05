@@ -179,11 +179,11 @@
     </section>
     <?php endif; ?>
 
-    <?php $_homeArticles = array_slice(get_articles(), 0, 3, true); ?>
+    <?php $_homeArticles = array_slice(get_indexable_articles(), 0, 3, true); ?>
     <?php if (!empty($_homeArticles)): ?>
     <section class="home-articles" aria-labelledby="home-articles-title">
         <div class="container">
-            <h2 id="home-articles-title" class="home-articles__title">Справочник: как выбрать марку нержавейки</h2>
+            <h2 id="home-articles-title" class="home-articles__title">Справочник по нержавеющей ленте</h2>
             <ul class="article-list home-articles__list">
                 <?php foreach ($_homeArticles as $_ha): ?>
                 <li class="article-list__item">

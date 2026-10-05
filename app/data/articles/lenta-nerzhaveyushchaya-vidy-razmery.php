@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'lenta-nerzhaveyushchaya-vidy-razmery',
-    'order'       => 13,
+    'order'       => 1,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Лента нержавеющая: виды, толщины, ширины, поверхности и состояния',

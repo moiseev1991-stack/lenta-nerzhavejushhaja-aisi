@@ -325,7 +325,7 @@ if ($requestPath === 'spravochnik' || strpos($requestPath, 'spravochnik/') === 0
     $articleSlug = $requestPath === 'spravochnik' ? '' : trim(substr($requestPath, strlen('spravochnik/')), '/');
 
     if ($articleSlug === '') {
-        $blogArticles = get_articles();
+        $blogArticles = get_indexable_articles();
         $pageTitle = 'Справочник по нержавеющей ленте AISI: марки, ГОСТ, применение';
         $pageDescription = 'Справочник по нержавеющей ленте: сравнение марок AISI, аналоги по ГОСТ, свойства и применение. Статьи помогут выбрать марку и заказать ленту.';
         $pageH1 = 'Справочник по нержавеющей ленте';
@@ -337,7 +337,7 @@ if ($requestPath === 'spravochnik' || strpos($requestPath, 'spravochnik/') === 0
     $blogArticle = strpos($articleSlug, '/') === false ? get_article($articleSlug) : null;
     if ($blogArticle) {
         $articleStock = get_grades_stock($pdo, isset($blogArticle['grades']) ? $blogArticle['grades'] : []);
-        $blogArticles = get_articles();
+        $blogArticles = get_indexable_articles();
         $pageTitle = $blogArticle['title'];
         $pageDescription = $blogArticle['description'];
         $pageH1 = $blogArticle['h1'];

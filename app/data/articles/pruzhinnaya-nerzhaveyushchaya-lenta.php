@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'pruzhinnaya-nerzhaveyushchaya-lenta',
-    'order'       => 15,
+    'order'       => 3,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Пружинная нержавеющая лента: AISI 301, 17-7PH и нагартовка',

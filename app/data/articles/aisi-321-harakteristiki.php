@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'aisi-321-harakteristiki',
-    'order'       => 9,
+    'order'       => 107,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'AISI 321 (12Х18Н10Т): жаростойкая нержавейка и её свойства',

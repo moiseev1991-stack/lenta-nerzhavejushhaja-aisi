@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'aisi-430-harakteristiki',
-    'order'       => 10,
+    'order'       => 108,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'AISI 430 (12Х17): характеристики, применение, отличия от 304',

@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'nerzhaveyushchaya-lenta-dlya-homutov-i-obvyazki',
-    'order'       => 21,
+    'order'       => 11,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Нержавеющая лента для хомутов и обвязки труб: как выбрать и как крепить',

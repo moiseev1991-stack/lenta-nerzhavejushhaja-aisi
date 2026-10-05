@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'aisi-316-i-316l',
-    'order'       => 8,
+    'order'       => 106,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'AISI 316 и 316L: в чём разница и что выбрать для сварки',

@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'tonkaya-nerzhaveyushchaya-lenta',
-    'order'       => 19,
+    'order'       => 9,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Тонкая нержавеющая лента 0,05–0,5 мм и фольга: размеры и применение',

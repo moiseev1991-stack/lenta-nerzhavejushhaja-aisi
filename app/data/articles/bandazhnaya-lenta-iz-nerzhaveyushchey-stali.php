@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'bandazhnaya-lenta-iz-nerzhaveyushchey-stali',
-    'order'       => 14,
+    'order'       => 2,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Бандажная лента из нержавеющей стали: типовые размеры и какую марку взять',

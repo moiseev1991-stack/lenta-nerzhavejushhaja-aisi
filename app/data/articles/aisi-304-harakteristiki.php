@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'aisi-304-harakteristiki',
-    'order'       => 5,
+    'order'       => 102,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-05',
     'updated'     => '2026-10-05',
     'h1'          => 'AISI 304: характеристики, аналог 08Х18Н10, применение',

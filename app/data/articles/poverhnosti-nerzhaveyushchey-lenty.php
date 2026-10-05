@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'poverhnosti-nerzhaveyushchey-lenty',
-    'order'       => 17,
+    'order'       => 5,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Поверхности нержавеющей ленты: 2B, BA, 2BA, 4N',

@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'aisi-316-harakteristiki',
-    'order'       => 6,
+    'order'       => 105,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-05',
     'updated'     => '2026-10-05',
     'h1'          => 'AISI 316: характеристики, аналог 08Х17Н13М2, применение',

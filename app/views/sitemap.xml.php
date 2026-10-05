@@ -68,7 +68,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
     </url>
-<?php foreach (get_articles() as $art): ?>
+<?php foreach (get_indexable_articles() as $art): ?>
     <url>
         <loc><?= htmlspecialchars($base . '/spravochnik/' . $art['slug'] . '/') ?></loc>
         <lastmod><?= sitemapLastmod(isset($art['updated']) ? $art['updated'] : $art['published'], $today) ?></lastmod>

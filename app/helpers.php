@@ -1072,6 +1072,19 @@ if (!function_exists('get_articles')) {
     }
 }
 
+/** Статьи, открытые для индексации: без флага 'noindex' (дубли общих статей основного сайта скрыты). */
+if (!function_exists('get_indexable_articles')) {
+    function get_indexable_articles() {
+        $out = [];
+        foreach (get_articles() as $slug => $a) {
+            if (empty($a['noindex'])) {
+                $out[$slug] = $a;
+            }
+        }
+        return $out;
+    }
+}
+
 if (!function_exists('get_article')) {
     function get_article($slug) {
         $all = get_articles();

@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'aisi-304-i-304l',
-    'order'       => 7,
+    'order'       => 103,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'AISI 304 и 304L: чем отличаются и когда брать 304L',

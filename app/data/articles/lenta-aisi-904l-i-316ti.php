@@ -1,14 +1,14 @@
 <?php
 return [
     'slug'        => 'lenta-aisi-904l-i-316ti',
-    'order'       => 23,
+    'order'       => 13,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Лента AISI 904L и 316Ti: для каких сред нужна и чем отличается от 316',
     'title'       => 'Лента AISI 904L и 316Ti: для каких сред нужна',
     'description' => 'Нержавеющая лента AISI 904L (06ХН28МДТ) и 316Ti (10Х17Н13М2Т): стойкость к кислотам и хлоридам, нагрев, сравнение с 316L. Размеры из каталога.',
     'grades'      => ['aisi-904l', 'aisi-316ti'],
-    'related'     => ['aisi-316-i-316l', 'primenenie-nerzhaveyushchey-lenty', 'lenta-nerzhaveyushchaya-vidy-razmery'],
+    'related'     => ['primenenie-nerzhaveyushchey-lenty', 'lenta-nerzhaveyushchaya-vidy-razmery', 'tonkaya-nerzhaveyushchaya-lenta'],
     'ref_links'   => [
         ['text' => 'сталь 06ХН28МДТ (gkmetallinvest.ru)', 'url' => 'https://gkmetallinvest.ru/blog/stal-06hn28mdt/'],
         ['text' => 'питтинговая коррозия (gkmetallinvest.ru)', 'url' => 'https://gkmetallinvest.ru/blog/pittingovaya-korroziya/'],
@@ -36,7 +36,7 @@ return [
 </div>
 
 <h2>Когда достаточно 316L</h2>
-<p>В большинстве случаев: солёная среда, слабые и средние кислоты, сварные аппараты. Если условия умеренные, 316L справляется. Сравнение с 316: <a href="/spravochnik/aisi-316-i-316l/">«AISI 316 и 316L»</a>.</p>
+<p>В большинстве случаев: солёная среда, слабые и средние кислоты, сварные аппараты. Если условия умеренные, 316L справляется. Сравнение с 316: <a href="https://gkmetallinvest.ru/blog/aisi-316-i-316l/" target="_blank" rel="noopener">«AISI 316 и 316L» на основном сайте</a>.</p>
 
 <h2>Когда нужна AISI 316Ti</h2>
 <p>Эта сталь соединяет молибден с титановой стабилизацией. Титан связывает углерод, поэтому сталь не склонна к межкристаллитной коррозии при нагреве. Выбирайте 316Ti, когда деталь одновременно работает в агрессивной среде (хлориды, кислоты) и при длительном нагреве выше 450 °C, до 850 °C. Типичные области: теплообменники и реакторы в нефтехимии, трубопроводы перегретого пара, сульфатная варка в целлюлозно-бумажной промышленности.</p>

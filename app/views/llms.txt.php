@@ -77,7 +77,7 @@ $today  = date('Y-m-d');
 - [Серия AISI 400](<?= $base ?>/aisi-400-seriya/) — ферритные и мартенситные (409, 420, 430, 441)
 - [Серия AISI 900L](<?= $base ?>/aisi-900l-seriya/) — супераустенитные (904L)
 - [Справочник](<?= $base ?>/spravochnik/) — статьи о выборе марки, аналогах по ГОСТ и свойствах нержавеющей ленты
-<?php foreach (get_articles() as $art): ?>
+<?php foreach (get_indexable_articles() as $art): ?>
   - [<?= $art['h1'] ?>](<?= $base ?>/spravochnik/<?= $art['slug'] ?>/) — <?= $art['description'] ?>
 
 <?php endforeach; ?>

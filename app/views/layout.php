@@ -620,6 +620,9 @@ if ($isServicePage && isset($pageH1)) {
     <?php if (isset($isSeriesPage) && $isSeriesPage && isset($seriesData)): ?>
     <link rel="canonical" href="<?= e(base_url($seriesData['slug'] . '/')) ?>">
     <?php endif; ?>
+    <?php if ($isArticlePage && !empty($blogArticle['noindex'])): ?>
+    <meta name="robots" content="noindex, follow">
+    <?php endif; ?>
     <?php if ($isArticleList): ?>
     <link rel="canonical" href="<?= e(base_url('spravochnik/')) ?>">
     <?php endif; ?>

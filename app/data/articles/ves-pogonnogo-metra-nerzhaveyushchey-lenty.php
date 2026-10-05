@@ -1,7 +1,7 @@
 <?php
 return [
     'slug'        => 'ves-pogonnogo-metra-nerzhaveyushchey-lenty',
-    'order'       => 20,
+    'order'       => 10,
     'published'   => '2026-10-06',
     'updated'     => '2026-10-06',
     'h1'          => 'Вес погонного метра нержавеющей ленты по маркам',

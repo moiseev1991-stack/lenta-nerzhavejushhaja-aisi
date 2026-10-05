@@ -1,7 +1,8 @@
 <?php
 return [
     'slug'        => 'analogi-aisi-gost',
-    'order'       => 2,
+    'order'       => 109,
+    'noindex'     => true, // дубль общей статьи основного сайта gkmetallinvest.ru
     'published'   => '2026-10-05',
     'updated'     => '2026-10-05',
     'h1'          => 'Аналоги AISI по ГОСТ: таблица соответствия марок',
