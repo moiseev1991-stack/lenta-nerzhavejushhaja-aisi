@@ -391,14 +391,14 @@ if (!function_exists('generate_product_description_auto')) {
             'AISI 304'   => 'Аустенитная нержавеющая лента с высокой коррозионной стойкостью — универсальная базовая марка; аналог 08Х18Н10 по ГОСТ 5632.',
             'AISI 304L'  => 'Аустенитная лента с пониженным содержанием углерода (≤ 0,03 %), исключает межкристаллитную коррозию в сварных узлах; аналог 03Х18Н11.',
             'AISI 310'   => 'Жаростойкая аустенитная лента для эксплуатации до 1100 °C, высокое содержание Cr и Ni; аналог 20Х23Н18 по ГОСТ 5632.',
-            'AISI 310S'  => 'Жаростойкая лента с пониженным углеродом — лучшая свариваемость при сохранении жаропрочности до 1100 °C; близкий аналог 08Х23Н18.',
+            'AISI 310S'  => 'Жаростойкая лента с пониженным углеродом — лучшая свариваемость при сохранении жаропрочности до 1100 °C; близкий аналог 10Х23Н18.',
             'AISI 316'   => 'Аустенитная кислотостойкая лента с молибденом (2–3 %), стойкая к хлоридам и морской воде; аналог 08Х17Н13М2 по ГОСТ 5632.',
             'AISI 316L'  => 'Кислотостойкая лента с молибденом и пониженным углеродом (≤ 0,03 %) для сварных конструкций в агрессивных средах; аналог 03Х17Н14М3.',
-            'AISI 316Ti' => 'Кислотостойкая лента с молибденом и титановой стабилизацией — выдерживает нагрев и агрессивные среды одновременно; аналог 08Х17Н13М2Т.',
+            'AISI 316Ti' => 'Кислотостойкая лента с молибденом и титановой стабилизацией — выдерживает нагрев и агрессивные среды одновременно; аналог 10Х17Н13М2Т.',
             'AISI 321'   => 'Жаростойкая Ti-стабилизированная лента для работы при 450–850 °C без риска МКК; аналог 12Х18Н10Т по ГОСТ 5632.',
             'AISI 409'   => 'Ферритная лента с минимальным содержанием хрома (10,5–11,75 %), бюджетная марка для выхлопных систем; близкий аналог 08Х13.',
             'AISI 420'   => 'Мартенситная лента, закаливается до высокой твёрдости — применяется для ножей, пружин и режущего инструмента; аналог 20Х13/30Х13.',
-            'AISI 430'   => 'Базовая ферритная магнитная лента с хорошей стойкостью к атмосферным воздействиям и умеренным средам; аналог 08Х17 по ГОСТ 5632.',
+            'AISI 430'   => 'Базовая ферритная магнитная лента с хорошей стойкостью к атмосферным воздействиям и умеренным средам; аналог 12Х17 по ГОСТ 5632.',
             'AISI 431'   => 'Мартенситная лента с добавлением никеля — повышенная прочность и твёрдость после термообработки; аналог 14Х17Н2 по ГОСТ 5632.',
             'AISI 439'   => 'Ферритная Ti-стабилизированная лента для выхлопных систем и теплообменников; близкий аналог 08Х17Т по ГОСТ 5632.',
             'AISI 441'   => 'Ферритная лента с двойной стабилизацией Ti+Nb — повышенная термостойкость в автомобильных и теплообменных применениях; близкий аналог 08Х17Т.',
@@ -1041,5 +1041,213 @@ if (!function_exists('get_filter_thicknesses')) {
             3.0,
             4.0,
         ];
+    }
+}
+
+/* ───────────────────────── Справочник (статьи) ───────────────────────── */
+
+/**
+ * Все статьи справочника из app/data/articles/*.php (ключ — slug), по возрастанию 'order'.
+ * Статьи лежат в файлах, а не в БД: SQLite в репозиторий не попадает и при деплое не обновляется.
+ */
+if (!function_exists('get_articles')) {
+    function get_articles() {
+        static $all = null;
+        if ($all === null) {
+            $all = [];
+            $files = glob(__DIR__ . '/data/articles/*.php');
+            foreach (($files ?: []) as $f) {
+                $a = require $f;
+                if (is_array($a) && !empty($a['slug'])) {
+                    $all[$a['slug']] = $a;
+                }
+            }
+            uasort($all, function ($x, $y) {
+                $ox = isset($x['order']) ? (int) $x['order'] : 999;
+                $oy = isset($y['order']) ? (int) $y['order'] : 999;
+                return $ox === $oy ? strcmp((string) $x['slug'], (string) $y['slug']) : $ox - $oy;
+            });
+        }
+        return $all;
+    }
+}
+
+if (!function_exists('get_article')) {
+    function get_article($slug) {
+        $all = get_articles();
+        return isset($all[$slug]) ? $all[$slug] : null;
+    }
+}
+
+/** «2026-10-05» → «5 октября 2026» */
+if (!function_exists('format_ru_date')) {
+    function format_ru_date($ymd) {
+        $months = ['', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        $ts = strtotime((string) $ymd);
+        if (!$ts) {
+            return '';
+        }
+        return (int) date('j', $ts) . ' ' . $months[(int) date('n', $ts)] . ' ' . date('Y', $ts);
+    }
+}
+
+/**
+ * Наличие по маркам для блока «В наличии» в статье: число типоразмеров и диапазоны размеров.
+ * Возвращает [slug => ['name'=>, 'count'=>, 'th_min'=>, 'th_max'=>, 'w_min'=>, 'w_max'=>]].
+ */
+if (!function_exists('get_grades_stock')) {
+    function get_grades_stock(PDO $pdo, array $slugs) {
+        $out = [];
+        foreach ($slugs as $slug) {
+            $stmt = $pdo->prepare('
+                SELECT c.name AS name, COUNT(p.id) AS cnt,
+                       MIN(CASE WHEN p.thickness > 0 THEN p.thickness END) AS th_min,
+                       MAX(p.thickness) AS th_max,
+                       MIN(CASE WHEN p.width > 0 THEN p.width END) AS w_min,
+                       MAX(p.width) AS w_max
+                FROM categories c
+                LEFT JOIN products p ON p.category_id = c.id AND p.in_stock = 1
+                WHERE c.slug = ? AND c.is_active = 1
+                GROUP BY c.id
+            ');
+            $stmt->execute([$slug]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row && (int) $row['cnt'] > 0) {
+                $out[$slug] = [
+                    'name'   => normalize_aisi_display_name($row['name']),
+                    'count'  => (int) $row['cnt'],
+                    'th_min' => $row['th_min'],
+                    'th_max' => $row['th_max'],
+                    'w_min'  => $row['w_min'],
+                    'w_max'  => $row['w_max'],
+                ];
+            }
+        }
+        return $out;
+    }
+}
+
+if (!function_exists('article_num')) {
+    /** 0.05 → «0,05», 4.0 → «4» */
+    function article_num($v) {
+        $v = (float) $v;
+        return str_replace('.', ',', rtrim(rtrim(number_format($v, 3, '.', ''), '0'), '.'));
+    }
+}
+
+/** Склонение «типоразмер» по числу. */
+if (!function_exists('article_sizes_word')) {
+    function article_sizes_word($n) {
+        $n = (int) $n;
+        if ($n % 10 === 1 && $n % 100 !== 11) {
+            return 'типоразмер';
+        }
+        if ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 12 || $n % 100 > 14)) {
+            return 'типоразмера';
+        }
+        return 'типоразмеров';
+    }
+}
+
+/** Блок призыва к заявке (кнопка открывает модалку amoCRM). */
+if (!function_exists('article_cta_html')) {
+    function article_cta_html($title = '', $text = '') {
+        $config = require __DIR__ . '/config.php';
+        $phone = isset($config['company']['phone']) ? $config['company']['phone'] : '+7 (800) 200-39-43';
+        $title = $title !== '' ? $title : 'Подберём марку и размеры под вашу задачу';
+        $text = $text !== '' ? $text : 'Ответим за 15 минут. Отматываем от 1 метра, режем от 2,5 мм, доставляем по всей России.';
+        return '<aside class="article-cta">'
+            . '<p class="article-cta__title">' . e($title) . '</p>'
+            . '<p class="article-cta__text">' . e($text) . '</p>'
+            . '<div class="article-cta__actions">'
+            . '<button type="button" class="btn btn--primary btn--large js-open-request-modal">Узнать наличие и цену</button>'
+            . '<a class="article-cta__phone" href="tel:+78002003943">' . e($phone) . '</a>'
+            . '</div></aside>';
+    }
+}
+
+/** Блок «В наличии» по маркам статьи. */
+if (!function_exists('article_stock_html')) {
+    function article_stock_html(array $stock) {
+        if (empty($stock)) {
+            return '';
+        }
+        $html = '<div class="article-stock"><p class="article-stock__title">В наличии на складе</p><ul class="article-stock__list">';
+        foreach ($stock as $slug => $s) {
+            $parts = [$s['count'] . ' ' . article_sizes_word($s['count'])];
+            if ($s['th_min'] !== null && $s['th_max'] !== null) {
+                $parts[] = 'толщина ' . article_num($s['th_min']) . ($s['th_min'] != $s['th_max'] ? '–' . article_num($s['th_max']) : '') . ' мм';
+            }
+            if ($s['w_min'] !== null && $s['w_max'] !== null && $s['w_max'] > 0) {
+                $parts[] = 'ширина ' . article_num($s['w_min']) . ($s['w_min'] != $s['w_max'] ? '–' . article_num($s['w_max']) : '') . ' мм';
+            }
+            $html .= '<li><a href="' . e(base_url($slug . '/')) . '"><strong>Лента ' . e($s['name']) . '</strong></a> — ' . e(implode(', ', $parts)) . '</li>';
+        }
+        $html .= '</ul></div>';
+        return $html;
+    }
+}
+
+/**
+ * Подстановка плейсхолдеров в тексте статьи:
+ *   {{CTA}}, {{STOCK}}, {{ANALOGS_TABLE}}, {{FACTS:aisi-304}}, {{CHEM:aisi-304}}, {{MECH:aisi-304}}.
+ * Таблицы строятся из app/data/grades_data.php — единый источник данных по маркам.
+ */
+if (!function_exists('render_article_body')) {
+    function render_article_body($html, array $stock = []) {
+        $html = str_replace('{{CTA}}', article_cta_html(), $html);
+        $html = str_replace('{{STOCK}}', article_stock_html($stock), $html);
+
+        if (strpos($html, '{{ANALOGS_TABLE}}') !== false) {
+            $path = __DIR__ . '/data/grades_data.php';
+            $grades = is_file($path) ? require $path : [];
+            $t = '<div class="article-table-wrap"><table class="article-table"><thead><tr>'
+                . '<th>AISI</th><th>ГОСТ 5632</th><th>EN (номер)</th><th>JIS</th><th>Тип стали</th></tr></thead><tbody>';
+            foreach ($grades as $slug => $g) {
+                $t .= '<tr><td><a href="' . e(base_url($slug . '/')) . '">AISI ' . e($g['number']) . '</a></td>'
+                    . '<td>' . e($g['gost']) . '</td>'
+                    . '<td>' . e($g['en_number']) . '</td>'
+                    . '<td>' . e($g['jis']) . '</td>'
+                    . '<td>' . e($g['type']) . '</td></tr>';
+            }
+            $t .= '</tbody></table></div>';
+            $html = str_replace('{{ANALOGS_TABLE}}', $t, $html);
+        }
+
+        $html = preg_replace_callback('/\{\{(FACTS|CHEM|MECH):([a-z0-9\-]+)\}\}/', function ($m) {
+            $g = get_grade_data($m[2]);
+            if (!$g) {
+                return '';
+            }
+            if ($m[1] === 'FACTS') {
+                $rows = [
+                    ['Тип стали', $g['type']],
+                    ['Аналог по ГОСТ 5632', $g['gost']],
+                    ['EN', $g['en_number'] . ' (' . $g['en_name'] . ')'],
+                    ['JIS', $g['jis']],
+                    ['Плотность', str_replace('.', ',', (string) $g['density']) . ' г/см³'],
+                    ['Магнитность', $g['magnetic'] ? 'магнитная' : 'не магнитится в состоянии поставки'],
+                ];
+                $t = '<div class="article-table-wrap"><table class="article-table article-table--kv"><tbody>';
+                foreach ($rows as $r) {
+                    $t .= '<tr><th>' . e($r[0]) . '</th><td>' . e($r[1]) . '</td></tr>';
+                }
+                return $t . '</tbody></table></div>';
+            }
+            if ($m[1] === 'CHEM') {
+                $t = '<div class="article-table-wrap"><table class="article-table"><thead><tr><th>Элемент</th><th>Содержание, %</th><th>Роль</th></tr></thead><tbody>';
+                foreach ($g['chemical'] as $c) {
+                    $t .= '<tr><td>' . e($c['element']) . '</td><td>' . e($c['range']) . '</td><td>' . e($c['note']) . '</td></tr>';
+                }
+                return $t . '</tbody></table></div>';
+            }
+            $t = '<div class="article-table-wrap"><table class="article-table article-table--kv"><tbody>';
+            foreach ($g['mechanical'] as $r) {
+                $t .= '<tr><th>' . e($r['property']) . '</th><td>' . e($r['value']) . '</td></tr>';
+            }
+            return $t . '</tbody></table></div>';
+        }, $html);
+
+        return $html;
     }
 }

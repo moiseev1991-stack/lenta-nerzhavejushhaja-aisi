@@ -62,6 +62,20 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <priority>0.7</priority>
     </url>
 <?php endforeach; ?>
+    <url>
+        <loc><?= htmlspecialchars($base . '/spravochnik/') ?></loc>
+        <lastmod><?= $today ?></lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+<?php foreach (get_articles() as $art): ?>
+    <url>
+        <loc><?= htmlspecialchars($base . '/spravochnik/' . $art['slug'] . '/') ?></loc>
+        <lastmod><?= sitemapLastmod(isset($art['updated']) ? $art['updated'] : $art['published'], $today) ?></lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+<?php endforeach; ?>
 <?php foreach ($servicePages as $slug): ?>
     <url>
         <loc><?= htmlspecialchars($base . '/' . $slug . '/') ?></loc>

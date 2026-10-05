@@ -12,6 +12,8 @@ $isCategory = !$is404 && isset($category) && is_array($category) && !$isProduct;
 $isServicePage = isset($isServicePage);
 $isBonusPage   = isset($isBonusPage);
 $isSeriesPage  = isset($isSeriesPage) && $isSeriesPage;
+$isArticlePage = !empty($isArticlePage) && isset($blogArticle) && is_array($blogArticle);
+$isArticleList = !empty($isArticleList);
 $pageTitle = $pageTitle ?? '';
 $pageDescription = $pageDescription ?? '';
 $pageH1 = $pageH1 ?? '';
@@ -133,7 +135,7 @@ if ($isHome) {
                 'name'  => 'Какие российские аналоги у марок AISI 304, 321, 430, 316L?',
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text'  => 'AISI 304 = 08Х18Н10 / 12Х18Н9 (ГОСТ 5632). AISI 304L = 03Х18Н11. AISI 316 = 10Х17Н13М2. AISI 316L = 03Х17Н14М2 / 03Х17Н14М3. AISI 316Ti = 10Х17Н13М2Т. AISI 321 = 08Х18Н10Т / 12Х18Н10Т. AISI 430 = 12Х17. AISI 201 — марганцевый аналог 304 без точного соответствия по ГОСТ. AISI 904L — высоконикелевая сталь 03ХН28МДТ.',
+                    'text'  => 'AISI 304 = 08Х18Н10 / 12Х18Н9 (ГОСТ 5632). AISI 304L = 03Х18Н11. AISI 316 = 08Х17Н13М2. AISI 316L = 03Х17Н14М2 / 03Х17Н14М3. AISI 316Ti = 10Х17Н13М2Т. AISI 321 = 08Х18Н10Т / 12Х18Н10Т. AISI 430 = 12Х17. AISI 201 — марганцевый аналог 304 без точного соответствия по ГОСТ. AISI 904L — высоконикелевая сталь 06ХН28МДТ.',
                 ],
             ],
             [
@@ -444,6 +446,73 @@ if ($isSeriesPage && isset($seriesData)) {
     }
 }
 
+// Справочник: список статей
+if ($isArticleList) {
+    $listItems = [];
+    $pos = 1;
+    foreach (($blogArticles ?? []) as $_la) {
+        $listItems[] = ['@type' => 'ListItem', 'position' => $pos++, 'url' => base_url('spravochnik/' . $_la['slug'] . '/'), 'name' => $_la['h1']];
+    }
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => $pageH1,
+        'description' => $pageDescription,
+        'url' => base_url('spravochnik/'),
+        'inLanguage' => 'ru-RU',
+        'isPartOf' => ['@type' => 'WebSite', 'name' => $config['site_name'] ?? 'Каталог AISI', 'url' => base_url()],
+        'mainEntity' => ['@type' => 'ItemList', 'itemListElement' => $listItems],
+    ];
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная', 'item' => base_url()],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Справочник', 'item' => base_url('spravochnik/')],
+        ],
+    ];
+}
+
+// Справочник: страница статьи (Article + BreadcrumbList + FAQPage)
+if ($isArticlePage) {
+    $_aUrl = base_url('spravochnik/' . $blogArticle['slug'] . '/');
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Article',
+        'headline' => $blogArticle['h1'],
+        'description' => $blogArticle['description'],
+        'inLanguage' => 'ru-RU',
+        'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $_aUrl],
+        'url' => $_aUrl,
+        'datePublished' => $blogArticle['published'],
+        'dateModified' => $blogArticle['updated'] ?? $blogArticle['published'],
+        'image' => asset_url('img/logo_aisi_lenta_full.png'),
+        'author' => ['@type' => 'Organization', 'name' => 'ИП Галанов А. О.', 'url' => base_url()],
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => $config['site_name'] ?? 'Каталог AISI',
+            'logo' => ['@type' => 'ImageObject', 'url' => asset_url('img/logo_aisi_lenta_full.png')],
+        ],
+        'speakable' => ['@type' => 'SpeakableSpecification', 'cssSelector' => ['h1', '.article__summary']],
+    ];
+    $jsonLd[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Главная', 'item' => base_url()],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Справочник', 'item' => base_url('spravochnik/')],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $blogArticle['h1'], 'item' => $_aUrl],
+        ],
+    ];
+    if (!empty($blogArticle['faq'])) {
+        $_faqEntity = [];
+        foreach ($blogArticle['faq'] as $_f) {
+            $_faqEntity[] = ['@type' => 'Question', 'name' => $_f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => strip_tags($_f['a'])]];
+        }
+        $jsonLd[] = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $_faqEntity];
+    }
+}
+
 // Сервисные страницы: WebPage + Article; на контактах — дублируем Organization
 if ($isServicePage && isset($pageH1)) {
     $jsonLd[] = [
@@ -551,6 +620,12 @@ if ($isServicePage && isset($pageH1)) {
     <?php if (isset($isSeriesPage) && $isSeriesPage && isset($seriesData)): ?>
     <link rel="canonical" href="<?= e(base_url($seriesData['slug'] . '/')) ?>">
     <?php endif; ?>
+    <?php if ($isArticleList): ?>
+    <link rel="canonical" href="<?= e(base_url('spravochnik/')) ?>">
+    <?php endif; ?>
+    <?php if ($isArticlePage): ?>
+    <link rel="canonical" href="<?= e(base_url('spravochnik/' . $blogArticle['slug'] . '/')) ?>">
+    <?php endif; ?>
     <?php if ($isProduct && !empty($product['category_slug']) && !empty($product['slug'])): ?>
     <link rel="canonical" href="<?= e(base_url($product['category_slug'] . '/' . $product['slug'] . '/')) ?>">
     <?php endif; ?>
@@ -571,8 +646,16 @@ if ($isServicePage && isset($pageH1)) {
     <?php endif; ?>
     <?php
     // Универсальный OG/Twitter блок: главная, категории, товары, серии, сервисные, бонус.
-    if ($isHome || $isCategory || $isProduct || $isSeriesPage || $isServicePage || $isBonusPage):
-        if ($isProduct) {
+    if ($isHome || $isCategory || $isProduct || $isSeriesPage || $isServicePage || $isBonusPage || $isArticlePage || $isArticleList):
+        if ($isArticlePage) {
+            $ogType = 'article';
+            $ogUrl  = base_url('spravochnik/' . $blogArticle['slug'] . '/');
+            $ogImg  = asset_url('img/logo_aisi_lenta_full.png');
+        } elseif ($isArticleList) {
+            $ogType = 'website';
+            $ogUrl  = base_url('spravochnik/');
+            $ogImg  = asset_url('img/logo_aisi_lenta_full.png');
+        } elseif ($isProduct) {
             $ogType = 'product';
             $ogUrl  = base_url($product['category_slug'] . '/' . $product['slug'] . '/');
             $ogImg  = !empty($product['image']) ? image_url($product['image']) : asset_url('img/logo_aisi_lenta_full.png');
@@ -730,6 +813,7 @@ if ($isServicePage && isset($pageH1)) {
                             <?php endforeach; ?>
                         </ul>
                     </li>
+                    <li><a class="mobile-menu__link" href="<?= base_url('spravochnik/') ?>">Справочник</a></li>
                     <li><a class="mobile-menu__link" href="<?= base_url('bonus/') ?>">Программа лояльности</a></li>
                     <li><a class="mobile-menu__link" href="<?= base_url('contacts/') ?>">Контакты</a></li>
                     <li><a class="mobile-menu__link js-region-phone"
@@ -799,6 +883,10 @@ if ($isServicePage && isset($pageH1)) {
             <?php require __DIR__ . '/series.php'; ?>
         <?php elseif ($isBonusPage): ?>
             <?php require __DIR__ . '/bonus.php'; ?>
+        <?php elseif ($isArticlePage): ?>
+            <?php require __DIR__ . '/article.php'; ?>
+        <?php elseif ($isArticleList): ?>
+            <?php require __DIR__ . '/articles.php'; ?>
         <?php elseif ($isSitemapPage): ?>
             <?php require __DIR__ . '/sitemap.php'; ?>
         <?php elseif ($is404): ?>
@@ -907,6 +995,7 @@ if ($isServicePage && isset($pageH1)) {
                 <div class="footer__col">
                     <h3 class="footer__title">Информация</h3>
                     <ul class="footer__list">
+                        <li><a href="<?= base_url('spravochnik/') ?>" class="footer__link">Справочник</a></li>
                         <li><a href="<?= base_url('bonus/') ?>" class="footer__link">Программа лояльности</a></li>
                         <li><a href="<?= base_url('about/') ?>" class="footer__link">О компании</a></li>
                         <li><a href="<?= base_url('price/') ?>" class="footer__link">Прайс-лист</a></li>

@@ -179,6 +179,24 @@
     </section>
     <?php endif; ?>
 
+    <?php $_homeArticles = array_slice(get_articles(), 0, 3, true); ?>
+    <?php if (!empty($_homeArticles)): ?>
+    <section class="home-articles" aria-labelledby="home-articles-title">
+        <div class="container">
+            <h2 id="home-articles-title" class="home-articles__title">Справочник: как выбрать марку нержавейки</h2>
+            <ul class="article-list home-articles__list">
+                <?php foreach ($_homeArticles as $_ha): ?>
+                <li class="article-list__item">
+                    <h3 class="article-list__title"><a href="<?= e(base_url('spravochnik/' . $_ha['slug'] . '/')) ?>"><?= e($_ha['h1']) ?></a></h3>
+                    <p class="article-list__desc"><?= e($_ha['description']) ?></p>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+            <p><a href="<?= e(base_url('spravochnik/')) ?>">Все статьи справочника →</a></p>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- PDF: КП по контрактным поставкам -->
     <section class="pdf-section">
         <div class="container">

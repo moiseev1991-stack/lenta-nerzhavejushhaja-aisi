@@ -53,6 +53,16 @@ foreach ($sitemapProducts as $row) {
             </ul>
         </section>
 
+        <section class="sitemap-section" aria-labelledby="sitemap-articles">
+            <h2 id="sitemap-articles" class="sitemap-section__title">Справочник</h2>
+            <ul class="sitemap-section__list">
+                <li><a href="<?= base_url('spravochnik/') ?>">Все статьи справочника</a></li>
+                <?php foreach (get_articles() as $art): ?>
+                <li><a href="<?= base_url('spravochnik/' . $art['slug'] . '/') ?>"><?= e($art['h1']) ?></a></li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+
         <section class="sitemap-section" aria-labelledby="sitemap-info">
             <h2 id="sitemap-info" class="sitemap-section__title">Информация</h2>
             <ul class="sitemap-section__list">

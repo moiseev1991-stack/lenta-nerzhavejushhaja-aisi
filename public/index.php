@@ -319,6 +319,40 @@ if ($requestPath === 'bonus' || $requestPath === 'bonus/') {
     exit;
 }
 
+// Справочник: /spravochnik/ (список) и /spravochnik/{slug}/ (статья)
+if ($requestPath === 'spravochnik' || strpos($requestPath, 'spravochnik/') === 0) {
+    $config = require __DIR__ . '/../app/config.php';
+    $articleSlug = $requestPath === 'spravochnik' ? '' : trim(substr($requestPath, strlen('spravochnik/')), '/');
+
+    if ($articleSlug === '') {
+        $blogArticles = get_articles();
+        $pageTitle = 'Справочник по нержавеющей ленте AISI: марки, ГОСТ, применение';
+        $pageDescription = 'Справочник по нержавеющей ленте: сравнение марок AISI, аналоги по ГОСТ, свойства и применение. Статьи помогут выбрать марку и заказать ленту.';
+        $pageH1 = 'Справочник по нержавеющей ленте';
+        $isArticleList = true;
+        require __DIR__ . '/../app/views/layout.php';
+        exit;
+    }
+
+    $blogArticle = strpos($articleSlug, '/') === false ? get_article($articleSlug) : null;
+    if ($blogArticle) {
+        $articleStock = get_grades_stock($pdo, isset($blogArticle['grades']) ? $blogArticle['grades'] : []);
+        $blogArticles = get_articles();
+        $pageTitle = $blogArticle['title'];
+        $pageDescription = $blogArticle['description'];
+        $pageH1 = $blogArticle['h1'];
+        $isArticlePage = true;
+        require __DIR__ . '/../app/views/layout.php';
+        exit;
+    }
+
+    http_response_code(404);
+    $is404 = true;
+    $pageTitle = '404 — Страница не найдена';
+    require __DIR__ . '/../app/views/layout.php';
+    exit;
+}
+
 // Сервисные страницы (проверяем до категорий и товаров)
 $servicePagesData = require __DIR__ . '/../app/data/pages.php';
 
