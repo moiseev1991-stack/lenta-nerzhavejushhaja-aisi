@@ -5799,3 +5799,6 @@ body > .sidebar_bottom,
 .home-articles__list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 0 0 1rem; }
 .home-articles__list .article-list__item { margin-bottom: 0; }
 .home-articles a { color: #0c5cb0; }
+
+.article__ref { margin: 0 0 1rem; font-size: var(--font-size-sm); color: var(--text-muted); }
+.article__ref a { color: #0c5cb0; text-decoration: underline; }

@@ -1197,6 +1197,14 @@ if (!function_exists('render_article_body')) {
     function render_article_body($html, array $stock = []) {
         $html = str_replace('{{CTA}}', article_cta_html(), $html);
         $html = str_replace('{{STOCK}}', article_stock_html($stock), $html);
+        $html = str_replace('{{ORDER_BLOCK}}',
+            '<h2>Что указать в заявке</h2><ol>'
+            . '<li>Марку стали, например AISI 304.</li>'
+            . '<li>Толщину и ширину в миллиметрах.</li>'
+            . '<li>Состояние (мягкая, нагартованная) и поверхность (2B, BA, 2BA, 4N).</li>'
+            . '<li>Длину в метрах или вес в килограммах.</li>'
+            . '<li>Город и способ получения: самовывоз (Нижний Новгород, Москва, Санкт-Петербург) или доставка.</li>'
+            . '</ol><p>Ответим за 15 минут: подтвердим наличие и подготовим счёт.</p>', $html);
 
         if (strpos($html, '{{ANALOGS_TABLE}}') !== false) {
             $path = __DIR__ . '/data/grades_data.php';
@@ -1248,6 +1256,270 @@ if (!function_exists('render_article_body')) {
             return $t . '</tbody></table></div>';
         }, $html);
 
+        $html = preg_replace_callback('/\{\{(SIZES|CATALOG_SUMMARY|RANGE_TABLE|THIN_TABLE|SURFACE_COUNTS|WEIGHT_TABLE|DENSITY_TABLE)(?::([^}]*))?\}\}/', function ($m) {
+            return article_data_block($m[1], isset($m[2]) ? $m[2] : '');
+        }, $html);
+
         return $html;
+    }
+}
+
+/* ─────── Блоки статей с данными каталога ─────── */
+
+if (!function_exists('article_db_all')) {
+    function article_db_all($sql, array $params = []) {
+        $st = db()->prepare($sql);
+        $st->execute($params);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+
+/** Подпись состояния поставки (в БД встречаются и коды, и русские значения). */
+if (!function_exists('article_cond_label')) {
+    function article_cond_label($c) {
+        $map = ['soft' => 'мягкая', 'semi_hard' => 'полунагартованная', 'hard' => 'нагартованная', 'extra_hard' => 'высоконагартованная'];
+        $c = trim((string) $c);
+        return isset($map[$c]) ? $map[$c] : $c;
+    }
+}
+
+if (!function_exists('article_sort_labels')) {
+    /** Упорядочить подписи состояний: мягкая → высоконагартованная; остальное в конце. */
+    function article_sort_labels(array $labels) {
+        $order = ['мягкая' => 1, 'полунагартованная' => 2, 'нагартованная' => 3, 'высоконагартованная' => 4];
+        $labels = array_values(array_unique($labels));
+        usort($labels, function ($a, $b) use ($order) {
+            $oa = isset($order[$a]) ? $order[$a] : 9;
+            $ob = isset($order[$b]) ? $order[$b] : 9;
+            return $oa === $ob ? strcmp($a, $b) : $oa - $ob;
+        });
+        return $labels;
+    }
+}
+
+if (!function_exists('article_table')) {
+    /** Таблица статьи: $heads — заголовки, $rows — массив строк (значения уже экранированы или HTML-безопасны). */
+    function article_table(array $heads, array $rows, $extraClass = '') {
+        $t = '<div class="article-table-wrap"><table class="article-table' . ($extraClass !== '' ? ' ' . $extraClass : '') . '"><thead><tr>';
+        foreach ($heads as $h) {
+            $t .= '<th>' . e($h) . '</th>';
+        }
+        $t .= '</tr></thead><tbody>';
+        foreach ($rows as $r) {
+            $t .= '<tr>';
+            foreach ($r as $cell) {
+                $t .= '<td>' . $cell . '</td>';
+            }
+            $t .= '</tr>';
+        }
+        return $t . '</tbody></table></div>';
+    }
+}
+
+if (!function_exists('article_data_block')) {
+    /**
+     * Блоки с данными из БД каталога и grades_data.php. Вызывается из render_article_body().
+     *   SIZES:slug                       — все позиции марки (толщина, ширина, состояние, поверхность)
+     *   CATALOG_SUMMARY:all|slug1,slug2  — сводка по маркам: позиции, диапазоны размеров, поверхности, состояния
+     *   RANGE_TABLE:t1-t2:w1-w2:slugs    — размеры в заданных диапазонах толщины и ширины по маркам
+     *   THIN_TABLE                       — тонкая лента (до 0,5 мм включительно) по маркам
+     *   SURFACE_COUNTS                   — число позиций каталога по поверхностям
+     *   WEIGHT_TABLE                     — масса 1 м и метры в 1 кг (плотность AISI 304)
+     *   DENSITY_TABLE                    — плотность по маркам
+     */
+    function article_data_block($type, $arg = '') {
+        $knownSurfaces = ['2B', 'BA', '2BA', '4N'];
+
+        if ($type === 'SIZES') {
+            $rows = article_db_all('
+                SELECT p.thickness, p.width, p.condition, p.surface
+                FROM products p JOIN categories c ON c.id = p.category_id
+                WHERE c.slug = ? AND c.is_active = 1 AND p.in_stock = 1
+                ORDER BY p.thickness, p.width
+            ', [$arg]);
+            if (empty($rows)) {
+                return '';
+            }
+            $out = [];
+            foreach ($rows as $r) {
+                $out[] = [e(article_num($r['thickness'])), e(article_num($r['width'])), e(article_cond_label($r['condition'])), e($r['surface'])];
+            }
+            return article_table(['Толщина, мм', 'Ширина, мм', 'Состояние', 'Поверхность'], $out);
+        }
+
+        if ($type === 'CATALOG_SUMMARY') {
+            $slugs = $arg === 'all' ? [] : array_filter(array_map('trim', explode(',', $arg)));
+            $where = '';
+            $params = [];
+            if (!empty($slugs)) {
+                $where = ' AND c.slug IN (' . implode(',', array_fill(0, count($slugs), '?')) . ')';
+                $params = array_values($slugs);
+            }
+            $base = article_db_all('
+                SELECT c.slug, c.name, COUNT(p.id) AS cnt,
+                       MIN(CASE WHEN p.thickness > 0 THEN p.thickness END) AS tmin, MAX(p.thickness) AS tmax,
+                       MIN(CASE WHEN p.width > 0 THEN p.width END) AS wmin, MAX(p.width) AS wmax
+                FROM categories c JOIN products p ON p.category_id = c.id AND p.in_stock = 1
+                WHERE c.is_active = 1' . $where . ' GROUP BY c.id
+            ', $params);
+            if (empty($base)) {
+                return '';
+            }
+            sort_aisi_categories($base);
+            $sc = [];
+            foreach (article_db_all('
+                SELECT c.slug, p.surface, p.condition FROM categories c JOIN products p ON p.category_id = c.id AND p.in_stock = 1
+                WHERE c.is_active = 1' . $where . ' GROUP BY c.slug, p.surface, p.condition
+            ', $params) as $r) {
+                $sc[$r['slug']]['s'][] = $r['surface'];
+                $sc[$r['slug']]['c'][] = article_cond_label($r['condition']);
+            }
+            $out = [];
+            foreach ($base as $b) {
+                $gd = get_grade_data($b['slug']);
+                $surf = [];
+                $other = false;
+                foreach ((isset($sc[$b['slug']]['s']) ? array_unique($sc[$b['slug']]['s']) : []) as $s) {
+                    if (in_array($s, $knownSurfaces, true)) {
+                        $surf[] = $s;
+                    } elseif ($s !== '' && $s !== null) {
+                        $other = true;
+                    }
+                }
+                usort($surf, function ($a, $b2) use ($knownSurfaces) {
+                    return array_search($a, $knownSurfaces) - array_search($b2, $knownSurfaces);
+                });
+                $surfTxt = implode(', ', $surf) . ($other ? ($surf ? ' и др.' : 'др.') : '');
+                $cond = article_sort_labels(isset($sc[$b['slug']]['c']) ? $sc[$b['slug']]['c'] : []);
+                $out[] = [
+                    '<a href="' . e(base_url($b['slug'] . '/')) . '">' . e(normalize_aisi_display_name($b['name'])) . '</a>',
+                    e($gd ? $gd['type'] : ''),
+                    e((string) $b['cnt']),
+                    e(article_num($b['tmin']) . ($b['tmin'] != $b['tmax'] ? '–' . article_num($b['tmax']) : '')),
+                    e(article_num($b['wmin']) . ($b['wmin'] != $b['wmax'] ? '–' . article_num($b['wmax']) : '')),
+                    e($surfTxt),
+                    e(implode(', ', $cond)),
+                ];
+            }
+            return article_table(['Марка', 'Тип стали', 'Позиций', 'Толщина, мм', 'Ширина, мм', 'Поверхности', 'Состояния'], $out);
+        }
+
+        if ($type === 'RANGE_TABLE') {
+            $parts = explode(':', $arg);
+            if (count($parts) < 3) {
+                return '';
+            }
+            $t = array_map('floatval', explode('-', $parts[0]));
+            $w = array_map('floatval', explode('-', $parts[1]));
+            $slugs = array_filter(array_map('trim', explode(',', $parts[2])));
+            $out = [];
+            foreach ($slugs as $slug) {
+                $rows = article_db_all('
+                    SELECT DISTINCT p.thickness, p.width, c.name
+                    FROM products p JOIN categories c ON c.id = p.category_id
+                    WHERE c.slug = ? AND c.is_active = 1 AND p.in_stock = 1
+                      AND p.thickness BETWEEN ? AND ? AND p.width BETWEEN ? AND ?
+                    ORDER BY p.thickness, p.width
+                ', [$slug, $t[0], $t[1], $w[0], $w[1]]);
+                if (empty($rows)) {
+                    continue;
+                }
+                $sizes = [];
+                foreach ($rows as $r) {
+                    $sizes[] = article_num($r['thickness']) . '×' . article_num($r['width']);
+                }
+                $more = count($sizes) > 30 ? ' и ещё ' . (count($sizes) - 30) : '';
+                $out[] = [
+                    '<a href="' . e(base_url($slug . '/')) . '">' . e(normalize_aisi_display_name($rows[0]['name'])) . '</a>',
+                    e(implode(', ', array_slice($sizes, 0, 30)) . $more),
+                    e((string) count($rows)),
+                ];
+            }
+            return empty($out) ? '' : article_table(['Марка', 'Размеры в каталоге (толщина × ширина, мм)', 'Позиций'], $out);
+        }
+
+        if ($type === 'THIN_TABLE') {
+            $base = article_db_all('
+                SELECT c.slug, c.name, COUNT(p.id) AS cnt, MIN(p.thickness) AS tmin, MAX(p.thickness) AS tmax,
+                       MIN(CASE WHEN p.width > 0 THEN p.width END) AS wmin, MAX(p.width) AS wmax
+                FROM categories c JOIN products p ON p.category_id = c.id AND p.in_stock = 1
+                WHERE c.is_active = 1 AND p.thickness > 0 AND p.thickness <= 0.5 GROUP BY c.id
+            ');
+            if (empty($base)) {
+                return '';
+            }
+            sort_aisi_categories($base);
+            $out = [];
+            foreach ($base as $b) {
+                $out[] = [
+                    '<a href="' . e(base_url($b['slug'] . '/')) . '">' . e(normalize_aisi_display_name($b['name'])) . '</a>',
+                    e((string) $b['cnt']),
+                    e(article_num($b['tmin']) . ($b['tmin'] != $b['tmax'] ? '–' . article_num($b['tmax']) : '')),
+                    e(article_num($b['wmin']) . ($b['wmin'] != $b['wmax'] ? '–' . article_num($b['wmax']) : '')),
+                ];
+            }
+            return article_table(['Марка', 'Позиций до 0,5 мм', 'Толщина, мм', 'Ширина, мм'], $out);
+        }
+
+        if ($type === 'SURFACE_COUNTS') {
+            $rows = article_db_all('SELECT surface, COUNT(*) AS cnt FROM products WHERE in_stock = 1 GROUP BY surface');
+            $cnt = [];
+            foreach ($rows as $r) {
+                $cnt[$r['surface']] = (int) $r['cnt'];
+            }
+            $out = [];
+            foreach ($knownSurfaces as $s) {
+                if (isset($cnt[$s])) {
+                    $out[] = [e($s), e((string) $cnt[$s])];
+                }
+            }
+            return article_table(['Поверхность', 'Позиций в каталоге'], $out);
+        }
+
+        if ($type === 'WEIGHT_TABLE') {
+            $g = get_grade_data('aisi-304');
+            $rho = $g ? (float) $g['density'] : 7.93;
+            $ts = [0.1, 0.2, 0.3, 0.5, 0.8, 1.0, 1.5, 2.0];
+            $ws = [10, 20, 50, 100, 200];
+            $heads = ['Толщина, мм'];
+            foreach ($ws as $w) {
+                $heads[] = 'ширина ' . $w . ' мм';
+            }
+            $gram = [];
+            $meters = [];
+            foreach ($ts as $t) {
+                $r1 = [e(article_num($t))];
+                $r2 = [e(article_num($t))];
+                foreach ($ws as $w) {
+                    $perM = $t * $w * $rho; // г на 1 погонный метр
+                    $r1[] = e(str_replace('.', ',', rtrim(rtrim(number_format($perM, 1, '.', ''), '0'), '.')));
+                    $r2[] = e(str_replace('.', ',', number_format(1000 / $perM, $perM > 100 ? 1 : 0, '.', '')));
+                }
+                $gram[] = $r1;
+                $meters[] = $r2;
+            }
+            return '<p><strong>Масса 1 погонного метра, граммов</strong> (плотность ' . e(str_replace('.', ',', (string) $rho)) . ' г/см³)</p>'
+                . article_table($heads, $gram)
+                . '<p><strong>Сколько метров ленты в 1 килограмме</strong></p>'
+                . article_table($heads, $meters);
+        }
+
+        if ($type === 'DENSITY_TABLE') {
+            $path = __DIR__ . '/data/grades_data.php';
+            $grades = is_file($path) ? require $path : [];
+            $base = isset($grades['aisi-304']['density']) ? (float) $grades['aisi-304']['density'] : 7.93;
+            $out = [];
+            foreach ($grades as $slug => $g) {
+                $pct = ($g['density'] / $base) * 100;
+                $out[] = [
+                    '<a href="' . e(base_url($slug . '/')) . '">AISI ' . e($g['number']) . '</a>',
+                    e(str_replace('.', ',', number_format((float) $g['density'], 2, '.', ''))),
+                    e(str_replace('.', ',', number_format($pct, 1, '.', '')) . '%'),
+                ];
+            }
+            return article_table(['Марка', 'Плотность, г/см³', 'Масса относительно AISI 304'], $out);
+        }
+
+        return '';
     }
 }

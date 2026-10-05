@@ -37,6 +37,13 @@ $_related = array_slice($_related, 0, 3, true);
                 Подготовил: ИП Галанов А.&nbsp;О. (Каталог AISI) · Обновлено: <time datetime="<?= e($_updated) ?>"><?= e(format_ru_date($_updated)) ?></time>
             </p>
 
+            <?php if (!empty($blogArticle['ref_links'])): ?>
+            <p class="article__ref">
+                Общий разбор:
+                <?php foreach ($blogArticle['ref_links'] as $_i => $_rl): ?><?= $_i > 0 ? ', ' : '' ?><a href="<?= e($_rl['url']) ?>" target="_blank" rel="noopener"><?= e($_rl['text']) ?></a><?php endforeach; ?>
+            </p>
+            <?php endif; ?>
+
             <div class="article__summary">
                 <strong>Коротко:</strong> <?= $blogArticle['summary'] ?>
             </div>
