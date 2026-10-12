@@ -724,6 +724,8 @@ if ($isServicePage && isset($pageH1)) {
                 </div>
             </div>
             <div class="topbar__right">
+                <?php $_topbarEmail = $config['company']['email'] ?? 'info@lenta-nerzhavejushhaja-aisi.ru'; ?>
+                <a href="mailto:<?= e($_topbarEmail) ?>" class="topbar__email"><?= e($_topbarEmail) ?></a>
                 <a href="#how-to-find-title"
                    class="topbar__address js-region-address"
                    title="Перейти к адресу на карте"
