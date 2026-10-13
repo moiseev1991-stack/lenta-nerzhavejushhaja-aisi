@@ -16,6 +16,11 @@
     RewriteEngine On
     RewriteBase /
 
+    # Правила корневого .htaccess сюда не наследуются: для адресов /public/... дублируем запреты.
+    RewriteRule ^(router|test)\.php$ - [F,NC,L]
+    RewriteRule \.(sqlite3?|bak)(\.|_|$) - [F,NC,L]
+    RewriteRule \.(db|sql|csv|xlsx|md|log|ps1|bat|zip|docx|json)$ - [F,NC,L]
+
     # Редирект HTTP → HTTPS (301)
     RewriteCond %{HTTPS} off
     RewriteCond %{HTTP:X-Forwarded-Proto} !https

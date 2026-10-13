@@ -16,6 +16,15 @@
     RewriteEngine On
     RewriteBase /
 
+    # Служебные файлы по HTTP не отдаём: корень сайта на хостинге = корень репозитория.
+    # Папки: git, CI, редакторы, код приложения, база данных, документы, скрипты, черновики.
+    RewriteRule ^(\.git|\.github|\.vscode|\.idea|\.cursor|\.claude|app|storage|docs|scripts|seo_texts|seo_texts_202_439|vendor|node_modules)(/|$) - [F,NC,L]
+    # Отдельные файлы в корне и dev-страницы в public/.
+    RewriteRule ^(get_urls\.php|composer\.(json|lock)|Dockerfile|docker-compose\.yml|deploy\.ps1|deploy-sftp-batch\.txt|sftp-config\.json|start-server.*|_commit_msg\.txt|public/(router|test)\.php)$ - [F,NC,L]
+    # Базы, дампы, выгрузки и документы по расширению (PDF для скачивания остаются доступными).
+    RewriteRule \.(sqlite3?|bak)(\.|_|$) - [F,NC,L]
+    RewriteRule \.(db|sql|csv|xlsx|md|log|ps1|bat|zip|docx|json)$ - [F,NC,L]
+
     # Редирект HTTP → HTTPS (301)
     RewriteCond %{HTTPS} off
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
