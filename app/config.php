@@ -89,7 +89,10 @@ $config = [
 // Локальные настройки сервера (ключи, пароли): не в git, перекрывают значения выше.
 $localConfig = __DIR__ . '/../storage/config.local.php';
 if (is_file($localConfig)) {
+    // Буфер отбрасывает посторонний вывод файла (BOM из блокнота, пустые строки в конце), иначе он сломает ответы сайта.
+    ob_start();
     $localValues = require $localConfig;
+    ob_end_clean();
     if (is_array($localValues)) {
         $config = array_replace_recursive($config, $localValues);
     }
