@@ -261,6 +261,14 @@ if ($requestPath === 'llms.txt') {
     exit;
 }
 
+// Диагностика формы: что настроено на сервере (без значений ключей)
+if ($requestPath === 'api/lead/status') {
+    $config = require __DIR__ . '/../app/config.php';
+    require __DIR__ . '/../app/lead.php';
+    lead_status($config);
+    exit;
+}
+
 // Приём заявок с формы: POST /api/lead → Roistat (проксилид), см. app/lead.php
 if ($requestPath === 'api/lead') {
     $config = require __DIR__ . '/../app/config.php';

@@ -357,6 +357,24 @@ if (!function_exists('lead_save_failed')) {
     }
 }
 
+if (!function_exists('lead_status')) {
+    /** GET /api/lead/status: что настроено на сервере (только да/нет, без значений ключей). Нужно для проверки без доступа к серверу. */
+    function lead_status(array $config) {
+        $s = lead_settings($config);
+        $storage = realpath(__DIR__ . '/../storage');
+        $expected = ($storage ? $storage : __DIR__ . '/../storage') . DIRECTORY_SEPARATOR . 'config.local.php';
+        lead_json(200, [
+            'form_enabled'     => lead_is_configured($config),
+            'config_local_php' => is_file($expected) ? 'найден' : 'НЕ НАЙДЕН (создайте по этому пути)',
+            'expected_path'    => $expected,
+            'recaptcha_site'   => !empty($s['recaptcha_site']),
+            'recaptcha_secret' => !empty($s['recaptcha_secret']),
+            'roistat_key'      => !empty($s['roistat_key']),
+            'notify_email'     => !empty($s['notify_email']),
+        ]);
+    }
+}
+
 if (!function_exists('lead_handle')) {
     /** Обработчик POST /api/lead. Всегда отвечает JSON и завершает скрипт. */
     function lead_handle(array $config) {
