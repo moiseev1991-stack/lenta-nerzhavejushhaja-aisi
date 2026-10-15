@@ -4,7 +4,7 @@ $host = $_SERVER['HTTP_HOST'] ?? '';
 $isProdDomain = ($host !== '' && strpos($host, 'lenta-nerzhavejushhaja-aisi.ru') !== false);
 $envBasePath = getenv('BASE_PATH');
 
-return [
+$config = [
     /** Префикс для статики. '' когда document root = public/ (см. DEPLOY.md). 'public/' если root = корень проекта. */
     'base_path' => ($envBasePath !== false) ? $envBasePath : ($isProdDomain ? 'public/' : ''),
 
@@ -69,12 +69,30 @@ return [
     /** Количество товаров на странице каталога (desktop + mobile) */
     'catalog_per_page' => 24,
 
-    /* amoCRM форма: один источник правды для embed. iframe_src: задайте env AMO_FORM_IFRAME_SRC или укажите URL здесь */
-    'amocrm' => [
-        'form_id' => '1663854',
-        'form_hash' => '81d6c52b4028728d57c87d1d9872cb22',
-        'locale' => 'ru',
-        'script_url' => 'https://forms.amocrm.ru/forms/assets/js/amoforms.js?1770385476',
-        'iframe_src' => getenv('AMO_FORM_IFRAME_SRC') ?: null,
+    /* Заявки: форма на сайте → POST /api/lead (app/lead.php) → Roistat (проксилид) → CRM.
+       Ключи НЕ хранить в этом файле: репозиторий публичный. Положите их на сервере в
+       storage/config.local.php (образец: storage/config.local.example.php) или в переменные окружения. */
+    'lead' => [
+        'roistat_key'          => getenv('ROISTAT_PROXYLEAD_KEY') ?: '',   // ключ интеграции с CRM в Roistat
+        'roistat_url'          => 'https://cloud.roistat.com/api/proxy/1.0/leads/add',
+        'roistat_fields'       => [],                                     // доп. поля CRM, напр. ['tags' => 'сайт']
+        'notify_email'         => 'info@lenta-nerzhavejushhaja-aisi.ru',  // копия каждой заявки письмом (несколько адресов через запятую; '' = не слать)
+        'notify_from'          => '',                                     // от кого письмо; пусто = первый адрес из notify_email
+        'recaptcha_site'       => getenv('RECAPTCHA_SITE_KEY') ?: '',     // публичный ключ reCAPTCHA v2
+        'recaptcha_secret'     => getenv('RECAPTCHA_SECRET_KEY') ?: '',   // секретный ключ reCAPTCHA v2
+        'recaptcha_verify_url' => 'https://www.recaptcha.net/recaptcha/api/siteverify',
+        'rate_limit'           => 10,    // не более стольких заявок с одного IP
+        'rate_window'          => 600,   // за столько секунд
     ],
 ];
+
+// Локальные настройки сервера (ключи, пароли): не в git, перекрывают значения выше.
+$localConfig = __DIR__ . '/../storage/config.local.php';
+if (is_file($localConfig)) {
+    $localValues = require $localConfig;
+    if (is_array($localValues)) {
+        $config = array_replace_recursive($config, $localValues);
+    }
+}
+
+return $config;

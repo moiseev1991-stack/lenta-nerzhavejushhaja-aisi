@@ -33,3 +33,9 @@ composer.lock
 # Конфигурация (если нужно скрыть)
 # app/config.php
 sftp-config.json
+
+# Локальные ключи сервера и служебные файлы заявок (не в git)
+storage/config.local.php
+storage/leads_failed.jsonl
+storage/lead_rate.json
+storage/lead_errors.log

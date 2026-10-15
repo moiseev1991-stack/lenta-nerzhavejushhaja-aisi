@@ -5813,3 +5813,132 @@ body > .sidebar_bottom,
 
 .article__ref { margin: 0 0 1rem; font-size: var(--font-size-sm); color: var(--text-muted); }
 .article__ref a { color: #0c5cb0; text-decoration: underline; }
+
+/* ───────── Форма заявки в модальном окне (отправка через /api/lead → Roistat) ───────── */
+.request-modal__body--lead {
+    display: block;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+.lead-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+.lead-form[hidden],
+.lead-done[hidden],
+.lead-form__error[hidden] {
+    display: none;
+}
+.lead-form__intro {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+.lead-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.lead-form__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.lead-form__req {
+    color: var(--danger);
+}
+.lead-form__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    font: inherit;
+    font-size: 16px; /* 16px: iOS не приближает страницу при фокусе */
+    color: var(--text-primary);
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+.lead-form__input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+}
+.lead-form__textarea {
+    min-height: 76px;
+    resize: vertical;
+}
+.lead-form__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.lead-form__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #475569;
+    cursor: pointer;
+}
+.lead-form__consent input {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    accent-color: var(--accent);
+}
+.lead-form__consent a {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+.lead-form__captcha {
+    min-height: 78px;
+    transform-origin: 0 0;
+}
+@media (max-width: 360px) {
+    .lead-form__captcha {
+        transform: scale(0.88);
+        min-height: 69px;
+    }
+}
+.lead-form__error {
+    margin: 0;
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+}
+.lead-form__submit {
+    width: 100%;
+}
+.lead-form__submit:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+.lead-done {
+    padding: 12px 0;
+    text-align: center;
+}
+.lead-done:focus {
+    outline: none;
+}
+.lead-done__title {
+    margin: 0 0 8px;
+    font-size: 20px;
+    color: var(--text-primary);
+}
+.lead-done__text {
+    margin: 0 0 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #475569;
+}

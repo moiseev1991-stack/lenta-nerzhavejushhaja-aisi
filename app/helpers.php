@@ -1162,7 +1162,7 @@ if (!function_exists('article_sizes_word')) {
     }
 }
 
-/** Блок призыва к заявке (кнопка открывает модалку amoCRM). */
+/** Блок призыва к заявке (кнопка открывает модальное окно заявки). */
 if (!function_exists('article_cta_html')) {
     function article_cta_html($title = '', $text = '') {
         $config = require __DIR__ . '/config.php';

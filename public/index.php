@@ -261,6 +261,14 @@ if ($requestPath === 'llms.txt') {
     exit;
 }
 
+// Приём заявок с формы: POST /api/lead → Roistat (проксилид), см. app/lead.php
+if ($requestPath === 'api/lead') {
+    $config = require __DIR__ . '/../app/config.php';
+    require __DIR__ . '/../app/lead.php';
+    lead_handle($config);
+    exit;
+}
+
 // HTML-страница «Карта сайта»
 if ($requestPath === 'sitemap' || $requestPath === 'sitemap/') {
     $config = require __DIR__ . '/../app/config.php';
