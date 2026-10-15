@@ -13,6 +13,7 @@ $_leadTel = preg_replace('/[^\d+]/', '', $_leadPhone);
 $_leadEmail = isset($_leadCompany['email']) ? $_leadCompany['email'] : 'info@lenta-nerzhavejushhaja-aisi.ru';
 $_leadReady = lead_is_configured($config);
 $_leadSite = $_leadReady ? $config['lead']['recaptcha_site'] : '';
+$_leadV3 = !isset($config['lead']['recaptcha_version']) || $config['lead']['recaptcha_version'] === 'v3';
 ?>
     <div class="request-modal-overlay" id="requestModalOverlay" aria-hidden="true" role="presentation"></div>
     <div class="request-modal" id="requestModal" role="dialog" aria-modal="true" aria-labelledby="requestModalTitle" aria-hidden="true">
@@ -61,7 +62,11 @@ $_leadSite = $_leadReady ? $config['lead']['recaptcha_site'] : '';
                         <span>Согласен(на) на <a href="<?= e(base_url('consent/')) ?>" target="_blank" rel="noopener">обработку персональных данных</a> и принимаю <a href="<?= e(base_url('privacy-policy/')) ?>" target="_blank" rel="noopener">политику конфиденциальности</a></span>
                     </label>
 
+                    <?php if ($_leadV3): ?>
+                    <p class="lead-form__legal">Защищено reCAPTCHA: действуют <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Политика конфиденциальности</a> и <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Условия использования</a> Google.</p>
+                    <?php else: ?>
                     <div class="lead-form__captcha" id="leadCaptcha"></div>
+                    <?php endif; ?>
 
                     <p class="lead-form__error" id="leadError" role="alert" aria-live="assertive" hidden></p>
 
@@ -103,6 +108,7 @@ $_leadSite = $_leadReady ? $config['lead']['recaptcha_site'] : '';
         var errorEl = document.getElementById('leadError');
         var submitBtn = document.getElementById('leadSubmit');
         var SITE_KEY = <?= json_encode($_leadSite) ?>;
+        var V3 = <?= json_encode($_leadV3) ?>; // true: невидимая reCAPTCHA v3, false: флажок v2
         var ENDPOINT = '/api/lead';
         var savedScrollY = 0;
         var captchaId = null;
@@ -138,10 +144,22 @@ $_leadSite = $_leadReady ? $config['lead']['recaptcha_site'] : '';
             errorEl.hidden = true;
         }
 
-        // reCAPTCHA v2 («Я не робот») подгружаем при первом открытии окна.
+        // reCAPTCHA подгружаем при первом открытии окна: v3 (невидимая) или v2 («Я не робот»).
         function loadCaptcha() {
             if (!form || captchaState !== 'idle') return;
             captchaState = 'loading';
+            if (V3) {
+                var s3 = document.createElement('script');
+                s3.src = 'https://www.recaptcha.net/recaptcha/api.js?render=' + encodeURIComponent(SITE_KEY) + '&hl=ru';
+                s3.async = true;
+                s3.defer = true;
+                s3.onload = function () {
+                    try { window.grecaptcha.ready(function () { captchaState = 'ready'; }); } catch (e) { captchaState = 'failed'; }
+                };
+                s3.onerror = function () { captchaState = 'failed'; };
+                document.head.appendChild(s3);
+                return;
+            }
             window.leadCaptchaReady = function () {
                 try {
                     captchaId = window.grecaptcha.render('leadCaptcha', { sitekey: SITE_KEY });
@@ -162,6 +180,18 @@ $_leadSite = $_leadReady ? $config['lead']['recaptcha_site'] : '';
         }
         function captchaToken() {
             try { return captchaId !== null && window.grecaptcha ? window.grecaptcha.getResponse(captchaId) : ''; } catch (e) { return ''; }
+        }
+        // Токен проверки: v3 запрашивается незаметно для посетителя при отправке, v2 берётся из отмеченного флажка.
+        function getCaptchaToken() {
+            if (!V3) return Promise.resolve(captchaToken());
+            return new Promise(function (resolve) {
+                if (!window.grecaptcha || !window.grecaptcha.execute) { resolve(''); return; }
+                try {
+                    window.grecaptcha.ready(function () {
+                        window.grecaptcha.execute(SITE_KEY, { action: 'lead' }).then(resolve, function () { resolve(''); });
+                    });
+                } catch (e) { resolve(''); }
+            });
         }
 
         function resetFormView() {
@@ -214,43 +244,50 @@ $_leadSite = $_leadReady ? $config['lead']['recaptcha_site'] : '';
                     showError('Нужно согласие на обработку персональных данных.');
                     return;
                 }
-                var token = captchaToken();
-                if (!token) {
-                    showError(captchaState === 'failed'
-                        ? 'Не загрузилась проверка «Я не робот». Обновите страницу или позвоните нам.'
-                        : 'Подтвердите, что вы не робот.');
-                    return;
-                }
 
                 sending = true;
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Отправляем…';
 
-                fetch(ENDPOINT, {
-                    method: 'POST',
-                    body: new FormData(form),
-                    credentials: 'same-origin',
-                    headers: { 'Accept': 'application/json' }
-                }).then(function (r) {
-                    return r.json().then(function (j) { return j; }, function () { return { ok: false, error: 'Сервер вернул неожиданный ответ. Позвоните нам.' }; });
-                }).then(function (res) {
-                    if (res && res.ok) {
-                        form.reset();
-                        resetCaptcha();
-                        form.hidden = true;
-                        if (done) { done.hidden = false; done.focus(); }
-                        try { window.dispatchEvent(new CustomEvent('lead:sent')); } catch (err) {}
-                    } else {
-                        showError((res && res.error) || 'Не удалось отправить заявку. Позвоните нам.');
-                        resetCaptcha();
-                    }
-                }).catch(function () {
-                    showError('Нет связи с сервером. Проверьте интернет или позвоните нам.');
-                    resetCaptcha();
-                }).then(function () {
+                function finish() {
                     sending = false;
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Отправить заявку';
+                }
+
+                getCaptchaToken().then(function (token) {
+                    if (!token) {
+                        showError(V3 || captchaState === 'failed'
+                            ? 'Не загрузилась проверка на робота. Обновите страницу или позвоните нам.'
+                            : 'Подтвердите, что вы не робот.');
+                        finish();
+                        return;
+                    }
+                    var data = new FormData(form);
+                    if (V3) data.set('g-recaptcha-response', token);
+
+                    return fetch(ENDPOINT, {
+                        method: 'POST',
+                        body: data,
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    }).then(function (r) {
+                        return r.json().then(function (j) { return j; }, function () { return { ok: false, error: 'Сервер вернул неожиданный ответ. Позвоните нам.' }; });
+                    }).then(function (res) {
+                        if (res && res.ok) {
+                            form.reset();
+                            resetCaptcha();
+                            form.hidden = true;
+                            if (done) { done.hidden = false; done.focus(); }
+                            try { window.dispatchEvent(new CustomEvent('lead:sent')); } catch (err) {}
+                        } else {
+                            showError((res && res.error) || 'Не удалось отправить заявку. Позвоните нам.');
+                            resetCaptcha();
+                        }
+                    }).catch(function () {
+                        showError('Нет связи с сервером. Проверьте интернет или позвоните нам.');
+                        resetCaptcha();
+                    }).then(finish);
                 });
             });
         }

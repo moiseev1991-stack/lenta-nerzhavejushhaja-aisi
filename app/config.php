@@ -80,6 +80,8 @@ $config = [
         'notify_from'          => '',                                     // от кого письмо; пусто = первый адрес из notify_email
         'recaptcha_site'       => getenv('RECAPTCHA_SITE_KEY') ?: '',     // публичный ключ reCAPTCHA v2
         'recaptcha_secret'     => getenv('RECAPTCHA_SECRET_KEY') ?: '',   // секретный ключ reCAPTCHA v2
+        'recaptcha_version'    => 'v3',                                   // 'v3' = невидимая проверка по оценке; 'v2' = флажок «Я не робот» (тип ключей должен совпадать)
+        'recaptcha_min_score'  => 0.5,                                    // для v3: ниже этой оценки заявка отклоняется (0.0 бот ... 1.0 человек)
         'recaptcha_verify_url' => 'https://www.recaptcha.net/recaptcha/api/siteverify',
         'rate_limit'           => 10,    // не более стольких заявок с одного IP
         'rate_window'          => 600,   // за столько секунд

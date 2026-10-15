@@ -5942,3 +5942,17 @@ body > .sidebar_bottom,
     line-height: 1.5;
     color: #475569;
 }
+.lead-form__legal {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #64748b;
+}
+.lead-form__legal a {
+    color: inherit;
+    text-decoration: underline;
+}
+/* reCAPTCHA v3: значок скрыт, вместо него в форме есть ссылки на условия Google (так требует Google) */
+.grecaptcha-badge {
+    visibility: hidden;
+}

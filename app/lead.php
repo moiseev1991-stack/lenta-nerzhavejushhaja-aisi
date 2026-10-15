@@ -209,6 +209,16 @@ if (!function_exists('lead_verify_recaptcha')) {
                 continue; // нет ответа или не JSON: пробуем ещё раз
             }
             if (!empty($data['success'])) {
+                if (isset($settings['recaptcha_version']) && $settings['recaptcha_version'] === 'v3') {
+                    // v3 возвращает оценку 0.0 (бот) ... 1.0 (человек) и название действия, заданное на странице.
+                    $min = isset($settings['recaptcha_min_score']) ? (float) $settings['recaptcha_min_score'] : 0.5;
+                    $score = isset($data['score']) ? (float) $data['score'] : 0.0;
+                    $action = isset($data['action']) ? (string) $data['action'] : '';
+                    if ($action !== 'lead' || $score < $min) {
+                        lead_log_system('reCAPTCHA v3: проверка не пройдена (оценка ' . $score . ', порог ' . $min . ', действие "' . $action . '")');
+                        return 'invalid';
+                    }
+                }
                 return 'ok';
             }
             $codes = isset($data['error-codes']) ? (array) $data['error-codes'] : [];
@@ -367,6 +377,7 @@ if (!function_exists('lead_status')) {
             'form_enabled'     => lead_is_configured($config),
             'config_local_php' => is_file($expected) ? 'найден' : 'НЕ НАЙДЕН (создайте по этому пути)',
             'expected_path'    => $expected,
+            'recaptcha_version' => isset($s['recaptcha_version']) ? $s['recaptcha_version'] : 'v2',
             'recaptcha_site'   => !empty($s['recaptcha_site']),
             'recaptcha_secret' => !empty($s['recaptcha_secret']),
             'roistat_key'      => !empty($s['roistat_key']),
@@ -439,7 +450,10 @@ if (!function_exists('lead_handle')) {
         $captcha = isset($_POST['g-recaptcha-response']) ? (string) $_POST['g-recaptcha-response'] : '';
         $captchaResult = lead_verify_recaptcha($settings, $captcha, $ip);
         if ($captchaResult === 'invalid') {
-            lead_json(400, ['ok' => false, 'field' => 'captcha', 'error' => 'Подтвердите, что вы не робот.']);
+            $isV3 = isset($settings['recaptcha_version']) && $settings['recaptcha_version'] === 'v3';
+            lead_json(400, ['ok' => false, 'field' => 'captcha', 'error' => $isV3
+                ? 'Не удалось пройти проверку на робота. Попробуйте ещё раз.' . $contactsHint
+                : 'Подтвердите, что вы не робот.']);
         }
         if ($captchaResult !== 'ok') {
             lead_json(503, ['ok' => false, 'error' => 'Не удалось проверить защиту от роботов. Повторите через минуту.' . $contactsHint]);
